@@ -1,0 +1,394 @@
+# Introduction to Mechanism Design
+
+## Chapter Introduction
+
+Imagine you're the product manager at an AI company like OpenAI, and you face a critical decision: How should ChatGPT integrate advertisements into its responses? When a user asks "Can you suggest some books similar to 'To Kill a Mockingbird'?", should the system prioritize the highest-bidding advertisers (BookStore Corp offering $5 per click) or the most relevant ones (Local Library offering $1 per click but with perfect topical match)? This seemingly simple question touches the heart of mechanism design—the systematic study of how to design rules and incentives that lead to desirable outcomes when participants have private information and conflicting interests.
+
+**Learning Objectives:** By the end of this chapter, you will be able to:
+
+1. Understand the fundamental problem that mechanism design solves and why it matters for AI-powered platforms
+2. Distinguish between mechanism design and traditional optimization approaches
+3. Identify the key components of any mechanism design problem
+4. Recognize how information asymmetries create strategic behavior in digital markets
+5. Connect mechanism design principles to real-world LLM advertising challenges
+
+**Chapter Roadmap:** This chapter establishes the conceptual foundation for everything that follows. We begin with economic intuition about why mechanism design matters, then formalize the mathematical framework, explore applications in digital advertising, and conclude by connecting these ideas specifically to LLM-powered platforms. Understanding these fundamentals is crucial because LLM advertising represents a new frontier where traditional advertising mechanisms must be reconsidered in light of AI's unique characteristics—dynamic content generation, context-dependent relevance, and the challenge of maintaining content quality while maximizing revenue.
+
+**Connection to LLM Mechanism Design:** Traditional advertising mechanisms were designed for static placements—banner ads, search results, or video interruptions. LLM advertising is fundamentally different: advertisements must be woven into dynamically generated text, creating unprecedented challenges in balancing revenue generation with content integrity. The mechanisms we design must account for how ad integration affects user experience, content coherence, and the AI system's helpfulness—making this a naturally multi-objective optimization problem.
+
+## Intuitive Development: Why Mechanism Design Matters
+
+### The Information Problem in Digital Markets
+
+Consider a simple scenario that captures the essence of mechanism design challenges. Sarah runs a popular travel blog and wants to monetize it by partnering with travel companies. Three companies approach her:
+
+- **LuxuryTravel Inc.** values featuring their premium hotels at $100 per mention but won't admit this publicly
+- **BudgetStay Corp.** values promoting their hostels at $30 per mention
+- **LocalGuides LLC** values showcasing their tours at $50 per mention
+
+Sarah faces what economists call the **mechanism design problem**: How should she decide which companies to feature and how much to charge them, given that she doesn't know their true valuations?
+
+If Sarah simply asks "How much are you willing to pay?", each company has an incentive to lie. LuxuryTravel might claim they'll only pay $20, hoping to get a bargain. This information asymmetry—where participants know their own values but others don't—is at the heart of why mechanism design is necessary.
+
+### From Intuition to Formal Framework
+
+The travel blog example illustrates several key insights that apply broadly to mechanism design:
+
+**Strategic Behavior Emerges from Information Asymmetries:** When people know something others don't (their private valuations), they may have incentives to misrepresent this information for personal gain.
+
+**Mechanism Design is "Reverse Game Theory":** Instead of taking the rules as given and finding optimal strategies (traditional game theory), mechanism design starts with desired outcomes and asks: "What rules will achieve these outcomes?"
+
+**Information Has Economic Value:** The difference between what Sarah could earn if she knew everyone's true valuations versus what she can earn without this knowledge represents the economic cost of information asymmetry.
+
+### The Platform Perspective
+
+Now scale this intuition to modern digital platforms. When you search "best coffee shops in Seattle" on Google, dozens of coffee shops would pay to appear at the top. Google doesn't know each shop's true willingness to pay, but it needs mechanisms that:
+
+1. **Encourage truthful bidding** so shops reveal their true valuations
+2. **Allocate efficiently** so the most valuable placements go to those who value them most
+3. **Generate revenue** to sustain the platform
+4. **Maintain user experience** so search results remain useful
+
+This multi-objective challenge becomes even more complex with LLM platforms, where advertisements must be integrated into conversational responses rather than displayed in separate slots.
+
+### Economic Intuition: The Social Planner's Problem
+
+To understand why mechanism design matters, imagine an omniscient social planner who knows everyone's true preferences. This planner could achieve the **first-best outcome**—allocating resources to maximize total social welfare. In our travel blog example, if the planner knows all three companies' true valuations, they can recommend the optimal arrangement.
+
+But real-world mechanism designers lack this omniscience. They must design mechanisms that work with whatever information participants choose to reveal. The challenge is creating incentives so that participants' self-interested behavior leads to outcomes that approximate the first-best allocation.
+
+This gap between first-best (full information) and second-best (strategic behavior under information asymmetry) outcomes is fundamental to understanding why mechanism design is both necessary and challenging.
+
+### From Static to Dynamic: The LLM Advertising Challenge
+
+Traditional advertising mechanisms operate in relatively static environments. A Google search auction determines which ads appear for specific keywords, and these mappings remain stable. LLM advertising introduces dynamic complexity:
+
+- **Content Integration:** Ads must be woven into generated text rather than displayed separately
+- **Context Dependence:** Ad relevance depends on the specific conversation context
+- **Quality Sensitivity:** Poor ad integration can severely degrade the user experience
+- **Sequential Decisions:** Long conversations may involve multiple advertising decisions
+
+These characteristics mean that LLM advertising mechanisms must balance traditional objectives (revenue, efficiency) with new ones (content quality, conversation flow, user satisfaction).
+
+## Mathematical Foundations
+
+### Formal Setup: The Mechanism Design Problem
+
+Let's formalize the intuitive concepts developed above. A mechanism design problem consists of several key components:
+
+**Definition 1.1 (Mechanism Design Environment):** A mechanism design environment is characterized by:
+
+- A set of agents $N = \{1, 2, \ldots, n\}$
+- A type space $\Theta_i$ for each agent $i$, where $\theta_i \in \Theta_i$ represents agent $i$'s private information
+- A set of feasible outcomes $X$
+- A utility function $u_i(x, \theta_i)$ for each agent $i$, representing their payoff from outcome $x$ given their type $\theta_i$
+
+**Example 1.1:** In our travel blog scenario:
+
+- Agents: $N = \{\text{LuxuryTravel}, \text{BudgetStay}, \text{LocalGuides}\}$
+- Types: $\theta_i$ represents company $i$'s true valuation for being featured
+- Outcomes: $X$ represents possible featuring arrangements (which companies to include, how prominently)
+- Utilities: $u_i(x, \theta_i) = \theta_i \cdot \mathbb{I}[\text{company } i \text{ is featured in outcome } x] - \text{payment}_i$
+
+### The Revelation Principle
+
+One of the most powerful results in mechanism design is the Revelation Principle, which dramatically simplifies the mechanism designer's problem.
+
+**Theorem 1.1 (Revelation Principle):** For any mechanism that implements a social choice function in some equilibrium, there exists an equivalent direct mechanism where truth-telling is optimal for all agents.
+
+**Proof Sketch:** Suppose we have a mechanism $M$ where agents use strategies $s_i^*(\theta_i)$ in equilibrium. We can construct a direct mechanism $M'$ where the mechanism designer simply applies the strategies $s_i^*(\cdot)$ on behalf of the agents. In $M'$, truth-telling becomes optimal because the mechanism automatically applies the equilibrium strategies from $M$.
+
+**Economic Interpretation:** This theorem tells us that mechanism designers can restrict attention to direct mechanisms where agents are asked to report their types and have incentives to do so truthfully. This transforms the design problem from considering all possible indirect mechanisms to focusing on direct, incentive-compatible ones.
+
+### Incentive Compatibility and Individual Rationality
+
+The Revelation Principle leads us to focus on two crucial constraints:
+
+**Definition 1.2 (Dominant Strategy Incentive Compatibility - DSIC):** A direct mechanism $(f, p)$ with social choice function $f: \Theta \rightarrow X$ and payment rule $p: \Theta \rightarrow \mathbb{R}^n$ is DSIC if for all agents $i$, all types $\theta_i, \theta_i' \in \Theta_i$, and all type profiles $\theta_{-i}$ of other agents: $$u_i(f(\theta_i, \theta_{-i}), \theta_i) - p_i(\theta_i, \theta_{-i}) \geq u_i(f(\theta_i', \theta_{-i}), \theta_i) - p_i(\theta_i', \theta_{-i})$$
+
+**Intuitive Interpretation:** DSIC means that regardless of what others do, each agent's best strategy is to report their true type. This is the strongest form of incentive compatibility.
+
+**Definition 1.3 (Individual Rationality - IR):** A mechanism is IR if for all agents $i$ and all type profiles $\theta$: $$u_i(f(\theta), \theta_i) - p_i(\theta) \geq u_i(\emptyset, \theta_i)$$
+
+where $u_i(\emptyset, \theta_i)$ represents agent $i$'s utility from not participating.
+
+**Economic Interpretation:** IR ensures that agents prefer participating in the mechanism to staying away. Without this, the mechanism would fail to attract participants.
+
+### Social Choice Functions and Implementation
+
+**Definition 1.4 (Social Choice Function):** A social choice function is a mapping $f: \Theta \rightarrow X$ that specifies an outcome for each possible type profile.
+
+**Definition 1.5 (Implementation):** A social choice function $f$ is implementable in dominant strategies if there exists a mechanism $(f, p)$ that is both DSIC and IR.
+
+**Theorem 1.2 (Myerson's Lemma - Single Parameter Case):** Consider a single-parameter environment where $\theta_i \in \mathbb{R}$ and $u_i(x, \theta_i) = \theta_i v_i(x) - p_i$ for some function $v_i(x)$. A social choice function $f$ is implementable in dominant strategies if and only if:
+
+1. $v_i(f(\theta))$ is non-decreasing in $\theta_i$ (monotonicity)
+2. The payment rule satisfies: $$p_i(\theta_i) = \theta_i v_i(f(\theta_i, \theta_{-i})) - \int_{\underline{\theta}_i}^{\theta_i} v_i(f(s, \theta_{-i})) ds - u_i(\underline{\theta}_i, \theta_{-i})$$
+
+**Economic Interpretation:** Myerson's Lemma provides a complete characterization of implementable mechanisms in single-parameter environments. The monotonicity condition ensures that higher types receive (weakly) better outcomes, while the payment formula represents the unique way to price the mechanism to maintain incentive compatibility.
+
+### Information Asymmetries in Digital Platforms
+
+Digital platforms face particularly complex information asymmetries:
+
+**Advertiser Private Information:**
+
+- True willingness to pay for ad placements
+- Internal conversion rates and customer lifetime values
+- Strategic budget considerations
+
+**User Private Information:**
+
+- Genuine preferences and interests
+- Sensitivity to advertising
+- Likelihood of engagement with different ad types
+
+**Platform Private Information:**
+
+- Algorithm performance and optimization strategies
+- User engagement patterns across different content types
+- True costs of content generation and moderation
+
+**Example 1.2 (Search Advertising):** In Google's AdWords system:
+
+- Advertisers know their true value-per-click but may bid strategically
+- Google doesn't observe true values but designs auctions to encourage truthful bidding
+- The Generalized Second Price (GSP) auction partially achieves this through strategic considerations
+
+## Advanced Results: Beyond Basic Implementation
+
+### Multi-Dimensional Mechanism Design
+
+While Myerson's Lemma provides clean results for single-parameter environments, many real-world problems involve multi-dimensional types.
+
+**Definition 1.6 (Multi-Dimensional Types):** An agent's type $\theta_i = (\theta_i^1, \theta_i^2, \ldots, \theta_i^k)$ is multi-dimensional if it consists of multiple attributes that affect the agent's preferences.
+
+**Example 1.3 (LLM Advertising):** An advertiser's type might include:
+
+- $\theta_i^1$: Willingness to pay per click
+- $\theta_i^2$: Brand safety requirements
+- $\theta_i^3$: Target audience preferences
+- $\theta_i^4$: Content integration flexibility
+
+**Theorem 1.3 (Border's Impossibility Result):** In generic multi-dimensional environments, there exists no dominant strategy incentive compatible mechanism that achieves full efficiency.
+
+**Proof Sketch:** The proof constructs specific type distributions where any DSIC mechanism must sometimes allocate inefficiently. The intuition is that with multiple dimensions, the monotonicity constraints required for incentive compatibility become overly restrictive.
+
+**Economic Implications:** This result explains why many real-world mechanisms use approximations or focus on specific objectives rather than achieving full efficiency.
+
+### Revenue-Optimal Mechanisms
+
+**Theorem 1.4 (Myerson's Optimal Auction):** Consider a single-item auction with buyers having independent private values drawn from distributions $F_i$ with densities $f_i$. The revenue-optimal auction:
+
+1. Allocates to bidder $i$ if $\psi_i(\theta_i) = \max_j \{\psi_j(\theta_j), 0\}$
+2. Charges the winner their threshold bid where $\psi_i(\theta_i) = \theta_i - \frac{1-F_i(\theta_i)}{f_i(\theta_i)}$ is the virtual valuation.
+
+**Economic Interpretation:** Revenue optimization requires balancing allocative efficiency against the monopolist's desire to extract surplus. The virtual valuation $\psi_i(\theta_i)$ adjusts the true valuation $\theta_i$ to capture this trade-off.
+
+**Connection to LLM Advertising:** In LLM contexts, platforms face similar trade-offs between revenue optimization and content quality, suggesting that multi-objective extensions of Myerson's framework will be crucial.
+
+## Applications and Implementation
+
+### Digital Advertising Mechanisms in Practice
+
+**Application 1.1 (Google AdWords - Generalized Second Price):**
+
+Consider a simplified version of Google's search advertising auction:
+
+```
+Algorithm: GSP Auction for Search Advertising
+Input: Bids (b₁, b₂, ..., bₙ), Quality Scores (q₁, q₂, ..., qₙ)
+Output: Allocation and Payments
+
+1. Calculate modified bids: s_i = b_i × q_i
+2. Rank advertisers by modified bids: s_{(1)} ≥ s_{(2)} ≥ ... ≥ s_{(n)}
+3. Allocate positions 1, 2, ..., k to top k bidders
+4. Charge advertiser i: p_i = s_{(i+1)} / q_i
+```
+
+**Analysis:** This mechanism approximates truthful bidding in equilibrium while balancing revenue generation with ad relevance (through quality scores).
+
+**Application 1.2 (Platform Marketplace Design):**
+
+Two-sided platforms like eBay face mechanism design challenges in setting fees:
+
+```
+Platform Revenue Model:
+- Listing fees: L(seller_type, item_characteristics)
+- Success fees: S(transaction_value, seller_history)
+- Buyer fees: B(transaction_value, service_level)
+
+Objectives:
+- Maximize platform revenue
+- Ensure adequate buyer and seller participation
+- Maintain market quality and trust
+```
+
+**Design Principle:** The platform must balance extraction from both sides while ensuring sufficient participation to maintain network effects.
+
+### LLM Advertising: A New Frontier
+
+LLM advertising introduces novel mechanism design challenges that traditional frameworks don't fully address:
+
+**Challenge 1: Dynamic Content Integration** Unlike banner ads or search results, LLM advertisements must be integrated into dynamically generated text. This creates new considerations:
+
+```
+LLM Ad Integration Process:
+1. User submits query
+2. Retrieve relevant advertisers based on context
+3. Run mechanism to select winning advertisers
+4. Generate response integrating ads naturally
+5. Measure user engagement and satisfaction
+```
+
+**Mechanism Design Implications:**
+
+- Outcome space $X$ now includes both ad selection and content quality
+- Utility functions must account for integration quality
+- New incentive issues arise around content manipulation
+
+**Challenge 2: Multi-Objective Optimization** Traditional mechanisms often focus on single objectives (revenue or efficiency). LLM platforms must balance:
+
+- Revenue generation
+- Content quality and coherence
+- User experience and satisfaction
+- Advertiser value and fairness
+
+**Formal Framework:** Let $R(\theta, x)$ represent platform revenue, $Q(\theta, x)$ represent content quality, and $U(\theta, x)$ represent user welfare. The platform's problem becomes: $$\max_{f, p} \alpha R(\theta, f(\theta)) + \beta Q(\theta, f(\theta)) + \gamma U(\theta, f(\theta))$$ subject to DSIC and IR constraints, where $\alpha + \beta + \gamma = 1$.
+
+**Application 1.3 (Segment Auctions for LLMs):**
+
+Based on the main research paper, consider the following mechanism for LLM advertising:
+
+```
+Segment Auction Mechanism:
+Input: Query x, Advertiser types θ = (θ₁, ..., θₙ)
+For each segment t:
+  1. Calculate relevance scores q_i^(t) for each advertiser i
+  2. Collect bids b_i from advertisers
+  3. Compute allocation probabilities: x_i^(t) = (b_i × q_i^(t)) / Σⱼ(bⱼ × qⱼ^(t))
+  4. Select winner stochastically based on probabilities
+  5. Generate segment content integrating winning ad
+  6. Compute payment based on second-price principle
+```
+
+**Theoretical Properties:**
+
+- Incentive compatible under appropriate conditions
+- Balances revenue and quality through relevance weighting
+- Naturally handles dynamic content generation
+
+### Implementation Considerations
+
+**Computational Complexity:** Real-world mechanism implementation must consider computational constraints:
+
+- Auction algorithms must run in real-time (milliseconds for search, seconds for LLM)
+- Payment computation can often be done offline
+- Approximation mechanisms may be necessary for complex multi-dimensional problems
+
+**Strategic Robustness:** Mechanisms must be robust to various forms of strategic manipulation:
+
+- Bid shading and demand reduction
+- False-name bidding and sybil attacks
+- Collusion between participants
+- Gaming of quality or relevance scores
+
+**Practical Design Principles:**
+
+1. **Simplicity:** Simple mechanisms are easier to implement and explain to participants
+2. **Transparency:** Clear rules build trust and participation
+3. **Flexibility:** Mechanisms should adapt to changing market conditions
+4. **Monitoring:** Continuous monitoring enables detection of strategic manipulation
+
+## Chapter Synthesis
+
+This chapter has established the fundamental concepts necessary for understanding mechanism design in digital markets, with particular attention to the emerging challenges of LLM advertising. Let's synthesize the key insights:
+
+**Core Principle:** Mechanism design addresses the fundamental challenge of making good decisions when participants have private information and conflicting interests. This is ubiquitous in digital platforms where advertisers, users, and platforms have different objectives and private information.
+
+**Theoretical Foundation:** The Revelation Principle dramatically simplifies mechanism design by allowing focus on direct, truthful mechanisms. Combined with incentive compatibility and individual rationality constraints, this provides a rigorous framework for designing and analyzing mechanisms.
+
+**Multi-Objective Reality:** While much classical theory focuses on single objectives (revenue or efficiency), real platforms must balance multiple competing goals. This is especially pronounced in LLM advertising where content quality becomes a crucial additional objective.
+
+**Information Economics:** The gap between first-best (full information) and second-best (strategic behavior) outcomes represents the economic cost of information asymmetries. Good mechanism design minimizes this cost while maintaining appropriate incentives.
+
+**Implementation Challenges:** Moving from theory to practice requires addressing computational constraints, strategic robustness, and the complexity of real-world environments where classical assumptions may not hold.
+
+**Connection to Subsequent Chapters:**
+
+- Chapter 2 will dive deeper into auction theory fundamentals, building on the strategic behavior concepts introduced here
+- Chapter 3 will explore incentive compatibility more rigorously, expanding on the formal definitions provided
+- Chapters 6-7 will develop the multi-objective optimization theory needed for LLM advertising applications
+- Chapter 13 will apply all these concepts specifically to LLM advertising mechanism design
+
+**Research Opportunities:** The integration of mechanism design with AI systems opens numerous research directions. LLM advertising represents just one application where traditional mechanism design theory must be extended to handle new objectives, constraints, and strategic considerations.
+
+Understanding these fundamentals prepares you to engage with the more advanced topics in subsequent chapters and, ultimately, to contribute original research to this rapidly evolving field where economics, computer science, and artificial intelligence intersect.
+
+## Exercises
+
+**Exercise 1.1 (Basic Concepts):** Consider a simple auction for a single advertising slot on a webpage. There are three bidders with private valuations $v_1 = 10$, $v_2 = 7$, and $v_3 = 4$.
+
+a) What would be the first-best (socially optimal) allocation? b) If you use a first-price sealed-bid auction, what strategic considerations do bidders face? c) Design a second-price auction for this setting and verify that truthful bidding is optimal for each bidder.
+
+**Exercise 1.2 (Information Asymmetries):** A travel booking platform wants to feature hotel recommendations. Hotels have private information about their true quality (high or low) and willingness to pay for promotion.
+
+a) Explain why the platform cannot simply ask hotels to report their quality. b) Design a mechanism that gives hotels incentives to reveal their true quality. c) What role might user reviews play in reducing information asymmetries?
+
+**Exercise 1.3 (LLM Advertising Context):** Consider an LLM-powered assistant that helps users plan meals. Restaurants can bid to be mentioned in meal suggestions.
+
+a) Identify the key stakeholders and their objectives. b) What private information does each stakeholder possess? c) How might traditional advertising mechanisms need to be modified for this context? d) What new objectives (beyond revenue and efficiency) become important?
+
+**Exercise 1.4 (Multi-Objective Trade-offs):** An LLM platform must choose between two advertising mechanisms:
+
+- Mechanism A: Generates high revenue but significantly reduces response quality
+- Mechanism B: Maintains response quality but generates lower revenue
+
+a) How might you formalize this trade-off mathematically? b) What factors should influence the platform's choice between these mechanisms? c) Design a parameterized mechanism that allows the platform to adjust the revenue-quality trade-off.
+
+**Exercise 1.5 (Incentive Compatibility):** Consider the following direct mechanism for allocating a single item:
+
+- If reported valuations are $(\hat{v}_1, \hat{v}_2)$, allocate to bidder 1 if $\hat{v}_1 > \hat{v}_2$
+- Charge the winner their reported valuation: $p_i = \hat{v}_i$ if bidder $i$ wins
+
+a) Is this mechanism incentive compatible? Prove your answer. b) Is it individually rational? c) Suggest a modification that would make it incentive compatible.
+
+**Exercise 1.6 (Revelation Principle Application):** Suppose you observe a complex advertising platform where advertisers use sophisticated bidding strategies.
+
+a) How could you use the Revelation Principle to analyze this platform? b) What would the equivalent direct mechanism look like? c) What information would you need to construct this equivalent mechanism?
+
+## Further Reading
+
+**Classical Mechanism Design:**
+
+- Myerson, R. B. (1981). "Optimal auction design." _Mathematics of Operations Research_, 6(1), 58-73.
+- Milgrom, P., & Weber, R. (1982). "A theory of auctions and competitive bidding." _Econometrica_, 50(5), 1089-1122.
+- Krishna, V. (2009). _Auction Theory_. Academic Press. [Chapters 1-3 provide excellent foundation material]
+
+**Information Economics and Strategic Behavior:**
+
+- Tirole, J. (1988). _The Theory of Industrial Organization_. MIT Press. [Chapter 1 on information economics]
+- Laffont, J. J., & Martimort, D. (2002). _The Theory of Incentives: The Principal-Agent Model_. Princeton University Press.
+
+**Digital Advertising and Platform Economics:**
+
+- Edelman, B., Ostrovsky, M., & Schwarz, M. (2007). "Internet advertising and the generalized second-price auction." _American Economic Review_, 97(1), 242-259.
+- Armstrong, M. (2006). "Competition in two-sided markets." _RAND Journal of Economics_, 37(3), 668-691.
+- Cabral, L. (2019). "Standing on the shoulders of dwarfs: Dominant firms and innovation incentives." _RAND Journal of Economics_, 50(1), 70-88.
+
+**Multi-Objective Optimization in Economics:**
+
+- Ehrgott, M. (2005). _Multicriteria Optimization_. Springer. [Chapters 1-2 for foundational concepts]
+- Steuer, R. E. (1986). _Multiple Criteria Optimization: Theory, Computation, and Applications_. Wiley.
+
+**Recent Developments in AI and Mechanism Design:**
+
+- Hajiaghayi, M. T., Lahaie, S., Rezaei, K., & Shin, S. (2024). "Ad Auctions for LLMs via Retrieval Augmented Generation." _arXiv preprint arXiv:2406.09459_.
+- Duetting, P., Mirrokni, V., Paes Leme, R., Xu, H., & Zuo, S. (2023). "Mechanism design for large language models." _arXiv preprint arXiv:2310.10826_.
+- Feizi, S., Hajiaghayi, M. T., Rezaei, K., & Shin, S. (2023). "Online advertisements with LLMs: Opportunities and challenges." _arXiv preprint arXiv:2311.07601_.
+
+**Surveys and Advanced Topics:**
+
+- Roughgarden, T. (2010). "Algorithmic game theory." _Communications of the ACM_, 53(7), 78-86.
+- Hartline, J. D. (2013). "Mechanism design and approximation." _Book draft_. [Available online, excellent for advanced topics]
+- Börgers, T. (2015). _An Introduction to the Theory of Mechanism Design_. Oxford University Press.

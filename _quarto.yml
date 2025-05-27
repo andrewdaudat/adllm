@@ -1,0 +1,70 @@
+# _quarto.yml
+project:
+  type: book
+  output-dir: docs
+book:
+  author: Tue Nguyen
+  sidebar:
+    style: "floating"
+    collapse-level: 1
+    border: true
+    search: true
+
+  title: ADLLM
+  chapters:
+    - index.qmd
+    - outline.qmd
+    - part: Classical MD
+      chapters:
+        - part01/intro-md.qmd
+        - part01/auction-theory.qmd
+        - part01/ic.qmd
+        - part01/revenue-opti.qmd
+    - part: Multi-objective Opti
+      chapters:
+        - part02/efficiency.qmd
+        - part02/multi-objective-opti.qmd
+        - part02/multi-objective-md.qmd
+        - part02/fairness.qmd
+    - part: Computational MD
+      chapters:
+        - part03/computational-aspects-md.qmd
+
+format:
+  html:
+    # TOC
+    toc: true
+    toc-location: right
+    smooth-scroll: true
+    toc-title: On this page
+    # toc-expand: 1
+    toc-depth: 3
+    # Numbering
+    number-sections: true
+    number-depth: 3
+    # Math
+    html-math-method: katex
+    # Code
+    code-fold: false
+    # Fig
+    fig-cap-location: bottom
+    fig-cap-style: caption
+    fig-cap-font-size: small
+    fig-cap-font-weight: normal
+    # Callout
+    callout-appearance: default
+    callout-icon: false
+    # Theme: cyborg, darkly, solar, superhero, quartz, vapor
+    theme:
+      light: [flatly, assets/style-light.scss]
+      dark: [superhero, assets/style-dark.scss]
+    fontsize: 1.1rem
+    linestretch: 1.6
+    link-external-newwindow: true
+
+execute:
+  cache: true
+  freeze: auto
+
+resources:
+  - assets/**

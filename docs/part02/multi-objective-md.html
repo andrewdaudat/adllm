@@ -1,0 +1,1432 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.6.43">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>7&nbsp; Multi-Objective Mechanism Design – ADLLM</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../part02/fairness.html" rel="next">
+<link href="../part02/multi-objective-opti.html" rel="prev">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-d4d76bf8491c20bad77d141916dc28e1.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-4379b0ccadffce622b03caf4c46266b3.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-bdec3157979715d7154bb60f5aa24e58.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-4104e206323135730aa08c3113d84ebc.min.css" rel="prefetch" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<style>html{ scroll-behavior: smooth; }</style>
+
+  <script>window.backupDefine = window.define; window.define = undefined;</script><script src="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.js"></script>
+  <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+  </script>
+  <script>window.define = window.backupDefine; window.backupDefine = undefined;</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.css">
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-sidebar floating">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../part02/efficiency.html">Multi-objective Opti</a></li><li class="breadcrumb-item"><a href="../part02/multi-objective-md.html"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Multi-Objective Mechanism Design</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">ADLLM</a> 
+        <div class="sidebar-tools-main">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Welcome</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../outline.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Outline</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="false">
+ <span class="menu-text">Classical MD</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../part01/intro-md.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction to Mechanism Design</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../part01/auction-theory.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Auction Theory Fundamentals</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../part01/ic.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Incentive Compatibility and Truthfulness</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../part01/revenue-opti.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Revenue Optimization and Optimal Auctions</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">Multi-objective Opti</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../part02/efficiency.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Efficiency and Welfare Analysis</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../part02/multi-objective-opti.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Multi-Objective Optimization Theory</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../part02/multi-objective-md.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Multi-Objective Mechanism Design</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../part02/fairness.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Fairness in Mechanism Design</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false">
+ <span class="menu-text">Computational MD</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../part03/computational-aspects-md.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">computational-aspects-md.html</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#chapter-introduction" id="toc-chapter-introduction" class="nav-link active" data-scroll-target="#chapter-introduction"><span class="header-section-number">7.1</span> Chapter Introduction</a></li>
+  <li><a href="#intuitive-development-private-information-and-constrained-trade-offs" id="toc-intuitive-development-private-information-and-constrained-trade-offs" class="nav-link" data-scroll-target="#intuitive-development-private-information-and-constrained-trade-offs"><span class="header-section-number">7.2</span> Intuitive Development: Private Information and Constrained Trade-offs</a>
+  <ul class="collapse">
+  <li><a href="#the-restaurant-auction-revisited" id="toc-the-restaurant-auction-revisited" class="nav-link" data-scroll-target="#the-restaurant-auction-revisited"><span class="header-section-number">7.2.1</span> The Restaurant Auction Revisited</a></li>
+  <li><a href="#why-standard-multi-objective-optimization-falls-short" id="toc-why-standard-multi-objective-optimization-falls-short" class="nav-link" data-scroll-target="#why-standard-multi-objective-optimization-falls-short"><span class="header-section-number">7.2.2</span> Why Standard Multi-Objective Optimization Falls Short</a></li>
+  <li><a href="#the-revelation-principle-in-multi-objective-settings" id="toc-the-revelation-principle-in-multi-objective-settings" class="nav-link" data-scroll-target="#the-revelation-principle-in-multi-objective-settings"><span class="header-section-number">7.2.3</span> The Revelation Principle in Multi-Objective Settings</a></li>
+  <li><a href="#building-intuition-for-trade-offs" id="toc-building-intuition-for-trade-offs" class="nav-link" data-scroll-target="#building-intuition-for-trade-offs"><span class="header-section-number">7.2.4</span> Building Intuition for Trade-offs</a></li>
+  <li><a href="#parameterized-mechanisms-as-multi-objective-solutions" id="toc-parameterized-mechanisms-as-multi-objective-solutions" class="nav-link" data-scroll-target="#parameterized-mechanisms-as-multi-objective-solutions"><span class="header-section-number">7.2.5</span> Parameterized Mechanisms as Multi-Objective Solutions</a></li>
+  </ul></li>
+  <li><a href="#mathematical-foundations-multi-objective-social-choice-functions" id="toc-mathematical-foundations-multi-objective-social-choice-functions" class="nav-link" data-scroll-target="#mathematical-foundations-multi-objective-social-choice-functions"><span class="header-section-number">7.3</span> Mathematical Foundations: Multi-Objective Social Choice Functions</a>
+  <ul class="collapse">
+  <li><a href="#formal-problem-setup" id="toc-formal-problem-setup" class="nav-link" data-scroll-target="#formal-problem-setup"><span class="header-section-number">7.3.1</span> Formal Problem Setup</a></li>
+  <li><a href="#incentive-compatibility-in-multi-objective-settings" id="toc-incentive-compatibility-in-multi-objective-settings" class="nav-link" data-scroll-target="#incentive-compatibility-in-multi-objective-settings"><span class="header-section-number">7.3.2</span> Incentive Compatibility in Multi-Objective Settings</a></li>
+  <li><a href="#characterizing-the-feasible-multi-objective-region" id="toc-characterizing-the-feasible-multi-objective-region" class="nav-link" data-scroll-target="#characterizing-the-feasible-multi-objective-region"><span class="header-section-number">7.3.3</span> Characterizing the Feasible Multi-Objective Region</a></li>
+  <li><a href="#scalarization-in-mechanism-design" id="toc-scalarization-in-mechanism-design" class="nav-link" data-scroll-target="#scalarization-in-mechanism-design"><span class="header-section-number">7.3.4</span> Scalarization in Mechanism Design</a></li>
+  <li><a href="#multi-objective-myerson-theory" id="toc-multi-objective-myerson-theory" class="nav-link" data-scroll-target="#multi-objective-myerson-theory"><span class="header-section-number">7.3.5</span> Multi-Objective Myerson Theory</a></li>
+  </ul></li>
+  <li><a href="#advanced-results-impossibility-results-and-fundamental-limitations" id="toc-advanced-results-impossibility-results-and-fundamental-limitations" class="nav-link" data-scroll-target="#advanced-results-impossibility-results-and-fundamental-limitations"><span class="header-section-number">7.4</span> Advanced Results: Impossibility Results and Fundamental Limitations</a>
+  <ul class="collapse">
+  <li><a href="#the-multi-objective-impossibility-theorem" id="toc-the-multi-objective-impossibility-theorem" class="nav-link" data-scroll-target="#the-multi-objective-impossibility-theorem"><span class="header-section-number">7.4.1</span> The Multi-Objective Impossibility Theorem</a></li>
+  <li><a href="#revenue-quality-fairness-trade-offs" id="toc-revenue-quality-fairness-trade-offs" class="nav-link" data-scroll-target="#revenue-quality-fairness-trade-offs"><span class="header-section-number">7.4.2</span> Revenue-Quality-Fairness Trade-offs</a></li>
+  <li><a href="#dynamic-multi-objective-mechanisms" id="toc-dynamic-multi-objective-mechanisms" class="nav-link" data-scroll-target="#dynamic-multi-objective-mechanisms"><span class="header-section-number">7.4.3</span> Dynamic Multi-Objective Mechanisms</a></li>
+  <li><a href="#robust-multi-objective-mechanism-design" id="toc-robust-multi-objective-mechanism-design" class="nav-link" data-scroll-target="#robust-multi-objective-mechanism-design"><span class="header-section-number">7.4.4</span> Robust Multi-Objective Mechanism Design</a></li>
+  </ul></li>
+  <li><a href="#applications-and-implementation-multi-objective-llm-advertising-mechanisms" id="toc-applications-and-implementation-multi-objective-llm-advertising-mechanisms" class="nav-link" data-scroll-target="#applications-and-implementation-multi-objective-llm-advertising-mechanisms"><span class="header-section-number">7.5</span> Applications and Implementation: Multi-Objective LLM Advertising Mechanisms</a>
+  <ul class="collapse">
+  <li><a href="#problem-formulation-for-llm-advertising" id="toc-problem-formulation-for-llm-advertising" class="nav-link" data-scroll-target="#problem-formulation-for-llm-advertising"><span class="header-section-number">7.5.1</span> Problem Formulation for LLM Advertising</a></li>
+  <li><a href="#parameterized-mechanism-design" id="toc-parameterized-mechanism-design" class="nav-link" data-scroll-target="#parameterized-mechanism-design"><span class="header-section-number">7.5.2</span> Parameterized Mechanism Design</a></li>
+  <li><a href="#three-objective-implementation" id="toc-three-objective-implementation" class="nav-link" data-scroll-target="#three-objective-implementation"><span class="header-section-number">7.5.3</span> Three-Objective Implementation</a></li>
+  <li><a href="#case-study-multi-objective-book-recommendation" id="toc-case-study-multi-objective-book-recommendation" class="nav-link" data-scroll-target="#case-study-multi-objective-book-recommendation"><span class="header-section-number">7.5.4</span> Case Study: Multi-Objective Book Recommendation</a></li>
+  <li><a href="#quality-function-specification" id="toc-quality-function-specification" class="nav-link" data-scroll-target="#quality-function-specification"><span class="header-section-number">7.5.5</span> Quality Function Specification</a></li>
+  <li><a href="#empirical-multi-objective-analysis-framework" id="toc-empirical-multi-objective-analysis-framework" class="nav-link" data-scroll-target="#empirical-multi-objective-analysis-framework"><span class="header-section-number">7.5.6</span> Empirical Multi-Objective Analysis Framework</a></li>
+  <li><a href="#mechanism-performance-evaluation" id="toc-mechanism-performance-evaluation" class="nav-link" data-scroll-target="#mechanism-performance-evaluation"><span class="header-section-number">7.5.7</span> Mechanism Performance Evaluation</a></li>
+  </ul></li>
+  <li><a href="#chapter-synthesis" id="toc-chapter-synthesis" class="nav-link" data-scroll-target="#chapter-synthesis"><span class="header-section-number">7.6</span> Chapter Synthesis</a></li>
+  <li><a href="#exercises" id="toc-exercises" class="nav-link" data-scroll-target="#exercises"><span class="header-section-number">7.7</span> Exercises</a></li>
+  <li><a href="#further-reading" id="toc-further-reading" class="nav-link" data-scroll-target="#further-reading"><span class="header-section-number">7.8</span> Further Reading</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../part02/efficiency.html">Multi-objective Opti</a></li><li class="breadcrumb-item"><a href="../part02/multi-objective-md.html"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Multi-Objective Mechanism Design</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Multi-Objective Mechanism Design</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="chapter-introduction" class="level2" data-number="7.1">
+<h2 data-number="7.1" class="anchored" data-anchor-id="chapter-introduction"><span class="header-section-number">7.1</span> Chapter Introduction</h2>
+<p>Consider ChatGPT responding to “What’s the best smartphone for photography?” The platform faces a complex optimization challenge: maximize advertising revenue from phone manufacturers, provide high-quality recommendations that serve users well, and treat advertisers fairly regardless of their budget size. Traditional mechanism design focuses on single objectives—typically revenue maximization or allocative efficiency. But modern AI platforms must balance multiple competing goals simultaneously.</p>
+<p>This creates a fundamental tension. A revenue-maximizing auction might feature the highest bidder: “The premium UltraPhone Pro offers cutting-edge camera technology,” generating substantial platform income but potentially misleading budget-conscious users. A quality-focused mechanism might recommend: “For photography, consider these three options across different price ranges,” providing excellent user value but minimal revenue. Neither approach optimizes the platform’s true multi-dimensional objective.</p>
+<p>Multi-objective mechanism design addresses this challenge by formally integrating optimization theory with game-theoretic incentive considerations. Unlike standard multi-objective optimization where we control all decision variables, mechanism design operates with private information—advertisers know their own valuations but the platform does not. This informational asymmetry constrains the achievable trade-off space and requires mechanisms that incentivize truthful reporting.</p>
+<p><strong>Learning Objectives:</strong> By the end of this chapter, you should be able to:</p>
+<ul>
+<li>Formulate multi-objective mechanism design problems with formal constraints for incentive compatibility and individual rationality</li>
+<li>Characterize the feasible trade-off space between competing objectives when agents have private information</li>
+<li>Design parameterized mechanisms that achieve specific points on the Pareto frontier while maintaining truthfulness</li>
+<li>Analyze impossibility results that limit achievable combinations of revenue, efficiency, and fairness</li>
+<li>Apply multi-objective mechanism design to LLM advertising contexts with quality considerations</li>
+</ul>
+<p><strong>Chapter Roadmap:</strong> We begin by exploring how private information constrains multi-objective optimization, then develop formal frameworks for multi-objective social choice functions. The chapter progresses through mechanism design techniques that achieve Pareto efficient combinations of objectives, analysis of fundamental trade-offs and impossibility results, and computational approaches for complex mechanism design problems. We conclude with detailed applications to LLM advertising.</p>
+<p><strong>Connection to Your Thesis Research:</strong> This chapter provides the core theoretical framework for your thesis by showing how to design mechanisms that balance revenue, quality, and fairness while maintaining incentive compatibility. The tools developed here enable you to formally characterize achievable trade-offs in LLM advertising, design optimal mechanisms for different objective weightings, and analyze the fundamental limits of what multi-objective mechanisms can accomplish.</p>
+</section>
+<section id="intuitive-development-private-information-and-constrained-trade-offs" class="level2" data-number="7.2">
+<h2 data-number="7.2" class="anchored" data-anchor-id="intuitive-development-private-information-and-constrained-trade-offs"><span class="header-section-number">7.2</span> Intuitive Development: Private Information and Constrained Trade-offs</h2>
+<section id="the-restaurant-auction-revisited" class="level3" data-number="7.2.1">
+<h3 data-number="7.2.1" class="anchored" data-anchor-id="the-restaurant-auction-revisited"><span class="header-section-number">7.2.1</span> The Restaurant Auction Revisited</h3>
+<p>Recall our restaurant recommendation scenario from Chapter 6, but now consider the informational constraints that mechanism design must address:</p>
+<p><strong>What the Platform Knows:</strong></p>
+<ul>
+<li>Three restaurants want to advertise: Romano’s Italian, QuickBite, Artisan Café</li>
+<li>Each restaurant’s relevance to different query types (observable through past data)</li>
+<li>Each restaurant submits a bid</li>
+</ul>
+<p><strong>What the Platform Doesn’t Know:</strong></p>
+<ul>
+<li>How much each restaurant actually values advertising (their true willingness to pay)</li>
+<li>Whether submitted bids reflect true values or strategic behavior</li>
+<li>Future value each restaurant places on long-term customer relationships</li>
+</ul>
+<p>This private information fundamentally constrains the platform’s optimization problem. Consider three potential mechanisms:</p>
+<p><strong>Mechanism A: Pure Revenue Auction</strong> “The restaurant with the highest bid wins each advertising slot.”</p>
+<ul>
+<li><strong>Revenue</strong>: High (if restaurants bid truthfully)</li>
+<li><strong>Quality</strong>: Potentially low (highest bidder may not be most relevant)</li>
+<li><strong>Truthfulness</strong>: Not guaranteed (restaurants may shade bids strategically)</li>
+</ul>
+<p><strong>Mechanism B: Pure Quality Matching</strong> “The most relevant restaurant for each query wins, paying their bid.”</p>
+<ul>
+<li><strong>Revenue</strong>: Low (restaurants can bid minimally since relevance determines allocation)</li>
+<li><strong>Quality</strong>: High (best matches always selected)</li>
+<li><strong>Truthfulness</strong>: Not guaranteed (no incentive to bid true value)</li>
+</ul>
+<p><strong>Mechanism C: Balanced VCG-Style Mechanism</strong> “Allocation based on bid × relevance, payment based on externality imposed on others.”</p>
+<ul>
+<li><strong>Revenue</strong>: Moderate (strategic bidding limited by VCG payments)</li>
+<li><strong>Quality</strong>: Moderate (balances bids and relevance)</li>
+<li><strong>Truthfulness</strong>: Guaranteed (VCG mechanism property)</li>
+</ul>
+</section>
+<section id="why-standard-multi-objective-optimization-falls-short" class="level3" data-number="7.2.2">
+<h3 data-number="7.2.2" class="anchored" data-anchor-id="why-standard-multi-objective-optimization-falls-short"><span class="header-section-number">7.2.2</span> Why Standard Multi-Objective Optimization Falls Short</h3>
+<p>In Chapter 6, we could directly choose decision variables to optimize multiple objectives. Mechanism design introduces a crucial constraint: the allocation and payment rules must incentivize truthful reporting from agents with private information.</p>
+<p><strong>Standard Multi-Objective Problem:</strong> <span class="math display">\max_{x} (\text{Revenue}(x), \text{Quality}(x), \text{Fairness}(x))</span> where <span class="math inline">x</span> represents allocation decisions we control directly.</p>
+<p><strong>Multi-Objective Mechanism Design Problem:</strong> <span class="math display">\max_{(\text{allocation rule}, \text{payment rule})} (\text{Revenue}, \text{Quality}, \text{Fairness})</span> subject to:</p>
+<ul>
+<li>Incentive Compatibility: Truth-telling is optimal for each agent</li>
+<li>Individual Rationality: Participation is voluntary and beneficial</li>
+<li>Budget Balance: Payments cover platform costs (if required)</li>
+</ul>
+<p>The feasible region is now constrained by these mechanism design requirements, potentially eliminating some theoretically achievable objective combinations.</p>
+</section>
+<section id="the-revelation-principle-in-multi-objective-settings" class="level3" data-number="7.2.3">
+<h3 data-number="7.2.3" class="anchored" data-anchor-id="the-revelation-principle-in-multi-objective-settings"><span class="header-section-number">7.2.3</span> The Revelation Principle in Multi-Objective Settings</h3>
+<p>The Revelation Principle states that any mechanism can be converted to a direct mechanism where agents report their types truthfully. In multi-objective settings, this means we can focus on direct mechanisms <span class="math inline">(x(v), p(v))</span> where:</p>
+<ul>
+<li><span class="math inline">x(v)</span>: allocation rule mapping reported valuations to outcomes</li>
+<li><span class="math inline">p(v)</span>: payment rule mapping reported valuations to transfers</li>
+</ul>
+<p><strong>Key Insight:</strong> Multi-objective mechanism design seeks allocation and payment rules that optimize multiple objectives while satisfying IC and IR constraints.</p>
+</section>
+<section id="building-intuition-for-trade-offs" class="level3" data-number="7.2.4">
+<h3 data-number="7.2.4" class="anchored" data-anchor-id="building-intuition-for-trade-offs"><span class="header-section-number">7.2.4</span> Building Intuition for Trade-offs</h3>
+<p><strong>Trade-off 1: Revenue vs.&nbsp;Efficiency</strong> Standard result: Revenue-maximizing mechanisms use virtual valuations that distort allocation away from efficiency. In multi-objective settings, we can choose how much efficiency to sacrifice for revenue.</p>
+<p><strong>Trade-off 2: Fairness vs.&nbsp;Revenue</strong> Fair mechanisms might allocate more evenly across agents, reducing revenue if high-value agents are excluded. Multi-objective approach allows controlled trade-offs.</p>
+<p><strong>Trade-off 3: Quality vs.&nbsp;Revenue</strong> In LLM advertising, quality depends on relevance and integration naturalness. Revenue-maximizing mechanisms might select irrelevant but high-bidding advertisers, reducing quality.</p>
+</section>
+<section id="parameterized-mechanisms-as-multi-objective-solutions" class="level3" data-number="7.2.5">
+<h3 data-number="7.2.5" class="anchored" data-anchor-id="parameterized-mechanisms-as-multi-objective-solutions"><span class="header-section-number">7.2.5</span> Parameterized Mechanisms as Multi-Objective Solutions</h3>
+<p><strong>Core Idea:</strong> Design mechanism families parameterized by trade-off preferences.</p>
+<p><strong>Example - Linear Combination Mechanism:</strong> Allocation based on: <span class="math inline">\alpha \cdot \text{bid}_i + (1-\alpha) \cdot \text{relevance}_i</span></p>
+<ul>
+<li><span class="math inline">\alpha = 1</span>: Pure revenue focus</li>
+<li><span class="math inline">\alpha = 0</span>: Pure quality focus</li>
+<li><span class="math inline">\alpha \in (0,1)</span>: Balanced approach</li>
+</ul>
+<p><strong>Challenge:</strong> Ensure truthfulness for all parameter values while characterizing the achievable trade-off space.</p>
+</section>
+</section>
+<section id="mathematical-foundations-multi-objective-social-choice-functions" class="level2" data-number="7.3">
+<h2 data-number="7.3" class="anchored" data-anchor-id="mathematical-foundations-multi-objective-social-choice-functions"><span class="header-section-number">7.3</span> Mathematical Foundations: Multi-Objective Social Choice Functions</h2>
+<section id="formal-problem-setup" class="level3" data-number="7.3.1">
+<h3 data-number="7.3.1" class="anchored" data-anchor-id="formal-problem-setup"><span class="header-section-number">7.3.1</span> Formal Problem Setup</h3>
+<p><strong>Definition 7.1 (Multi-Objective Mechanism Design Problem).</strong> A multi-objective mechanism design problem consists of:</p>
+<ul>
+<li>Agent set <span class="math inline">N = \{1, 2, \ldots, n\}</span></li>
+<li>Type space <span class="math inline">\Theta_i</span> for each agent <span class="math inline">i</span> with typical element <span class="math inline">\theta_i</span></li>
+<li>Outcome space <span class="math inline">A</span> (e.g., allocations and payments)</li>
+<li>Objective functions <span class="math inline">f^1, f^2, \ldots, f^k : A \times \Theta \rightarrow \mathbb{R}</span></li>
+<li>Prior distribution <span class="math inline">F(\theta)</span> over type profiles <span class="math inline">\theta = (\theta_1, \ldots, \theta_n)</span></li>
+</ul>
+<p>The goal is to design a mechanism <span class="math inline">(x, p)</span> that achieves Pareto efficient combinations of expected objectives: <span class="math display">\mathbb{E}_\theta[f^j(x(\theta), p(\theta), \theta)] \text{ for } j = 1, \ldots, k</span></p>
+<p><strong>Definition 7.2 (Multi-Objective Social Choice Function).</strong> A multi-objective social choice function is a mapping <span class="math inline">g: \Theta \rightarrow \mathbb{R}^k</span> that assigns an objective vector to each type profile: <span class="math display">g(\theta) = (f^1(x(\theta), p(\theta), \theta), \ldots, f^k(x(\theta), p(\theta), \theta))</span></p>
+<p><strong>Definition 7.3 (Implementable Multi-Objective Social Choice Function).</strong> A multi-objective social choice function <span class="math inline">g</span> is implementable if there exists a mechanism <span class="math inline">(x, p)</span> such that:</p>
+<ol type="1">
+<li>Truth-telling is a Bayesian Nash equilibrium</li>
+<li><span class="math inline">g(\theta) = (f^1(x(\theta), p(\theta), \theta), \ldots, f^k(x(\theta), p(\theta), \theta))</span> for all <span class="math inline">\theta</span></li>
+</ol>
+</section>
+<section id="incentive-compatibility-in-multi-objective-settings" class="level3" data-number="7.3.2">
+<h3 data-number="7.3.2" class="anchored" data-anchor-id="incentive-compatibility-in-multi-objective-settings"><span class="header-section-number">7.3.2</span> Incentive Compatibility in Multi-Objective Settings</h3>
+<p><strong>Theorem 7.1 (Multi-Objective Incentive Compatibility).</strong> A direct mechanism <span class="math inline">(x, p)</span> is Bayesian incentive compatible if and only if for all agents <span class="math inline">i</span>, types <span class="math inline">\theta_i, \theta'_i \in \Theta_i</span>: <span class="math display">\mathbb{E}_{\theta_{-i}}[u_i(x(\theta_i, \theta_{-i}), p_i(\theta_i, \theta_{-i}), \theta_i)] \geq \mathbb{E}_{\theta_{-i}}[u_i(x(\theta'_i, \theta_{-i}), p_i(\theta'_i, \theta_{-i}), \theta_i)]</span></p>
+<p>where <span class="math inline">u_i(x, p_i, \theta_i)</span> is agent <span class="math inline">i</span>’s utility function.</p>
+<p><strong>Key Insight:</strong> Incentive compatibility constrains the achievable multi-objective combinations—some theoretically optimal combinations may be impossible to implement with truthful mechanisms.</p>
+<p><strong>Theorem 7.2 (Multi-Objective Revenue Equivalence).</strong> Suppose two mechanisms <span class="math inline">(x^1, p^1)</span> and <span class="math inline">(x^2, p^2)</span> have the same allocation rule <span class="math inline">x^1 = x^2</span> and both satisfy IC and IR. Then they generate the same expected revenue: <span class="math display">\mathbb{E}_\theta\left[\sum_i p^1_i(\theta)\right] = \mathbb{E}_\theta\left[\sum_i p^2_i(\theta)\right]</span></p>
+<p><em>Proof.</em> This follows from the standard revenue equivalence theorem applied to each mechanism individually. □</p>
+</section>
+<section id="characterizing-the-feasible-multi-objective-region" class="level3" data-number="7.3.3">
+<h3 data-number="7.3.3" class="anchored" data-anchor-id="characterizing-the-feasible-multi-objective-region"><span class="header-section-number">7.3.3</span> Characterizing the Feasible Multi-Objective Region</h3>
+<p><strong>Definition 7.4 (Feasible Multi-Objective Region).</strong> The feasible region <span class="math inline">\mathcal{F}</span> in objective space is: <span class="math display">\mathcal{F} = \{(\mathbb{E}[f^1], \ldots, \mathbb{E}[f^k]) : \exists \text{ IC, IR mechanism achieving these expectations}\}</span></p>
+<p><strong>Theorem 7.3 (Constraints on Feasible Region).</strong> The feasible multi-objective region satisfies:</p>
+<ol type="1">
+<li><strong>Monotonicity</strong>: If allocation rule <span class="math inline">x</span> satisfies monotonicity conditions, then <span class="math inline">(x, p)</span> can be made IC for appropriate payment rule <span class="math inline">p</span></li>
+<li><strong>Individual Rationality</strong>: All objective combinations must satisfy <span class="math inline">\mathbb{E}[u_i] \geq 0</span> for all agents <span class="math inline">i</span></li>
+<li><strong>Budget Balance</strong>: If required, <span class="math inline">\mathbb{E}[\sum_i p_i] \geq 0</span></li>
+</ol>
+</section>
+<section id="scalarization-in-mechanism-design" class="level3" data-number="7.3.4">
+<h3 data-number="7.3.4" class="anchored" data-anchor-id="scalarization-in-mechanism-design"><span class="header-section-number">7.3.4</span> Scalarization in Mechanism Design</h3>
+<p><strong>Definition 7.5 (Weighted Social Choice Function).</strong> For weights <span class="math inline">\lambda = (\lambda_1, \ldots, \lambda_k)</span> with <span class="math inline">\lambda_j \geq 0</span> and <span class="math inline">\sum_j \lambda_j = 1</span>, define: <span class="math display">W_\lambda(\theta) = \sum_{j=1}^k \lambda_j f^j(x(\theta), p(\theta), \theta)</span></p>
+<p><strong>Theorem 7.4 (Scalarization and Pareto Efficiency).</strong> If mechanism <span class="math inline">(x^*, p^*)</span> maximizes <span class="math inline">\mathbb{E}_\theta[W_\lambda(\theta)]</span> subject to IC and IR constraints, then <span class="math inline">(x^*, p^*)</span> is Pareto efficient in the multi-objective sense.</p>
+<p><em>Proof.</em> Suppose <span class="math inline">(x^*, p^*)</span> is not Pareto efficient. Then there exists a feasible mechanism <span class="math inline">(x', p')</span> with <span class="math inline">\mathbb{E}[f^j] \geq \mathbb{E}[f^{j*}]</span> for all <span class="math inline">j</span> and strict inequality for some <span class="math inline">j</span>. This implies: <span class="math display">\mathbb{E}[W_\lambda] = \sum_j \lambda_j \mathbb{E}[f^j] &gt; \sum_j \lambda_j \mathbb{E}[f^{j*}] = \mathbb{E}[W_\lambda^*]</span> contradicting optimality of <span class="math inline">(x^*, p^*)</span>. □</p>
+<p><strong>Corollary 7.5 (Parameterized Mechanisms).</strong> The family of mechanisms <span class="math inline">\{(x_\lambda, p_\lambda)\}_{\lambda}</span> that optimize <span class="math inline">W_\lambda</span> for different weight vectors <span class="math inline">\lambda</span> traces out the Pareto frontier of the feasible multi-objective region.</p>
+</section>
+<section id="multi-objective-myerson-theory" class="level3" data-number="7.3.5">
+<h3 data-number="7.3.5" class="anchored" data-anchor-id="multi-objective-myerson-theory"><span class="header-section-number">7.3.5</span> Multi-Objective Myerson Theory</h3>
+<p>We extend Myerson’s optimal auction theory to multi-objective settings.</p>
+<p><strong>Definition 7.6 (Multi-Objective Virtual Valuation).</strong> For weights <span class="math inline">\lambda</span>, define the multi-objective virtual valuation: <span class="math display">\psi_{\lambda,i}(v_i) = v_i - \frac{\lambda_1}{\lambda_1 + \lambda_2} \cdot \frac{1-F_i(v_i)}{f_i(v_i)}</span> where <span class="math inline">\lambda_1</span> is the weight on allocative efficiency and <span class="math inline">\lambda_2</span> is the weight on revenue.</p>
+<p><strong>Theorem 7.6 (Multi-Objective Optimal Mechanism).</strong> The optimal mechanism for weights <span class="math inline">(\lambda_1, \lambda_2)</span> on efficiency and revenue allocates to agent <span class="math inline">i</span> if and only if: <span class="math display">\psi_{\lambda,i}(v_i) = \max_j \{\psi_{\lambda,j}(v_j), 0\}</span></p>
+<p><em>Proof Sketch.</em> This follows from applying optimal control theory to the multi-objective optimization problem subject to IC constraints. The virtual valuation balances allocative efficiency (first term) against revenue considerations (second term) according to the weight ratio. □</p>
+</section>
+</section>
+<section id="advanced-results-impossibility-results-and-fundamental-limitations" class="level2" data-number="7.4">
+<h2 data-number="7.4" class="anchored" data-anchor-id="advanced-results-impossibility-results-and-fundamental-limitations"><span class="header-section-number">7.4</span> Advanced Results: Impossibility Results and Fundamental Limitations</h2>
+<section id="the-multi-objective-impossibility-theorem" class="level3" data-number="7.4.1">
+<h3 data-number="7.4.1" class="anchored" data-anchor-id="the-multi-objective-impossibility-theorem"><span class="header-section-number">7.4.1</span> The Multi-Objective Impossibility Theorem</h3>
+<p><strong>Theorem 7.7 (Multi-Objective Mechanism Design Impossibility).</strong> There is no mechanism that simultaneously achieves:</p>
+<ol type="1">
+<li><strong>Ex-post allocative efficiency</strong>: <span class="math inline">x(\theta) \in \arg\max_y \sum_i v_i(\theta_i) y_i</span> for all <span class="math inline">\theta</span></li>
+<li><strong>Revenue maximization</strong>: Maximizes <span class="math inline">\mathbb{E}[\sum_i p_i(\theta)]</span></li>
+<li><strong>Perfect fairness</strong>: <span class="math inline">\mathbb{E}[x_i] = 1/n</span> for all agents <span class="math inline">i</span></li>
+<li><strong>Dominant strategy incentive compatibility</strong></li>
+<li><strong>Individual rationality</strong></li>
+</ol>
+<p><em>Proof.</em> We show these requirements are mutually inconsistent:</p>
+<p><strong>Step 1</strong>: Ex-post efficiency requires allocation to highest-value agents regardless of payments.</p>
+<p><strong>Step 2</strong>: Revenue maximization (by Myerson’s theorem) requires using virtual valuations, which generally differ from true valuations, violating efficiency.</p>
+<p><strong>Step 3</strong>: Perfect fairness requires equal expected allocations, which conflicts with both efficiency (if agents have different expected values) and revenue maximization (if agents have different distributions).</p>
+<p><strong>Step 4</strong>: The requirements form an over-constrained system with no solution in general environments. □</p>
+<p>This impossibility result is fundamental—it shows that multi-objective mechanism design necessarily involves trade-offs rather than simultaneous optimization of all desirable properties.</p>
+</section>
+<section id="revenue-quality-fairness-trade-offs" class="level3" data-number="7.4.2">
+<h3 data-number="7.4.2" class="anchored" data-anchor-id="revenue-quality-fairness-trade-offs"><span class="header-section-number">7.4.2</span> Revenue-Quality-Fairness Trade-offs</h3>
+<p><strong>Theorem 7.8 (Three-Way Trade-off Characterization).</strong> In LLM advertising mechanisms with objectives (Revenue, Quality, Fairness), the feasible region satisfies:</p>
+<ol type="1">
+<li><strong>Revenue-Quality Trade-off</strong>: Higher revenue generally reduces quality when advertisers have heterogeneous relevance</li>
+<li><strong>Revenue-Fairness Trade-off</strong>: Higher revenue concentrates allocation among high-bidders, reducing fairness</li>
+<li><strong>Quality-Fairness Trade-off</strong>: Quality maximization may favor highly relevant advertisers, reducing fairness</li>
+</ol>
+<p><em>Proof Outline.</em> Each trade-off follows from analyzing the optimal allocation rules for each objective:</p>
+<ul>
+<li>Revenue maximization: Allocate to highest virtual valuations (may be irrelevant)</li>
+<li>Quality maximization: Allocate to highest relevance scores (ignores payments)</li>
+<li>Fairness maximization: Allocate more equally (ignores both payments and relevance) □</li>
+</ul>
+<p><strong>Corollary 7.9 (Constrained Pareto Frontier).</strong> The achievable combinations of (Revenue, Quality, Fairness) form a three-dimensional surface that is generally non-convex and bounded by the impossibility constraints.</p>
+</section>
+<section id="dynamic-multi-objective-mechanisms" class="level3" data-number="7.4.3">
+<h3 data-number="7.4.3" class="anchored" data-anchor-id="dynamic-multi-objective-mechanisms"><span class="header-section-number">7.4.3</span> Dynamic Multi-Objective Mechanisms</h3>
+<p><strong>Definition 7.7 (Dynamic Multi-Objective Problem).</strong> In repeated settings, the mechanism designer optimizes: <span class="math display">\max_{(x_t, p_t)_{t=1}^T} \sum_{t=1}^T \delta^{t-1} \sum_{j=1}^k \lambda_j f^j_t(x_t(\theta_t), p_t(\theta_t), \theta_t)</span> subject to IC and IR constraints in each period and across periods.</p>
+<p><strong>Theorem 7.10 (Dynamic Trade-offs).</strong> In dynamic multi-objective mechanism design:</p>
+<ol type="1">
+<li><strong>Reputation Effects</strong>: Short-term revenue maximization may reduce long-term quality, affecting user retention</li>
+<li><strong>Learning Considerations</strong>: Quality investments in early periods may improve mechanism performance in later periods</li>
+<li><strong>Commitment Issues</strong>: Optimal dynamic mechanisms may require commitment to future policies</li>
+</ol>
+</section>
+<section id="robust-multi-objective-mechanism-design" class="level3" data-number="7.4.4">
+<h3 data-number="7.4.4" class="anchored" data-anchor-id="robust-multi-objective-mechanism-design"><span class="header-section-number">7.4.4</span> Robust Multi-Objective Mechanism Design</h3>
+<p><strong>Definition 7.8 (Robust Multi-Objective Mechanism).</strong> A mechanism is <span class="math inline">(\epsilon_1, \ldots, \epsilon_k)</span>-robust if it achieves within <span class="math inline">\epsilon_j</span> of the optimal value for objective <span class="math inline">j</span> across all realizations in an uncertainty set.</p>
+<p><strong>Theorem 7.11 (Robust-Pareto Efficiency).</strong> A mechanism that is robust across multiple objectives may not be Pareto efficient for any specific realization, but provides guaranteed performance bounds.</p>
+<p>This result is important for LLM advertising where advertiser valuations and user preferences may be uncertain.</p>
+</section>
+</section>
+<section id="applications-and-implementation-multi-objective-llm-advertising-mechanisms" class="level2" data-number="7.5">
+<h2 data-number="7.5" class="anchored" data-anchor-id="applications-and-implementation-multi-objective-llm-advertising-mechanisms"><span class="header-section-number">7.5</span> Applications and Implementation: Multi-Objective LLM Advertising Mechanisms</h2>
+<section id="problem-formulation-for-llm-advertising" class="level3" data-number="7.5.1">
+<h3 data-number="7.5.1" class="anchored" data-anchor-id="problem-formulation-for-llm-advertising"><span class="header-section-number">7.5.1</span> Problem Formulation for LLM Advertising</h3>
+<p><strong>Setup:</strong></p>
+<ul>
+<li>Advertisers <span class="math inline">N = \{1, 2, \ldots, n\}</span> with private valuations <span class="math inline">v_i</span> for ad clicks</li>
+<li>Relevance scores <span class="math inline">r_i \in [0,1]</span> for each advertiser (known to platform)</li>
+<li>User queries arriving with quality function <span class="math inline">q(x, r)</span> depending on allocation <span class="math inline">x</span> and relevance vector <span class="math inline">r</span></li>
+</ul>
+<p><strong>Objectives:</strong></p>
+<ol type="1">
+<li><strong>Revenue</strong>: <span class="math inline">R(x, p) = \mathbb{E}[\sum_i p_i]</span></li>
+<li><strong>Quality</strong>: <span class="math inline">Q(x, r) = \mathbb{E}[q(x, r)]</span></li>
+<li><strong>Fairness</strong>: <span class="math inline">F(x) = -\text{Var}(\mathbb{E}[x_i])</span></li>
+</ol>
+<p><strong>Constraints:</strong></p>
+<ul>
+<li>Incentive Compatibility: <span class="math inline">\mathbb{E}[u_i(v_i)] \geq \mathbb{E}[u_i(\hat{v}_i)]</span> for all <span class="math inline">i, v_i, \hat{v}_i</span></li>
+<li>Individual Rationality: <span class="math inline">\mathbb{E}[u_i(v_i)] \geq 0</span> for all <span class="math inline">i, v_i</span></li>
+<li>Feasibility: <span class="math inline">\sum_i x_i \leq 1</span></li>
+</ul>
+</section>
+<section id="parameterized-mechanism-design" class="level3" data-number="7.5.2">
+<h3 data-number="7.5.2" class="anchored" data-anchor-id="parameterized-mechanism-design"><span class="header-section-number">7.5.2</span> Parameterized Mechanism Design</h3>
+<p><strong>Linear Combination Approach:</strong> Design mechanisms that optimize: <span class="math display">W_\alpha(x, p, r) = \alpha R(x, p) + (1-\alpha) Q(x, r)</span></p>
+<p><strong>Allocation Rule:</strong> <span class="math display">x_i(v, r) = \mathbf{1}[\alpha v_i + (1-\alpha) r_i \geq \max_j \{\alpha v_j + (1-\alpha) r_j\}]</span></p>
+<p><strong>Payment Rule (from Revenue Equivalence):</strong> <span class="math display">p_i(v_i) = \int_0^{v_i} x_i(t, v_{-i}, r) dt</span></p>
+<p><strong>Theorem 7.12 (Parameterized Mechanism Properties).</strong> The parameterized mechanism family <span class="math inline">\{M_\alpha\}_{\alpha \in [0,1]}</span> satisfies:</p>
+<ol type="1">
+<li>Each <span class="math inline">M_\alpha</span> is dominant-strategy incentive compatible</li>
+<li>Each <span class="math inline">M_\alpha</span> satisfies individual rationality</li>
+<li>The family traces out a curve on the Revenue-Quality Pareto frontier</li>
+<li>Extreme points correspond to pure revenue (<span class="math inline">\alpha = 1</span>) and pure quality (<span class="math inline">\alpha = 0</span>) optimization</li>
+</ol>
+<p><em>Proof.</em> Properties 1-2 follow from standard mechanism design theory since each <span class="math inline">M_\alpha</span> is a weighted second-price auction. Property 3 follows from Theorem 7.4. Property 4 follows by direct calculation of the extreme cases. □</p>
+</section>
+<section id="three-objective-implementation" class="level3" data-number="7.5.3">
+<h3 data-number="7.5.3" class="anchored" data-anchor-id="three-objective-implementation"><span class="header-section-number">7.5.3</span> Three-Objective Implementation</h3>
+<p><strong>Extended Parameterization:</strong> <span class="math display">W_{\alpha,\beta}(x, p, r) = \alpha R(x, p) + \beta Q(x, r) + (1-\alpha-\beta) F(x)</span></p>
+<p><strong>Modified Allocation Rule:</strong> The optimal allocation becomes more complex, requiring solution of: <span class="math display">\max_{x \in \Delta^n} \alpha \mathbb{E}[\sum_i p_i(x)] + \beta \mathbb{E}[q(x, r)] - (1-\alpha-\beta) \text{Var}(\mathbb{E}[x_i])</span></p>
+<p><strong>Computational Implementation:</strong></p>
+<pre><code>Algorithm: Three-Objective LLM Mechanism Design
+Input: Weights (α, β), Advertiser bids v, Relevance scores r
+Output: Allocation probabilities x, Expected payments p
+
+1. For each possible allocation vector x ∈ {0,1}ⁿ:
+   2.   Calculate Revenue: R(x) = expected payment under x
+   3.   Calculate Quality: Q(x) = quality_function(x, r)
+   4.   Calculate Fairness: F(x) = -variance_penalty(x)
+   5.   Calculate Objective: W(x) = α×R(x) + β×Q(x) + (1-α-β)×F(x)
+6. Select allocation: x* = argmax W(x)
+7. Compute IC payments using revenue equivalence
+8. Return (x*, p*)</code></pre>
+</section>
+<section id="case-study-multi-objective-book-recommendation" class="level3" data-number="7.5.4">
+<h3 data-number="7.5.4" class="anchored" data-anchor-id="case-study-multi-objective-book-recommendation"><span class="header-section-number">7.5.4</span> Case Study: Multi-Objective Book Recommendation</h3>
+<p><strong>Scenario:</strong></p>
+<ul>
+<li>Query: “Suggest programming books for beginners”</li>
+<li>Advertisers: TechBooks (bid=$5, relevance=0.9), MegaStore (bid=$8, relevance=0.3), EduPress (bid=$3, relevance=0.7)</li>
+</ul>
+<p><strong>Objective Analysis:</strong></p>
+<p><strong>Pure Revenue (α=1, β=0):</strong></p>
+<ul>
+<li>Winner: MegaStore (highest bid)</li>
+<li>Revenue: $8</li>
+<li>Quality: 0.3 (poor relevance)</li>
+<li>Fairness: 0 (winner-take-all)</li>
+<li>Total Weighted Objective: 1.0 × 8 = 8.0</li>
+</ul>
+<p><strong>Pure Quality (α=0, β=1):</strong></p>
+<ul>
+<li>Winner: TechBooks (highest relevance)</li>
+<li>Revenue: $5</li>
+<li>Quality: 0.9 (excellent relevance)</li>
+<li>Fairness: 0 (winner-take-all)</li>
+<li>Total Weighted Objective: 1.0 × 0.9 = 0.9</li>
+</ul>
+<p><strong>Balanced (α=0.4, β=0.4, γ=0.2):</strong></p>
+<ul>
+<li>Scores: TechBooks=0.4×5+0.4×0.9=2.36, MegaStore=0.4×8+0.4×0.3=3.32, EduPress=0.4×3+0.4×0.7=1.48</li>
+<li>Winner: MegaStore</li>
+<li>But fairness consideration might modify this…</li>
+</ul>
+<p><strong>Fairness-Adjusted Balanced:</strong> To incorporate fairness, we might use randomized allocation:</p>
+<ul>
+<li>TechBooks: 0.5 probability (high relevance boost)</li>
+<li>MegaStore: 0.3 probability (high bid, but relevance penalty)</li>
+<li>EduPress: 0.2 probability (moderate on both dimensions)</li>
+</ul>
+</section>
+<section id="quality-function-specification" class="level3" data-number="7.5.5">
+<h3 data-number="7.5.5" class="anchored" data-anchor-id="quality-function-specification"><span class="header-section-number">7.5.5</span> Quality Function Specification</h3>
+<p><strong>Composite Quality Measure:</strong> <span class="math display">q(x, r) = w_1 \cdot \text{relevance\_match}(x, r) + w_2 \cdot \text{integration\_naturalness}(x) + w_3 \cdot \text{information\_value}(x)</span></p>
+<p><strong>Implementation:</strong></p>
+<pre><code>Function: Calculate_Quality(allocation x, relevance r)
+Input: Allocation vector x, Relevance scores r
+Output: Quality score ∈ [0,1]
+
+1. relevance_score := sum(x[i] × r[i] for i in advertisers)
+2. integration_score := naturalness_penalty(x)  // Penalize multiple ads
+3. information_score := diversity_bonus(x, r)   // Bonus for diverse relevant ads
+4. quality := w₁×relevance_score + w₂×integration_score + w₃×information_score
+5. Return normalize(quality, [0,1])</code></pre>
+</section>
+<section id="empirical-multi-objective-analysis-framework" class="level3" data-number="7.5.6">
+<h3 data-number="7.5.6" class="anchored" data-anchor-id="empirical-multi-objective-analysis-framework"><span class="header-section-number">7.5.6</span> Empirical Multi-Objective Analysis Framework</h3>
+<p><strong>Data Collection Design:</strong></p>
+<pre><code>Algorithm: Multi-Objective Mechanism Evaluation
+Input: Parameter ranges for (α, β), Query set Q, Advertiser pool A
+Output: Empirical Pareto frontier
+
+1. For each parameter combination (α, β):
+   2.   For each query q in Q:
+   3.     Run mechanism M(α,β) on q with advertisers A
+   4.     Measure Revenue: R(α,β,q)
+   5.     Measure Quality: Q(α,β,q) via LLM response evaluation
+   6.     Measure Fairness: F(α,β,q) via allocation distribution
+   7.   Average metrics across queries for parameter (α, β)
+8. Plot empirical Pareto frontier in (Revenue, Quality, Fairness) space
+9. Analyze trade-off relationships and identify efficient regions</code></pre>
+<p><strong>Statistical Analysis:</strong></p>
+<ul>
+<li><strong>Correlation Analysis</strong>: Measure trade-off strength between objectives</li>
+<li><strong>Regression Analysis</strong>: Model objective values as functions of parameters</li>
+<li><strong>Efficiency Analysis</strong>: Compare empirical frontier to theoretical predictions</li>
+</ul>
+</section>
+<section id="mechanism-performance-evaluation" class="level3" data-number="7.5.7">
+<h3 data-number="7.5.7" class="anchored" data-anchor-id="mechanism-performance-evaluation"><span class="header-section-number">7.5.7</span> Mechanism Performance Evaluation</h3>
+<p><strong>Regret Minimization:</strong> For online LLM advertising, we want mechanisms that minimize regret: <span class="math display">\text{Regret}_T = \sum_{t=1}^T W(\text{optimal\_allocation}_t) - W(\text{mechanism\_allocation}_t)</span></p>
+<p><strong>Multi-Armed Bandit Extension:</strong></p>
+<pre><code>Algorithm: Multi-Objective Bandit for LLM Advertising
+Input: Objective weights λ, Time horizon T
+Output: Allocation decisions that minimize multi-objective regret
+
+1. Initialize: For each advertiser i, track performance estimates
+2. For each time period t:
+   3.   Observe query q_t and advertiser bids v_t
+   4.   Compute allocation using current estimates and uncertainty bounds
+   5.   Execute allocation, observe outcomes (revenue, quality, fairness)
+   6.   Update performance estimates for selected advertiser(s)
+   7.   Update regret bounds and confidence intervals
+8. Return cumulative performance across all objectives</code></pre>
+</section>
+</section>
+<section id="chapter-synthesis" class="level2" data-number="7.6">
+<h2 data-number="7.6" class="anchored" data-anchor-id="chapter-synthesis"><span class="header-section-number">7.6</span> Chapter Synthesis</h2>
+<p>This chapter has developed the theoretical framework for multi-objective mechanism design, integrating optimization theory with game-theoretic incentive considerations. The key insights and their implications for your thesis research are:</p>
+<p><strong>Fundamental Framework:</strong></p>
+<ul>
+<li><strong>Constrained Trade-offs</strong>: Private information and incentive compatibility requirements constrain the achievable combinations of objectives, creating a bounded feasible region in objective space</li>
+<li><strong>Parameterized Mechanisms</strong>: Families of mechanisms parameterized by objective weights can trace out the Pareto frontier while maintaining truthfulness</li>
+<li><strong>Impossibility Results</strong>: Certain combinations of objectives (perfect efficiency, revenue maximization, perfect fairness) are fundamentally incompatible</li>
+</ul>
+<p><strong>Theoretical Contributions:</strong></p>
+<ul>
+<li><strong>Multi-Objective Social Choice Functions</strong>: Formal framework for aggregating multiple objectives subject to mechanism design constraints</li>
+<li><strong>Extended Myerson Theory</strong>: Multi-objective virtual valuations that balance efficiency and revenue considerations</li>
+<li><strong>Revenue Equivalence</strong>: Standard results extend to multi-objective settings with appropriate modifications</li>
+</ul>
+<p><strong>LLM Advertising Applications:</strong></p>
+<ul>
+<li><strong>Three-Objective Framework</strong>: Revenue-Quality-Fairness trade-offs formally characterized with quality depending on ad relevance and integration</li>
+<li><strong>Parameterized Implementation</strong>: Practical mechanisms using linear combination of objectives with provable incentive compatibility</li>
+<li><strong>Empirical Evaluation Methods</strong>: Systematic approaches for measuring trade-offs and validating theoretical predictions</li>
+</ul>
+<p><strong>Research Implications for Your Thesis:</strong></p>
+<ol type="1">
+<li><p><strong>Theoretical Foundation</strong>: You now have formal tools to characterize the revenue-quality-fairness trade-off space in LLM advertising, including impossibility constraints and achievable regions.</p></li>
+<li><p><strong>Mechanism Design</strong>: The parameterized mechanism approach provides a systematic way to design truthful mechanisms for any desired point on the trade-off frontier.</p></li>
+<li><p><strong>Empirical Framework</strong>: The evaluation methods enable you to measure trade-offs in real LLM systems and compare empirical results with theoretical predictions.</p></li>
+<li><p><strong>Policy Analysis</strong>: Understanding fundamental limitations helps analyze when regulatory intervention might be justified and what trade-offs are inherent vs.&nbsp;choice-dependent.</p></li>
+</ol>
+<p><strong>Key Research Questions Your Thesis Can Address:</strong></p>
+<ul>
+<li>How does the empirical Pareto frontier compare to theoretical predictions in LLM advertising?</li>
+<li>Which parameterizations achieve good balance across objectives in practice?</li>
+<li>How do quality measurement approaches affect the characterized trade-offs?</li>
+<li>What welfare implications arise from different points on the trade-off frontier?</li>
+</ul>
+<p><strong>Connection to Next Chapter:</strong> Chapter 8 builds on this foundation by exploring fairness concepts in mechanism design, providing deeper analysis of one of the key objectives in your multi-objective framework. It examines different fairness definitions, their implementation in mechanisms, and their interaction with revenue and quality objectives.</p>
+<p>The multi-objective mechanism design theory developed here provides the optimization and game-theoretic foundation, while the next chapter adds nuanced understanding of fairness considerations that are increasingly important in AI systems and platform regulation.</p>
+</section>
+<section id="exercises" class="level2" data-number="7.7">
+<h2 data-number="7.7" class="anchored" data-anchor-id="exercises"><span class="header-section-number">7.7</span> Exercises</h2>
+<p><strong>Exercise 7.1 (Basic Multi-Objective Mechanism Design)</strong> Consider a single-item auction with two bidders and two objectives: revenue and allocative efficiency.</p>
+<ol type="a">
+<li>Write the multi-objective optimization problem formally, including IC and IR constraints. b) Explain why the revenue-maximizing mechanism (standard optimal auction) may not be allocatively efficient. c) Design a parameterized mechanism that trades off between revenue and efficiency using parameter α ∈ [0,1].</li>
+</ol>
+<p><strong>Exercise 7.2 (Impossibility Results)</strong> Prove that no mechanism can simultaneously achieve:</p>
+<ul>
+<li>Ex-post allocative efficiency for all type profiles</li>
+<li>Revenue that equals the maximum possible revenue</li>
+<li>Individual rationality for all agents</li>
+</ul>
+<p>Use a simple two-bidder, two-type example to illustrate the impossibility.</p>
+<p><strong>Exercise 7.3 (LLM Advertising Parameterization)</strong> An LLM platform has three advertisers with the following characteristics:</p>
+<ul>
+<li>Advertiser 1: bid = $6, relevance = 0.4</li>
+<li>Advertiser 2: bid = $4, relevance = 0.8</li>
+<li>Advertiser 3: bid = $8, relevance = 0.2</li>
+</ul>
+<p>The platform uses allocation rule: select advertiser with highest α×bid + (1-α)×relevance.</p>
+<ol type="a">
+<li>Which advertiser wins for α = 0.8? b) Which advertiser wins for α = 0.3? c) Find the values of α where the winning advertiser changes. d) Calculate the revenue and quality for each α value in parts (a) and (b).</li>
+</ol>
+<p><strong>Exercise 7.4 (Multi-Objective Virtual Valuations)</strong> Extend Myerson’s virtual valuation concept to two objectives: efficiency (weight λ₁) and revenue (weight λ₂).</p>
+<ol type="a">
+<li>Derive the multi-objective virtual valuation formula. b) Show that the standard virtual valuation is a special case. c) Explain intuitively how the weights affect the allocation rule.</li>
+</ol>
+<p><strong>Exercise 7.5 (Three-Objective Trade-offs)</strong> Consider an LLM advertising mechanism optimizing Revenue (R), Quality (Q), and Fairness (F) with weights (α, β, 1-α-β).</p>
+<ol type="a">
+<li>Write the objective function W(R,Q,F,α,β). b) What happens when α + β &gt; 1? Why is this not allowed? c) Describe the three extreme points of this objective space. d) Which point would you expect to maximize total welfare? Justify your answer.</li>
+</ol>
+<p><strong>Exercise 7.6 (Dynamic Multi-Objective Mechanisms)</strong> A platform operates for T periods, optimizing total discounted welfare with discount factor δ.</p>
+<ol type="a">
+<li>Write the dynamic optimization problem for two objectives (revenue, quality). b) Explain why myopic optimization (period-by-period) might be suboptimal. c) Give an example where sacrificing current revenue improves future quality and long-term welfare.</li>
+</ol>
+<p><strong>Exercise 7.7 (Robust Multi-Objective Design)</strong> Advertiser valuations are uncertain, drawn from interval [v_i - ε, v_i + ε].</p>
+<ol type="a">
+<li>Define what it means for a mechanism to be (ε₁, ε₂)-robust for objectives (revenue, quality). b) Compare the robust Pareto frontier to the standard Pareto frontier. c) When might a platform prefer robust mechanisms over optimal mechanisms for known valuations?</li>
+</ol>
+<p><strong>Exercise 7.8 (Advanced Implementation)</strong> Design a computational algorithm to find the Pareto frontier for three-objective LLM advertising:</p>
+<ol type="a">
+<li>Describe how to discretize the weight space (α, β, 1-α-β) for computational tractability. b) For each weight combination, write the optimization problem that must be solved. c) Explain how to verify that computed solutions are actually Pareto efficient. d) Describe a method to interpolate between computed points to approximate the continuous frontier.</li>
+</ol>
+</section>
+<section id="further-reading" class="level2" data-number="7.8">
+<h2 data-number="7.8" class="anchored" data-anchor-id="further-reading"><span class="header-section-number">7.8</span> Further Reading</h2>
+<p><strong>Foundational Multi-Objective Mechanism Design:</strong></p>
+<ul>
+<li>Holmström, B. (1979). Groves’ scheme on restricted domains. <em>Econometrica</em>, 47(5), 1137-1144.</li>
+<li>d’Aspremont, C., &amp; Gérard-Varet, L. A. (1979). Incentives and incomplete information. <em>Journal of Public Economics</em>, 11(1), 25-45.</li>
+<li>Mookherjee, D., &amp; Reichelstein, S. (1992). Dominant strategy implementation of Bayesian incentive compatible allocation rules. <em>Journal of Economic Theory</em>, 56(2), 378-399.</li>
+</ul>
+<p><strong>Multi-Objective Auction Theory:</strong></p>
+<ul>
+<li>Krishna, V. (2009). <em>Auction Theory</em>, Chapter 6. Academic Press.</li>
+<li>Milgrom, P. (2004). <em>Putting Auction Theory to Work</em>, Chapters 3-4. Cambridge University Press.</li>
+<li>Borgers, T., Krahmer, D., &amp; Strausz, R. (2015). <em>An Introduction to the Theory of Mechanism Design</em>, Chapters 8-9. Oxford University Press.</li>
+</ul>
+<p><strong>Welfare and Efficiency in Mechanism Design:</strong></p>
+<ul>
+<li>Myerson, R. B. (1981). Optimal auction design. <em>Mathematics of Operations Research</em>, 6(1), 58-73.</li>
+<li>Bulow, J., &amp; Roberts, J. (1989). The simple economics of optimal auctions. <em>Journal of Political Economy</em>, 97(5), 1060-1090.</li>
+<li>Jehiel, P., &amp; Moldovanu, B. (2001). Efficient design with interdependent valuations. <em>Econometrica</em>, 69(5), 1237-1259.</li>
+</ul>
+<p><strong>Fairness in Mechanism Design:</strong></p>
+<ul>
+<li>Moulin, H. (2003). <em>Fair Division and Collective Welfare</em>. MIT Press.</li>
+<li>Thomson, W. (2011). <em>Introduction to the Theory of Fair Allocation</em>. Princeton University Press.</li>
+<li>Procaccia, A. D. (2013). Cake cutting: not just child’s play. <em>Communications of the ACM</em>, 56(7), 78-87.</li>
+</ul>
+<p><strong>Platform Economics and Two-Sided Markets:</strong></p>
+<ul>
+<li>Rochet, J. C., &amp; Tirole, J. (2003). Platform competition in two-sided markets. <em>Journal of the European Economic Association</em>, 1(4), 990-1029.</li>
+<li>Armstrong, M. (2006). Competition in two-sided markets. <em>RAND Journal of Economics</em>, 37(3), 668-691.</li>
+<li>Hagiu, A., &amp; Wright, J. (2015). Multi-sided platforms. <em>International Journal of Industrial Organization</em>, 43, 162-174.</li>
+</ul>
+<p><strong>Computational Mechanism Design:</strong></p>
+<ul>
+<li>Conitzer, V., &amp; Sandholm, T. (2002). Complexity of mechanism design. <em>Proceedings of the 18th Conference on Uncertainty in Artificial Intelligence</em>, 103-110.</li>
+<li>Nisan, N., &amp; Ronen, A. (2001). Algorithmic mechanism design. <em>Games and Economic Behavior</em>, 35(1-2), 166-196.</li>
+<li>Hartline, J. D. (2013). <em>Mechanism Design and Approximation</em>. Book draft, Northwestern University.</li>
+</ul>
+<p><strong>Multi-Objective Optimization in Economics:</strong></p>
+<ul>
+<li>Zeleny, M. (1982). <em>Multiple Criteria Decision Making</em>. McGraw-Hill.</li>
+<li>Steuer, R. E. (1986). <em>Multiple Criteria Optimization: Theory, Computation, and Applications</em>. Wiley.</li>
+<li>Ehrgott, M., &amp; Gandibleux, X. (Eds.). (2002). <em>Multiple Criteria Optimization: State of the Art Annotated Bibliographic Surveys</em>. Springer.</li>
+</ul>
+<p><strong>Recent Applications to Digital Markets:</strong></p>
+<ul>
+<li>Edelman, B., Ostrovsky, M., &amp; Schwarz, M. (2007). Internet advertising and the generalized second-price auction: Selling billions of dollars worth of keywords. <em>American Economic Review</em>, 97(1), 242-259.</li>
+<li>Varian, H. R. (2007). Position auctions. <em>International Journal of Industrial Organization</em>, 25(6), 1163-1178.</li>
+<li>Choi, J. P., Jeon, D. S., &amp; Kim, B. C. (2019). Privacy and personal data collection with information externalities. <em>Journal of Public Economics</em>, 173, 113-124.</li>
+</ul>
+<p><strong>AI and Algorithmic Mechanism Design:</strong></p>
+<ul>
+<li>Dütting, P., Henzinger, M., &amp; Weber, I. (2021). An expressive mechanism design model for the digital economy. <em>Operations Research</em>, 69(4), 1041-1055.</li>
+<li>Conitzer, V., Freeman, R., &amp; Shah, N. (2017). Fair public decision making. <em>Proceedings of the 2017 ACM Conference on Economics and Computation</em>, 629-646.</li>
+<li>Balcan, M. F., Sandholm, T., &amp; Vitercik, E. (2018). Sample complexity of automated mechanism design. <em>Advances in Neural Information Processing Systems</em>, 31.</li>
+</ul>
+<p><strong>Robust and Dynamic Mechanism Design:</strong></p>
+<ul>
+<li>Bergemann, D., &amp; Morris, S. (2005). Robust mechanism design. <em>Econometrica</em>, 73(6), 1771-1813.</li>
+<li>Pavan, A., Segal, I., &amp; Toikka, J. (2014). Dynamic mechanism design: A Myersonian approach. <em>Econometrica</em>, 82(2), 601-653.</li>
+<li>Kakade, S. M., Lobel, I., &amp; Nazerzadeh, H. (2013). Optimal dynamic mechanism design and the virtual-pivot mechanism. <em>Operations Research</em>, 61(4), 837-854.</li>
+</ul>
+<p><strong>Empirical Mechanism Design:</strong></p>
+<ul>
+<li>Athey, S., &amp; Haile, P. A. (2007). Nonparametric approaches to auctions. <em>Handbook of Econometrics</em>, 6, 3847-3965.</li>
+<li>Hendricks, K., &amp; Porter, R. H. (2007). An empirical perspective on auctions. <em>Handbook of Industrial Organization</em>, 3, 2073-2143.</li>
+<li>Laffont, J. J., Ossard, H., &amp; Vuong, Q. (1995). Econometrics of first-price auctions. <em>Econometrica</em>, 63(4), 953-980.</li>
+</ul>
+<p><strong>Special Topics and Surveys:</strong></p>
+<ul>
+<li>Bolton, P., &amp; Dewatripont, M. (2005). <em>Contract Theory</em>, Chapters 9-12. MIT Press.</li>
+<li>Laffont, J. J., &amp; Martimort, D. (2002). <em>The Theory of Incentives</em>, Chapters 8-10. Princeton University Press.</li>
+<li>Tirole, J. (1988). <em>The Theory of Industrial Organization</em>, Chapters 1-2. MIT Press.</li>
+</ul>
+<p><strong>Recent Conference Proceedings:</strong></p>
+<ul>
+<li>ACM Conference on Economics and Computation (EC)</li>
+<li>International Conference on Web and Internet Economics (WINE)</li>
+<li>AAAI Conference on Artificial Intelligence (Mechanism Design Track)</li>
+<li>Conference on Learning Theory (COLT) - Mechanism Design Sessions</li>
+</ul>
+<p><strong>Online Resources:</strong></p>
+<ul>
+<li>Algorithmic Game Theory book (Noam Nisan et al.) - Free online version</li>
+<li>Tim Roughgarden’s course materials on Algorithmic Game Theory</li>
+<li>Mechanism Design lectures by Roger Myerson and others on YouTube</li>
+<li>AGTbook.org for comprehensive algorithmic game theory resources</li>
+</ul>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const disableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'prefetch';
+    }
+  }
+  const enableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'stylesheet';
+    }
+  }
+  const manageTransitions = (selector, allowTransitions) => {
+    const els = window.document.querySelectorAll(selector);
+    for (let i=0; i < els.length; i++) {
+      const el = els[i];
+      if (allowTransitions) {
+        el.classList.remove('notransition');
+      } else {
+        el.classList.add('notransition');
+      }
+    }
+  }
+  const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+    const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+    const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+    let newTheme = '';
+    if(darkModeDefault) {
+      newTheme = isAlternate ? baseTheme : alternateTheme;
+    } else {
+      newTheme = isAlternate ? alternateTheme : baseTheme;
+    }
+    const changeGiscusTheme = () => {
+      // From: https://github.com/giscus/giscus/issues/336
+      const sendMessage = (message) => {
+        const iframe = document.querySelector('iframe.giscus-frame');
+        if (!iframe) return;
+        iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+      }
+      sendMessage({
+        setConfig: {
+          theme: newTheme
+        }
+      });
+    }
+    const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+    if (isGiscussLoaded) {
+      changeGiscusTheme();
+    }
+  }
+  const toggleColorMode = (alternate) => {
+    // Switch the stylesheets
+    const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+    manageTransitions('#quarto-margin-sidebar .nav-link', false);
+    if (alternate) {
+      enableStylesheet(alternateStylesheets);
+      for (const sheetNode of alternateStylesheets) {
+        if (sheetNode.id === "quarto-bootstrap") {
+          toggleBodyColorMode(sheetNode);
+        }
+      }
+    } else {
+      disableStylesheet(alternateStylesheets);
+      toggleBodyColorPrimary();
+    }
+    manageTransitions('#quarto-margin-sidebar .nav-link', true);
+    // Switch the toggles
+    const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+    for (let i=0; i < toggles.length; i++) {
+      const toggle = toggles[i];
+      if (toggle) {
+        if (alternate) {
+          toggle.classList.add("alternate");     
+        } else {
+          toggle.classList.remove("alternate");
+        }
+      }
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455)
+    if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+      manageTransitions("body", false);
+      window.scrollTo(0, 1);
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+        manageTransitions("body", true);
+      }, 40);  
+    }
+  }
+  const isFileUrl = () => { 
+    return window.location.protocol === 'file:';
+  }
+  const hasAlternateSentinel = () => {  
+    let styleSentinel = getColorSchemeSentinel();
+    if (styleSentinel !== null) {
+      return styleSentinel === "alternate";
+    } else {
+      return false;
+    }
+  }
+  const setStyleSentinel = (alternate) => {
+    const value = alternate ? "alternate" : "default";
+    if (!isFileUrl()) {
+      window.localStorage.setItem("quarto-color-scheme", value);
+    } else {
+      localAlternateSentinel = value;
+    }
+  }
+  const getColorSchemeSentinel = () => {
+    if (!isFileUrl()) {
+      const storageValue = window.localStorage.getItem("quarto-color-scheme");
+      return storageValue != null ? storageValue : localAlternateSentinel;
+    } else {
+      return localAlternateSentinel;
+    }
+  }
+  const darkModeDefault = false;
+  let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+  // Dark / light mode switch
+  window.quartoToggleColorScheme = () => {
+    // Read the current dark / light value 
+    let toAlternate = !hasAlternateSentinel();
+    toggleColorMode(toAlternate);
+    setStyleSentinel(toAlternate);
+    toggleGiscusIfUsed(toAlternate, darkModeDefault);
+  };
+  // Ensure there is a toggle, if there isn't float one in the top right
+  if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+    const a = window.document.createElement('a');
+    a.classList.add('top-right');
+    a.classList.add('quarto-color-scheme-toggle');
+    a.href = "";
+    a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+    const i = window.document.createElement("i");
+    i.classList.add('bi');
+    a.appendChild(i);
+    window.document.body.appendChild(a);
+  }
+  // Switch to dark mode if need be
+  if (hasAlternateSentinel()) {
+    toggleColorMode(true);
+  } else {
+    toggleColorMode(false);
+  }
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+          // target, if specified
+          link.setAttribute("target", "_blank");
+          if (link.getAttribute("rel") === null) {
+            link.setAttribute("rel", "noopener");
+          }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../part02/multi-objective-opti.html" class="pagination-link" aria-label="Multi-Objective Optimization Theory">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Multi-Objective Optimization Theory</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../part02/fairness.html" class="pagination-link" aria-label="Fairness in Mechanism Design">
+        <span class="nav-page-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Fairness in Mechanism Design</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+<script src="../site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>

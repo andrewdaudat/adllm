@@ -1,0 +1,1262 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.6.43">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>1&nbsp; Introduction to Mechanism Design – ADLLM</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../part01/auction-theory.html" rel="next">
+<link href="../outline.html" rel="prev">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-d4d76bf8491c20bad77d141916dc28e1.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-4379b0ccadffce622b03caf4c46266b3.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-bdec3157979715d7154bb60f5aa24e58.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-4104e206323135730aa08c3113d84ebc.min.css" rel="prefetch" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<style>html{ scroll-behavior: smooth; }</style>
+
+  <script>window.backupDefine = window.define; window.define = undefined;</script><script src="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.js"></script>
+  <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+  </script>
+  <script>window.define = window.backupDefine; window.backupDefine = undefined;</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.css">
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-sidebar floating">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../part01/intro-md.html">Classical MD</a></li><li class="breadcrumb-item"><a href="../part01/intro-md.html"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction to Mechanism Design</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">ADLLM</a> 
+        <div class="sidebar-tools-main">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Welcome</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../outline.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Outline</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Classical MD</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../part01/intro-md.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction to Mechanism Design</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../part01/auction-theory.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Auction Theory Fundamentals</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../part01/ic.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Incentive Compatibility and Truthfulness</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../part01/revenue-opti.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Revenue Optimization and Optimal Auctions</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false">
+ <span class="menu-text">Multi-objective Opti</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../part02/efficiency.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Efficiency and Welfare Analysis</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../part02/multi-objective-opti.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Multi-Objective Optimization Theory</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../part02/multi-objective-md.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Multi-Objective Mechanism Design</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../part02/fairness.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Fairness in Mechanism Design</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false">
+ <span class="menu-text">Computational MD</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../part03/computational-aspects-md.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">computational-aspects-md.html</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#chapter-introduction" id="toc-chapter-introduction" class="nav-link active" data-scroll-target="#chapter-introduction"><span class="header-section-number">1.1</span> Chapter Introduction</a></li>
+  <li><a href="#intuitive-development-why-mechanism-design-matters" id="toc-intuitive-development-why-mechanism-design-matters" class="nav-link" data-scroll-target="#intuitive-development-why-mechanism-design-matters"><span class="header-section-number">1.2</span> Intuitive Development: Why Mechanism Design Matters</a>
+  <ul class="collapse">
+  <li><a href="#the-information-problem-in-digital-markets" id="toc-the-information-problem-in-digital-markets" class="nav-link" data-scroll-target="#the-information-problem-in-digital-markets"><span class="header-section-number">1.2.1</span> The Information Problem in Digital Markets</a></li>
+  <li><a href="#from-intuition-to-formal-framework" id="toc-from-intuition-to-formal-framework" class="nav-link" data-scroll-target="#from-intuition-to-formal-framework"><span class="header-section-number">1.2.2</span> From Intuition to Formal Framework</a></li>
+  <li><a href="#the-platform-perspective" id="toc-the-platform-perspective" class="nav-link" data-scroll-target="#the-platform-perspective"><span class="header-section-number">1.2.3</span> The Platform Perspective</a></li>
+  <li><a href="#economic-intuition-the-social-planners-problem" id="toc-economic-intuition-the-social-planners-problem" class="nav-link" data-scroll-target="#economic-intuition-the-social-planners-problem"><span class="header-section-number">1.2.4</span> Economic Intuition: The Social Planner’s Problem</a></li>
+  <li><a href="#from-static-to-dynamic-the-llm-advertising-challenge" id="toc-from-static-to-dynamic-the-llm-advertising-challenge" class="nav-link" data-scroll-target="#from-static-to-dynamic-the-llm-advertising-challenge"><span class="header-section-number">1.2.5</span> From Static to Dynamic: The LLM Advertising Challenge</a></li>
+  </ul></li>
+  <li><a href="#mathematical-foundations" id="toc-mathematical-foundations" class="nav-link" data-scroll-target="#mathematical-foundations"><span class="header-section-number">1.3</span> Mathematical Foundations</a>
+  <ul class="collapse">
+  <li><a href="#formal-setup-the-mechanism-design-problem" id="toc-formal-setup-the-mechanism-design-problem" class="nav-link" data-scroll-target="#formal-setup-the-mechanism-design-problem"><span class="header-section-number">1.3.1</span> Formal Setup: The Mechanism Design Problem</a></li>
+  <li><a href="#the-revelation-principle" id="toc-the-revelation-principle" class="nav-link" data-scroll-target="#the-revelation-principle"><span class="header-section-number">1.3.2</span> The Revelation Principle</a></li>
+  <li><a href="#incentive-compatibility-and-individual-rationality" id="toc-incentive-compatibility-and-individual-rationality" class="nav-link" data-scroll-target="#incentive-compatibility-and-individual-rationality"><span class="header-section-number">1.3.3</span> Incentive Compatibility and Individual Rationality</a></li>
+  <li><a href="#social-choice-functions-and-implementation" id="toc-social-choice-functions-and-implementation" class="nav-link" data-scroll-target="#social-choice-functions-and-implementation"><span class="header-section-number">1.3.4</span> Social Choice Functions and Implementation</a></li>
+  <li><a href="#information-asymmetries-in-digital-platforms" id="toc-information-asymmetries-in-digital-platforms" class="nav-link" data-scroll-target="#information-asymmetries-in-digital-platforms"><span class="header-section-number">1.3.5</span> Information Asymmetries in Digital Platforms</a></li>
+  </ul></li>
+  <li><a href="#advanced-results-beyond-basic-implementation" id="toc-advanced-results-beyond-basic-implementation" class="nav-link" data-scroll-target="#advanced-results-beyond-basic-implementation"><span class="header-section-number">1.4</span> Advanced Results: Beyond Basic Implementation</a>
+  <ul class="collapse">
+  <li><a href="#multi-dimensional-mechanism-design" id="toc-multi-dimensional-mechanism-design" class="nav-link" data-scroll-target="#multi-dimensional-mechanism-design"><span class="header-section-number">1.4.1</span> Multi-Dimensional Mechanism Design</a></li>
+  <li><a href="#revenue-optimal-mechanisms" id="toc-revenue-optimal-mechanisms" class="nav-link" data-scroll-target="#revenue-optimal-mechanisms"><span class="header-section-number">1.4.2</span> Revenue-Optimal Mechanisms</a></li>
+  </ul></li>
+  <li><a href="#applications-and-implementation" id="toc-applications-and-implementation" class="nav-link" data-scroll-target="#applications-and-implementation"><span class="header-section-number">1.5</span> Applications and Implementation</a>
+  <ul class="collapse">
+  <li><a href="#digital-advertising-mechanisms-in-practice" id="toc-digital-advertising-mechanisms-in-practice" class="nav-link" data-scroll-target="#digital-advertising-mechanisms-in-practice"><span class="header-section-number">1.5.1</span> Digital Advertising Mechanisms in Practice</a></li>
+  <li><a href="#llm-advertising-a-new-frontier" id="toc-llm-advertising-a-new-frontier" class="nav-link" data-scroll-target="#llm-advertising-a-new-frontier"><span class="header-section-number">1.5.2</span> LLM Advertising: A New Frontier</a></li>
+  <li><a href="#implementation-considerations" id="toc-implementation-considerations" class="nav-link" data-scroll-target="#implementation-considerations"><span class="header-section-number">1.5.3</span> Implementation Considerations</a></li>
+  </ul></li>
+  <li><a href="#chapter-synthesis" id="toc-chapter-synthesis" class="nav-link" data-scroll-target="#chapter-synthesis"><span class="header-section-number">1.6</span> Chapter Synthesis</a></li>
+  <li><a href="#exercises" id="toc-exercises" class="nav-link" data-scroll-target="#exercises"><span class="header-section-number">1.7</span> Exercises</a></li>
+  <li><a href="#further-reading" id="toc-further-reading" class="nav-link" data-scroll-target="#further-reading"><span class="header-section-number">1.8</span> Further Reading</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../part01/intro-md.html">Classical MD</a></li><li class="breadcrumb-item"><a href="../part01/intro-md.html"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction to Mechanism Design</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction to Mechanism Design</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="chapter-introduction" class="level2" data-number="1.1">
+<h2 data-number="1.1" class="anchored" data-anchor-id="chapter-introduction"><span class="header-section-number">1.1</span> Chapter Introduction</h2>
+<p>Imagine you’re the product manager at an AI company like OpenAI, and you face a critical decision: How should ChatGPT integrate advertisements into its responses? When a user asks “Can you suggest some books similar to ‘To Kill a Mockingbird’?”, should the system prioritize the highest-bidding advertisers (BookStore Corp offering $5 per click) or the most relevant ones (Local Library offering $1 per click but with perfect topical match)? This seemingly simple question touches the heart of mechanism design—the systematic study of how to design rules and incentives that lead to desirable outcomes when participants have private information and conflicting interests.</p>
+<p><strong>Learning Objectives:</strong> By the end of this chapter, you will be able to:</p>
+<ol type="1">
+<li>Understand the fundamental problem that mechanism design solves and why it matters for AI-powered platforms</li>
+<li>Distinguish between mechanism design and traditional optimization approaches</li>
+<li>Identify the key components of any mechanism design problem</li>
+<li>Recognize how information asymmetries create strategic behavior in digital markets</li>
+<li>Connect mechanism design principles to real-world LLM advertising challenges</li>
+</ol>
+<p><strong>Chapter Roadmap:</strong> This chapter establishes the conceptual foundation for everything that follows. We begin with economic intuition about why mechanism design matters, then formalize the mathematical framework, explore applications in digital advertising, and conclude by connecting these ideas specifically to LLM-powered platforms. Understanding these fundamentals is crucial because LLM advertising represents a new frontier where traditional advertising mechanisms must be reconsidered in light of AI’s unique characteristics—dynamic content generation, context-dependent relevance, and the challenge of maintaining content quality while maximizing revenue.</p>
+<p><strong>Connection to LLM Mechanism Design:</strong> Traditional advertising mechanisms were designed for static placements—banner ads, search results, or video interruptions. LLM advertising is fundamentally different: advertisements must be woven into dynamically generated text, creating unprecedented challenges in balancing revenue generation with content integrity. The mechanisms we design must account for how ad integration affects user experience, content coherence, and the AI system’s helpfulness—making this a naturally multi-objective optimization problem.</p>
+</section>
+<section id="intuitive-development-why-mechanism-design-matters" class="level2" data-number="1.2">
+<h2 data-number="1.2" class="anchored" data-anchor-id="intuitive-development-why-mechanism-design-matters"><span class="header-section-number">1.2</span> Intuitive Development: Why Mechanism Design Matters</h2>
+<section id="the-information-problem-in-digital-markets" class="level3" data-number="1.2.1">
+<h3 data-number="1.2.1" class="anchored" data-anchor-id="the-information-problem-in-digital-markets"><span class="header-section-number">1.2.1</span> The Information Problem in Digital Markets</h3>
+<p>Consider a simple scenario that captures the essence of mechanism design challenges. Sarah runs a popular travel blog and wants to monetize it by partnering with travel companies. Three companies approach her:</p>
+<ul>
+<li><strong>LuxuryTravel Inc.</strong> values featuring their premium hotels at $100 per mention but won’t admit this publicly</li>
+<li><strong>BudgetStay Corp.</strong> values promoting their hostels at $30 per mention</li>
+<li><strong>LocalGuides LLC</strong> values showcasing their tours at $50 per mention</li>
+</ul>
+<p>Sarah faces what economists call the <strong>mechanism design problem</strong>: How should she decide which companies to feature and how much to charge them, given that she doesn’t know their true valuations?</p>
+<p>If Sarah simply asks “How much are you willing to pay?”, each company has an incentive to lie. LuxuryTravel might claim they’ll only pay $20, hoping to get a bargain. This information asymmetry—where participants know their own values but others don’t—is at the heart of why mechanism design is necessary.</p>
+</section>
+<section id="from-intuition-to-formal-framework" class="level3" data-number="1.2.2">
+<h3 data-number="1.2.2" class="anchored" data-anchor-id="from-intuition-to-formal-framework"><span class="header-section-number">1.2.2</span> From Intuition to Formal Framework</h3>
+<p>The travel blog example illustrates several key insights that apply broadly to mechanism design:</p>
+<p><strong>Strategic Behavior Emerges from Information Asymmetries:</strong> When people know something others don’t (their private valuations), they may have incentives to misrepresent this information for personal gain.</p>
+<p><strong>Mechanism Design is “Reverse Game Theory”:</strong> Instead of taking the rules as given and finding optimal strategies (traditional game theory), mechanism design starts with desired outcomes and asks: “What rules will achieve these outcomes?”</p>
+<p><strong>Information Has Economic Value:</strong> The difference between what Sarah could earn if she knew everyone’s true valuations versus what she can earn without this knowledge represents the economic cost of information asymmetry.</p>
+</section>
+<section id="the-platform-perspective" class="level3" data-number="1.2.3">
+<h3 data-number="1.2.3" class="anchored" data-anchor-id="the-platform-perspective"><span class="header-section-number">1.2.3</span> The Platform Perspective</h3>
+<p>Now scale this intuition to modern digital platforms. When you search “best coffee shops in Seattle” on Google, dozens of coffee shops would pay to appear at the top. Google doesn’t know each shop’s true willingness to pay, but it needs mechanisms that:</p>
+<ol type="1">
+<li><strong>Encourage truthful bidding</strong> so shops reveal their true valuations</li>
+<li><strong>Allocate efficiently</strong> so the most valuable placements go to those who value them most</li>
+<li><strong>Generate revenue</strong> to sustain the platform</li>
+<li><strong>Maintain user experience</strong> so search results remain useful</li>
+</ol>
+<p>This multi-objective challenge becomes even more complex with LLM platforms, where advertisements must be integrated into conversational responses rather than displayed in separate slots.</p>
+</section>
+<section id="economic-intuition-the-social-planners-problem" class="level3" data-number="1.2.4">
+<h3 data-number="1.2.4" class="anchored" data-anchor-id="economic-intuition-the-social-planners-problem"><span class="header-section-number">1.2.4</span> Economic Intuition: The Social Planner’s Problem</h3>
+<p>To understand why mechanism design matters, imagine an omniscient social planner who knows everyone’s true preferences. This planner could achieve the <strong>first-best outcome</strong>—allocating resources to maximize total social welfare. In our travel blog example, if the planner knows all three companies’ true valuations, they can recommend the optimal arrangement.</p>
+<p>But real-world mechanism designers lack this omniscience. They must design mechanisms that work with whatever information participants choose to reveal. The challenge is creating incentives so that participants’ self-interested behavior leads to outcomes that approximate the first-best allocation.</p>
+<p>This gap between first-best (full information) and second-best (strategic behavior under information asymmetry) outcomes is fundamental to understanding why mechanism design is both necessary and challenging.</p>
+</section>
+<section id="from-static-to-dynamic-the-llm-advertising-challenge" class="level3" data-number="1.2.5">
+<h3 data-number="1.2.5" class="anchored" data-anchor-id="from-static-to-dynamic-the-llm-advertising-challenge"><span class="header-section-number">1.2.5</span> From Static to Dynamic: The LLM Advertising Challenge</h3>
+<p>Traditional advertising mechanisms operate in relatively static environments. A Google search auction determines which ads appear for specific keywords, and these mappings remain stable. LLM advertising introduces dynamic complexity:</p>
+<ul>
+<li><strong>Content Integration:</strong> Ads must be woven into generated text rather than displayed separately</li>
+<li><strong>Context Dependence:</strong> Ad relevance depends on the specific conversation context</li>
+<li><strong>Quality Sensitivity:</strong> Poor ad integration can severely degrade the user experience</li>
+<li><strong>Sequential Decisions:</strong> Long conversations may involve multiple advertising decisions</li>
+</ul>
+<p>These characteristics mean that LLM advertising mechanisms must balance traditional objectives (revenue, efficiency) with new ones (content quality, conversation flow, user satisfaction).</p>
+</section>
+</section>
+<section id="mathematical-foundations" class="level2" data-number="1.3">
+<h2 data-number="1.3" class="anchored" data-anchor-id="mathematical-foundations"><span class="header-section-number">1.3</span> Mathematical Foundations</h2>
+<section id="formal-setup-the-mechanism-design-problem" class="level3" data-number="1.3.1">
+<h3 data-number="1.3.1" class="anchored" data-anchor-id="formal-setup-the-mechanism-design-problem"><span class="header-section-number">1.3.1</span> Formal Setup: The Mechanism Design Problem</h3>
+<p>Let’s formalize the intuitive concepts developed above. A mechanism design problem consists of several key components:</p>
+<p><strong>Definition 1.1 (Mechanism Design Environment):</strong> A mechanism design environment is characterized by:</p>
+<ul>
+<li>A set of agents <span class="math inline">N = \{1, 2, \ldots, n\}</span></li>
+<li>A type space <span class="math inline">\Theta_i</span> for each agent <span class="math inline">i</span>, where <span class="math inline">\theta_i \in \Theta_i</span> represents agent <span class="math inline">i</span>’s private information</li>
+<li>A set of feasible outcomes <span class="math inline">X</span></li>
+<li>A utility function <span class="math inline">u_i(x, \theta_i)</span> for each agent <span class="math inline">i</span>, representing their payoff from outcome <span class="math inline">x</span> given their type <span class="math inline">\theta_i</span></li>
+</ul>
+<p><strong>Example 1.1:</strong> In our travel blog scenario:</p>
+<ul>
+<li>Agents: <span class="math inline">N = \{\text{LuxuryTravel}, \text{BudgetStay}, \text{LocalGuides}\}</span></li>
+<li>Types: <span class="math inline">\theta_i</span> represents company <span class="math inline">i</span>’s true valuation for being featured</li>
+<li>Outcomes: <span class="math inline">X</span> represents possible featuring arrangements (which companies to include, how prominently)</li>
+<li>Utilities: <span class="math inline">u_i(x, \theta_i) = \theta_i \cdot \mathbb{I}[\text{company } i \text{ is featured in outcome } x] - \text{payment}_i</span></li>
+</ul>
+</section>
+<section id="the-revelation-principle" class="level3" data-number="1.3.2">
+<h3 data-number="1.3.2" class="anchored" data-anchor-id="the-revelation-principle"><span class="header-section-number">1.3.2</span> The Revelation Principle</h3>
+<p>One of the most powerful results in mechanism design is the Revelation Principle, which dramatically simplifies the mechanism designer’s problem.</p>
+<p><strong>Theorem 1.1 (Revelation Principle):</strong> For any mechanism that implements a social choice function in some equilibrium, there exists an equivalent direct mechanism where truth-telling is optimal for all agents.</p>
+<p><strong>Proof Sketch:</strong> Suppose we have a mechanism <span class="math inline">M</span> where agents use strategies <span class="math inline">s_i^*(\theta_i)</span> in equilibrium. We can construct a direct mechanism <span class="math inline">M'</span> where the mechanism designer simply applies the strategies <span class="math inline">s_i^*(\cdot)</span> on behalf of the agents. In <span class="math inline">M'</span>, truth-telling becomes optimal because the mechanism automatically applies the equilibrium strategies from <span class="math inline">M</span>.</p>
+<p><strong>Economic Interpretation:</strong> This theorem tells us that mechanism designers can restrict attention to direct mechanisms where agents are asked to report their types and have incentives to do so truthfully. This transforms the design problem from considering all possible indirect mechanisms to focusing on direct, incentive-compatible ones.</p>
+</section>
+<section id="incentive-compatibility-and-individual-rationality" class="level3" data-number="1.3.3">
+<h3 data-number="1.3.3" class="anchored" data-anchor-id="incentive-compatibility-and-individual-rationality"><span class="header-section-number">1.3.3</span> Incentive Compatibility and Individual Rationality</h3>
+<p>The Revelation Principle leads us to focus on two crucial constraints:</p>
+<p><strong>Definition 1.2 (Dominant Strategy Incentive Compatibility - DSIC):</strong> A direct mechanism <span class="math inline">(f, p)</span> with social choice function <span class="math inline">f: \Theta \rightarrow X</span> and payment rule <span class="math inline">p: \Theta \rightarrow \mathbb{R}^n</span> is DSIC if for all agents <span class="math inline">i</span>, all types <span class="math inline">\theta_i, \theta_i' \in \Theta_i</span>, and all type profiles <span class="math inline">\theta_{-i}</span> of other agents: <span class="math display">u_i(f(\theta_i, \theta_{-i}), \theta_i) - p_i(\theta_i, \theta_{-i}) \geq u_i(f(\theta_i', \theta_{-i}), \theta_i) - p_i(\theta_i', \theta_{-i})</span></p>
+<p><strong>Intuitive Interpretation:</strong> DSIC means that regardless of what others do, each agent’s best strategy is to report their true type. This is the strongest form of incentive compatibility.</p>
+<p><strong>Definition 1.3 (Individual Rationality - IR):</strong> A mechanism is IR if for all agents <span class="math inline">i</span> and all type profiles <span class="math inline">\theta</span>: <span class="math display">u_i(f(\theta), \theta_i) - p_i(\theta) \geq u_i(\emptyset, \theta_i)</span></p>
+<p>where <span class="math inline">u_i(\emptyset, \theta_i)</span> represents agent <span class="math inline">i</span>’s utility from not participating.</p>
+<p><strong>Economic Interpretation:</strong> IR ensures that agents prefer participating in the mechanism to staying away. Without this, the mechanism would fail to attract participants.</p>
+</section>
+<section id="social-choice-functions-and-implementation" class="level3" data-number="1.3.4">
+<h3 data-number="1.3.4" class="anchored" data-anchor-id="social-choice-functions-and-implementation"><span class="header-section-number">1.3.4</span> Social Choice Functions and Implementation</h3>
+<p><strong>Definition 1.4 (Social Choice Function):</strong> A social choice function is a mapping <span class="math inline">f: \Theta \rightarrow X</span> that specifies an outcome for each possible type profile.</p>
+<p><strong>Definition 1.5 (Implementation):</strong> A social choice function <span class="math inline">f</span> is implementable in dominant strategies if there exists a mechanism <span class="math inline">(f, p)</span> that is both DSIC and IR.</p>
+<p><strong>Theorem 1.2 (Myerson’s Lemma - Single Parameter Case):</strong> Consider a single-parameter environment where <span class="math inline">\theta_i \in \mathbb{R}</span> and <span class="math inline">u_i(x, \theta_i) = \theta_i v_i(x) - p_i</span> for some function <span class="math inline">v_i(x)</span>. A social choice function <span class="math inline">f</span> is implementable in dominant strategies if and only if:</p>
+<ol type="1">
+<li><span class="math inline">v_i(f(\theta))</span> is non-decreasing in <span class="math inline">\theta_i</span> (monotonicity)</li>
+<li>The payment rule satisfies: <span class="math display">p_i(\theta_i) = \theta_i v_i(f(\theta_i, \theta_{-i})) - \int_{\underline{\theta}_i}^{\theta_i} v_i(f(s, \theta_{-i})) ds - u_i(\underline{\theta}_i, \theta_{-i})</span></li>
+</ol>
+<p><strong>Economic Interpretation:</strong> Myerson’s Lemma provides a complete characterization of implementable mechanisms in single-parameter environments. The monotonicity condition ensures that higher types receive (weakly) better outcomes, while the payment formula represents the unique way to price the mechanism to maintain incentive compatibility.</p>
+</section>
+<section id="information-asymmetries-in-digital-platforms" class="level3" data-number="1.3.5">
+<h3 data-number="1.3.5" class="anchored" data-anchor-id="information-asymmetries-in-digital-platforms"><span class="header-section-number">1.3.5</span> Information Asymmetries in Digital Platforms</h3>
+<p>Digital platforms face particularly complex information asymmetries:</p>
+<p><strong>Advertiser Private Information:</strong></p>
+<ul>
+<li>True willingness to pay for ad placements</li>
+<li>Internal conversion rates and customer lifetime values</li>
+<li>Strategic budget considerations</li>
+</ul>
+<p><strong>User Private Information:</strong></p>
+<ul>
+<li>Genuine preferences and interests</li>
+<li>Sensitivity to advertising</li>
+<li>Likelihood of engagement with different ad types</li>
+</ul>
+<p><strong>Platform Private Information:</strong></p>
+<ul>
+<li>Algorithm performance and optimization strategies</li>
+<li>User engagement patterns across different content types</li>
+<li>True costs of content generation and moderation</li>
+</ul>
+<p><strong>Example 1.2 (Search Advertising):</strong> In Google’s AdWords system:</p>
+<ul>
+<li>Advertisers know their true value-per-click but may bid strategically</li>
+<li>Google doesn’t observe true values but designs auctions to encourage truthful bidding</li>
+<li>The Generalized Second Price (GSP) auction partially achieves this through strategic considerations</li>
+</ul>
+</section>
+</section>
+<section id="advanced-results-beyond-basic-implementation" class="level2" data-number="1.4">
+<h2 data-number="1.4" class="anchored" data-anchor-id="advanced-results-beyond-basic-implementation"><span class="header-section-number">1.4</span> Advanced Results: Beyond Basic Implementation</h2>
+<section id="multi-dimensional-mechanism-design" class="level3" data-number="1.4.1">
+<h3 data-number="1.4.1" class="anchored" data-anchor-id="multi-dimensional-mechanism-design"><span class="header-section-number">1.4.1</span> Multi-Dimensional Mechanism Design</h3>
+<p>While Myerson’s Lemma provides clean results for single-parameter environments, many real-world problems involve multi-dimensional types.</p>
+<p><strong>Definition 1.6 (Multi-Dimensional Types):</strong> An agent’s type <span class="math inline">\theta_i = (\theta_i^1, \theta_i^2, \ldots, \theta_i^k)</span> is multi-dimensional if it consists of multiple attributes that affect the agent’s preferences.</p>
+<p><strong>Example 1.3 (LLM Advertising):</strong> An advertiser’s type might include:</p>
+<ul>
+<li><span class="math inline">\theta_i^1</span>: Willingness to pay per click</li>
+<li><span class="math inline">\theta_i^2</span>: Brand safety requirements</li>
+<li><span class="math inline">\theta_i^3</span>: Target audience preferences</li>
+<li><span class="math inline">\theta_i^4</span>: Content integration flexibility</li>
+</ul>
+<p><strong>Theorem 1.3 (Border’s Impossibility Result):</strong> In generic multi-dimensional environments, there exists no dominant strategy incentive compatible mechanism that achieves full efficiency.</p>
+<p><strong>Proof Sketch:</strong> The proof constructs specific type distributions where any DSIC mechanism must sometimes allocate inefficiently. The intuition is that with multiple dimensions, the monotonicity constraints required for incentive compatibility become overly restrictive.</p>
+<p><strong>Economic Implications:</strong> This result explains why many real-world mechanisms use approximations or focus on specific objectives rather than achieving full efficiency.</p>
+</section>
+<section id="revenue-optimal-mechanisms" class="level3" data-number="1.4.2">
+<h3 data-number="1.4.2" class="anchored" data-anchor-id="revenue-optimal-mechanisms"><span class="header-section-number">1.4.2</span> Revenue-Optimal Mechanisms</h3>
+<p><strong>Theorem 1.4 (Myerson’s Optimal Auction):</strong> Consider a single-item auction with buyers having independent private values drawn from distributions <span class="math inline">F_i</span> with densities <span class="math inline">f_i</span>. The revenue-optimal auction:</p>
+<ol type="1">
+<li>Allocates to bidder <span class="math inline">i</span> if <span class="math inline">\psi_i(\theta_i) = \max_j \{\psi_j(\theta_j), 0\}</span></li>
+<li>Charges the winner their threshold bid where <span class="math inline">\psi_i(\theta_i) = \theta_i - \frac{1-F_i(\theta_i)}{f_i(\theta_i)}</span> is the virtual valuation.</li>
+</ol>
+<p><strong>Economic Interpretation:</strong> Revenue optimization requires balancing allocative efficiency against the monopolist’s desire to extract surplus. The virtual valuation <span class="math inline">\psi_i(\theta_i)</span> adjusts the true valuation <span class="math inline">\theta_i</span> to capture this trade-off.</p>
+<p><strong>Connection to LLM Advertising:</strong> In LLM contexts, platforms face similar trade-offs between revenue optimization and content quality, suggesting that multi-objective extensions of Myerson’s framework will be crucial.</p>
+</section>
+</section>
+<section id="applications-and-implementation" class="level2" data-number="1.5">
+<h2 data-number="1.5" class="anchored" data-anchor-id="applications-and-implementation"><span class="header-section-number">1.5</span> Applications and Implementation</h2>
+<section id="digital-advertising-mechanisms-in-practice" class="level3" data-number="1.5.1">
+<h3 data-number="1.5.1" class="anchored" data-anchor-id="digital-advertising-mechanisms-in-practice"><span class="header-section-number">1.5.1</span> Digital Advertising Mechanisms in Practice</h3>
+<p><strong>Application 1.1 (Google AdWords - Generalized Second Price):</strong></p>
+<p>Consider a simplified version of Google’s search advertising auction:</p>
+<pre><code>Algorithm: GSP Auction for Search Advertising
+Input: Bids (b₁, b₂, ..., bₙ), Quality Scores (q₁, q₂, ..., qₙ)
+Output: Allocation and Payments
+
+1. Calculate modified bids: s_i = b_i × q_i
+2. Rank advertisers by modified bids: s_{(1)} ≥ s_{(2)} ≥ ... ≥ s_{(n)}
+3. Allocate positions 1, 2, ..., k to top k bidders
+4. Charge advertiser i: p_i = s_{(i+1)} / q_i</code></pre>
+<p><strong>Analysis:</strong> This mechanism approximates truthful bidding in equilibrium while balancing revenue generation with ad relevance (through quality scores).</p>
+<p><strong>Application 1.2 (Platform Marketplace Design):</strong></p>
+<p>Two-sided platforms like eBay face mechanism design challenges in setting fees:</p>
+<pre><code>Platform Revenue Model:
+- Listing fees: L(seller_type, item_characteristics)
+- Success fees: S(transaction_value, seller_history)
+- Buyer fees: B(transaction_value, service_level)
+
+Objectives:
+- Maximize platform revenue
+- Ensure adequate buyer and seller participation
+- Maintain market quality and trust</code></pre>
+<p><strong>Design Principle:</strong> The platform must balance extraction from both sides while ensuring sufficient participation to maintain network effects.</p>
+</section>
+<section id="llm-advertising-a-new-frontier" class="level3" data-number="1.5.2">
+<h3 data-number="1.5.2" class="anchored" data-anchor-id="llm-advertising-a-new-frontier"><span class="header-section-number">1.5.2</span> LLM Advertising: A New Frontier</h3>
+<p>LLM advertising introduces novel mechanism design challenges that traditional frameworks don’t fully address:</p>
+<p><strong>Challenge 1: Dynamic Content Integration</strong> Unlike banner ads or search results, LLM advertisements must be integrated into dynamically generated text. This creates new considerations:</p>
+<pre><code>LLM Ad Integration Process:
+1. User submits query
+2. Retrieve relevant advertisers based on context
+3. Run mechanism to select winning advertisers
+4. Generate response integrating ads naturally
+5. Measure user engagement and satisfaction</code></pre>
+<p><strong>Mechanism Design Implications:</strong></p>
+<ul>
+<li>Outcome space <span class="math inline">X</span> now includes both ad selection and content quality</li>
+<li>Utility functions must account for integration quality</li>
+<li>New incentive issues arise around content manipulation</li>
+</ul>
+<p><strong>Challenge 2: Multi-Objective Optimization</strong> Traditional mechanisms often focus on single objectives (revenue or efficiency). LLM platforms must balance:</p>
+<ul>
+<li>Revenue generation</li>
+<li>Content quality and coherence</li>
+<li>User experience and satisfaction</li>
+<li>Advertiser value and fairness</li>
+</ul>
+<p><strong>Formal Framework:</strong> Let <span class="math inline">R(\theta, x)</span> represent platform revenue, <span class="math inline">Q(\theta, x)</span> represent content quality, and <span class="math inline">U(\theta, x)</span> represent user welfare. The platform’s problem becomes: <span class="math display">\max_{f, p} \alpha R(\theta, f(\theta)) + \beta Q(\theta, f(\theta)) + \gamma U(\theta, f(\theta))</span> subject to DSIC and IR constraints, where <span class="math inline">\alpha + \beta + \gamma = 1</span>.</p>
+<p><strong>Application 1.3 (Segment Auctions for LLMs):</strong></p>
+<p>Based on the main research paper, consider the following mechanism for LLM advertising:</p>
+<pre><code>Segment Auction Mechanism:
+Input: Query x, Advertiser types θ = (θ₁, ..., θₙ)
+For each segment t:
+  1. Calculate relevance scores q_i^(t) for each advertiser i
+  2. Collect bids b_i from advertisers
+  3. Compute allocation probabilities: x_i^(t) = (b_i × q_i^(t)) / Σⱼ(bⱼ × qⱼ^(t))
+  4. Select winner stochastically based on probabilities
+  5. Generate segment content integrating winning ad
+  6. Compute payment based on second-price principle</code></pre>
+<p><strong>Theoretical Properties:</strong></p>
+<ul>
+<li>Incentive compatible under appropriate conditions</li>
+<li>Balances revenue and quality through relevance weighting</li>
+<li>Naturally handles dynamic content generation</li>
+</ul>
+</section>
+<section id="implementation-considerations" class="level3" data-number="1.5.3">
+<h3 data-number="1.5.3" class="anchored" data-anchor-id="implementation-considerations"><span class="header-section-number">1.5.3</span> Implementation Considerations</h3>
+<p><strong>Computational Complexity:</strong> Real-world mechanism implementation must consider computational constraints:</p>
+<ul>
+<li>Auction algorithms must run in real-time (milliseconds for search, seconds for LLM)</li>
+<li>Payment computation can often be done offline</li>
+<li>Approximation mechanisms may be necessary for complex multi-dimensional problems</li>
+</ul>
+<p><strong>Strategic Robustness:</strong> Mechanisms must be robust to various forms of strategic manipulation:</p>
+<ul>
+<li>Bid shading and demand reduction</li>
+<li>False-name bidding and sybil attacks</li>
+<li>Collusion between participants</li>
+<li>Gaming of quality or relevance scores</li>
+</ul>
+<p><strong>Practical Design Principles:</strong></p>
+<ol type="1">
+<li><strong>Simplicity:</strong> Simple mechanisms are easier to implement and explain to participants</li>
+<li><strong>Transparency:</strong> Clear rules build trust and participation</li>
+<li><strong>Flexibility:</strong> Mechanisms should adapt to changing market conditions</li>
+<li><strong>Monitoring:</strong> Continuous monitoring enables detection of strategic manipulation</li>
+</ol>
+</section>
+</section>
+<section id="chapter-synthesis" class="level2" data-number="1.6">
+<h2 data-number="1.6" class="anchored" data-anchor-id="chapter-synthesis"><span class="header-section-number">1.6</span> Chapter Synthesis</h2>
+<p>This chapter has established the fundamental concepts necessary for understanding mechanism design in digital markets, with particular attention to the emerging challenges of LLM advertising. Let’s synthesize the key insights:</p>
+<p><strong>Core Principle:</strong> Mechanism design addresses the fundamental challenge of making good decisions when participants have private information and conflicting interests. This is ubiquitous in digital platforms where advertisers, users, and platforms have different objectives and private information.</p>
+<p><strong>Theoretical Foundation:</strong> The Revelation Principle dramatically simplifies mechanism design by allowing focus on direct, truthful mechanisms. Combined with incentive compatibility and individual rationality constraints, this provides a rigorous framework for designing and analyzing mechanisms.</p>
+<p><strong>Multi-Objective Reality:</strong> While much classical theory focuses on single objectives (revenue or efficiency), real platforms must balance multiple competing goals. This is especially pronounced in LLM advertising where content quality becomes a crucial additional objective.</p>
+<p><strong>Information Economics:</strong> The gap between first-best (full information) and second-best (strategic behavior) outcomes represents the economic cost of information asymmetries. Good mechanism design minimizes this cost while maintaining appropriate incentives.</p>
+<p><strong>Implementation Challenges:</strong> Moving from theory to practice requires addressing computational constraints, strategic robustness, and the complexity of real-world environments where classical assumptions may not hold.</p>
+<p><strong>Connection to Subsequent Chapters:</strong></p>
+<ul>
+<li>Chapter 2 will dive deeper into auction theory fundamentals, building on the strategic behavior concepts introduced here</li>
+<li>Chapter 3 will explore incentive compatibility more rigorously, expanding on the formal definitions provided</li>
+<li>Chapters 6-7 will develop the multi-objective optimization theory needed for LLM advertising applications</li>
+<li>Chapter 13 will apply all these concepts specifically to LLM advertising mechanism design</li>
+</ul>
+<p><strong>Research Opportunities:</strong> The integration of mechanism design with AI systems opens numerous research directions. LLM advertising represents just one application where traditional mechanism design theory must be extended to handle new objectives, constraints, and strategic considerations.</p>
+<p>Understanding these fundamentals prepares you to engage with the more advanced topics in subsequent chapters and, ultimately, to contribute original research to this rapidly evolving field where economics, computer science, and artificial intelligence intersect.</p>
+</section>
+<section id="exercises" class="level2" data-number="1.7">
+<h2 data-number="1.7" class="anchored" data-anchor-id="exercises"><span class="header-section-number">1.7</span> Exercises</h2>
+<p><strong>Exercise 1.1 (Basic Concepts):</strong> Consider a simple auction for a single advertising slot on a webpage. There are three bidders with private valuations <span class="math inline">v_1 = 10</span>, <span class="math inline">v_2 = 7</span>, and <span class="math inline">v_3 = 4</span>.</p>
+<ol type="a">
+<li>What would be the first-best (socially optimal) allocation? b) If you use a first-price sealed-bid auction, what strategic considerations do bidders face? c) Design a second-price auction for this setting and verify that truthful bidding is optimal for each bidder.</li>
+</ol>
+<p><strong>Exercise 1.2 (Information Asymmetries):</strong> A travel booking platform wants to feature hotel recommendations. Hotels have private information about their true quality (high or low) and willingness to pay for promotion.</p>
+<ol type="a">
+<li>Explain why the platform cannot simply ask hotels to report their quality. b) Design a mechanism that gives hotels incentives to reveal their true quality. c) What role might user reviews play in reducing information asymmetries?</li>
+</ol>
+<p><strong>Exercise 1.3 (LLM Advertising Context):</strong> Consider an LLM-powered assistant that helps users plan meals. Restaurants can bid to be mentioned in meal suggestions.</p>
+<ol type="a">
+<li>Identify the key stakeholders and their objectives. b) What private information does each stakeholder possess? c) How might traditional advertising mechanisms need to be modified for this context? d) What new objectives (beyond revenue and efficiency) become important?</li>
+</ol>
+<p><strong>Exercise 1.4 (Multi-Objective Trade-offs):</strong> An LLM platform must choose between two advertising mechanisms:</p>
+<ul>
+<li>Mechanism A: Generates high revenue but significantly reduces response quality</li>
+<li>Mechanism B: Maintains response quality but generates lower revenue</li>
+</ul>
+<ol type="a">
+<li>How might you formalize this trade-off mathematically? b) What factors should influence the platform’s choice between these mechanisms? c) Design a parameterized mechanism that allows the platform to adjust the revenue-quality trade-off.</li>
+</ol>
+<p><strong>Exercise 1.5 (Incentive Compatibility):</strong> Consider the following direct mechanism for allocating a single item:</p>
+<ul>
+<li>If reported valuations are <span class="math inline">(\hat{v}_1, \hat{v}_2)</span>, allocate to bidder 1 if <span class="math inline">\hat{v}_1 &gt; \hat{v}_2</span></li>
+<li>Charge the winner their reported valuation: <span class="math inline">p_i = \hat{v}_i</span> if bidder <span class="math inline">i</span> wins</li>
+</ul>
+<ol type="a">
+<li>Is this mechanism incentive compatible? Prove your answer. b) Is it individually rational? c) Suggest a modification that would make it incentive compatible.</li>
+</ol>
+<p><strong>Exercise 1.6 (Revelation Principle Application):</strong> Suppose you observe a complex advertising platform where advertisers use sophisticated bidding strategies.</p>
+<ol type="a">
+<li>How could you use the Revelation Principle to analyze this platform? b) What would the equivalent direct mechanism look like? c) What information would you need to construct this equivalent mechanism?</li>
+</ol>
+</section>
+<section id="further-reading" class="level2" data-number="1.8">
+<h2 data-number="1.8" class="anchored" data-anchor-id="further-reading"><span class="header-section-number">1.8</span> Further Reading</h2>
+<p><strong>Classical Mechanism Design:</strong></p>
+<ul>
+<li>Myerson, R. B. (1981). “Optimal auction design.” <em>Mathematics of Operations Research</em>, 6(1), 58-73.</li>
+<li>Milgrom, P., &amp; Weber, R. (1982). “A theory of auctions and competitive bidding.” <em>Econometrica</em>, 50(5), 1089-1122.</li>
+<li>Krishna, V. (2009). <em>Auction Theory</em>. Academic Press. [Chapters 1-3 provide excellent foundation material]</li>
+</ul>
+<p><strong>Information Economics and Strategic Behavior:</strong></p>
+<ul>
+<li>Tirole, J. (1988). <em>The Theory of Industrial Organization</em>. MIT Press. [Chapter 1 on information economics]</li>
+<li>Laffont, J. J., &amp; Martimort, D. (2002). <em>The Theory of Incentives: The Principal-Agent Model</em>. Princeton University Press.</li>
+</ul>
+<p><strong>Digital Advertising and Platform Economics:</strong></p>
+<ul>
+<li>Edelman, B., Ostrovsky, M., &amp; Schwarz, M. (2007). “Internet advertising and the generalized second-price auction.” <em>American Economic Review</em>, 97(1), 242-259.</li>
+<li>Armstrong, M. (2006). “Competition in two-sided markets.” <em>RAND Journal of Economics</em>, 37(3), 668-691.</li>
+<li>Cabral, L. (2019). “Standing on the shoulders of dwarfs: Dominant firms and innovation incentives.” <em>RAND Journal of Economics</em>, 50(1), 70-88.</li>
+</ul>
+<p><strong>Multi-Objective Optimization in Economics:</strong></p>
+<ul>
+<li>Ehrgott, M. (2005). <em>Multicriteria Optimization</em>. Springer. [Chapters 1-2 for foundational concepts]</li>
+<li>Steuer, R. E. (1986). <em>Multiple Criteria Optimization: Theory, Computation, and Applications</em>. Wiley.</li>
+</ul>
+<p><strong>Recent Developments in AI and Mechanism Design:</strong></p>
+<ul>
+<li>Hajiaghayi, M. T., Lahaie, S., Rezaei, K., &amp; Shin, S. (2024). “Ad Auctions for LLMs via Retrieval Augmented Generation.” <em>arXiv preprint arXiv:2406.09459</em>.</li>
+<li>Duetting, P., Mirrokni, V., Paes Leme, R., Xu, H., &amp; Zuo, S. (2023). “Mechanism design for large language models.” <em>arXiv preprint arXiv:2310.10826</em>.</li>
+<li>Feizi, S., Hajiaghayi, M. T., Rezaei, K., &amp; Shin, S. (2023). “Online advertisements with LLMs: Opportunities and challenges.” <em>arXiv preprint arXiv:2311.07601</em>.</li>
+</ul>
+<p><strong>Surveys and Advanced Topics:</strong></p>
+<ul>
+<li>Roughgarden, T. (2010). “Algorithmic game theory.” <em>Communications of the ACM</em>, 53(7), 78-86.</li>
+<li>Hartline, J. D. (2013). “Mechanism design and approximation.” <em>Book draft</em>. [Available online, excellent for advanced topics]</li>
+<li>Börgers, T. (2015). <em>An Introduction to the Theory of Mechanism Design</em>. Oxford University Press.</li>
+</ul>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const disableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'prefetch';
+    }
+  }
+  const enableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'stylesheet';
+    }
+  }
+  const manageTransitions = (selector, allowTransitions) => {
+    const els = window.document.querySelectorAll(selector);
+    for (let i=0; i < els.length; i++) {
+      const el = els[i];
+      if (allowTransitions) {
+        el.classList.remove('notransition');
+      } else {
+        el.classList.add('notransition');
+      }
+    }
+  }
+  const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+    const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+    const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+    let newTheme = '';
+    if(darkModeDefault) {
+      newTheme = isAlternate ? baseTheme : alternateTheme;
+    } else {
+      newTheme = isAlternate ? alternateTheme : baseTheme;
+    }
+    const changeGiscusTheme = () => {
+      // From: https://github.com/giscus/giscus/issues/336
+      const sendMessage = (message) => {
+        const iframe = document.querySelector('iframe.giscus-frame');
+        if (!iframe) return;
+        iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+      }
+      sendMessage({
+        setConfig: {
+          theme: newTheme
+        }
+      });
+    }
+    const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+    if (isGiscussLoaded) {
+      changeGiscusTheme();
+    }
+  }
+  const toggleColorMode = (alternate) => {
+    // Switch the stylesheets
+    const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+    manageTransitions('#quarto-margin-sidebar .nav-link', false);
+    if (alternate) {
+      enableStylesheet(alternateStylesheets);
+      for (const sheetNode of alternateStylesheets) {
+        if (sheetNode.id === "quarto-bootstrap") {
+          toggleBodyColorMode(sheetNode);
+        }
+      }
+    } else {
+      disableStylesheet(alternateStylesheets);
+      toggleBodyColorPrimary();
+    }
+    manageTransitions('#quarto-margin-sidebar .nav-link', true);
+    // Switch the toggles
+    const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+    for (let i=0; i < toggles.length; i++) {
+      const toggle = toggles[i];
+      if (toggle) {
+        if (alternate) {
+          toggle.classList.add("alternate");     
+        } else {
+          toggle.classList.remove("alternate");
+        }
+      }
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455)
+    if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+      manageTransitions("body", false);
+      window.scrollTo(0, 1);
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+        manageTransitions("body", true);
+      }, 40);  
+    }
+  }
+  const isFileUrl = () => { 
+    return window.location.protocol === 'file:';
+  }
+  const hasAlternateSentinel = () => {  
+    let styleSentinel = getColorSchemeSentinel();
+    if (styleSentinel !== null) {
+      return styleSentinel === "alternate";
+    } else {
+      return false;
+    }
+  }
+  const setStyleSentinel = (alternate) => {
+    const value = alternate ? "alternate" : "default";
+    if (!isFileUrl()) {
+      window.localStorage.setItem("quarto-color-scheme", value);
+    } else {
+      localAlternateSentinel = value;
+    }
+  }
+  const getColorSchemeSentinel = () => {
+    if (!isFileUrl()) {
+      const storageValue = window.localStorage.getItem("quarto-color-scheme");
+      return storageValue != null ? storageValue : localAlternateSentinel;
+    } else {
+      return localAlternateSentinel;
+    }
+  }
+  const darkModeDefault = false;
+  let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+  // Dark / light mode switch
+  window.quartoToggleColorScheme = () => {
+    // Read the current dark / light value 
+    let toAlternate = !hasAlternateSentinel();
+    toggleColorMode(toAlternate);
+    setStyleSentinel(toAlternate);
+    toggleGiscusIfUsed(toAlternate, darkModeDefault);
+  };
+  // Ensure there is a toggle, if there isn't float one in the top right
+  if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+    const a = window.document.createElement('a');
+    a.classList.add('top-right');
+    a.classList.add('quarto-color-scheme-toggle');
+    a.href = "";
+    a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+    const i = window.document.createElement("i");
+    i.classList.add('bi');
+    a.appendChild(i);
+    window.document.body.appendChild(a);
+  }
+  // Switch to dark mode if need be
+  if (hasAlternateSentinel()) {
+    toggleColorMode(true);
+  } else {
+    toggleColorMode(false);
+  }
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+          // target, if specified
+          link.setAttribute("target", "_blank");
+          if (link.getAttribute("rel") === null) {
+            link.setAttribute("rel", "noopener");
+          }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../outline.html" class="pagination-link" aria-label="Outline">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Outline</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../part01/auction-theory.html" class="pagination-link" aria-label="Auction Theory Fundamentals">
+        <span class="nav-page-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Auction Theory Fundamentals</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+<script src="../site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>

@@ -1,0 +1,437 @@
+# Efficiency and Welfare Analysis
+
+## Chapter Introduction
+
+Consider a user asking an LLM-powered assistant: "What's the best laptop for college students?" The system could respond in multiple ways. A purely revenue-maximizing approach might feature the highest-bidding advertiser: "The premium UltraBook Pro at $2,500 offers cutting-edge performance." Alternatively, a user welfare-focused response might recommend: "The StudentBook at $800 provides excellent value with all essential features for coursework." Each approach serves different stakeholders—advertisers seeking visibility, platforms generating revenue, and users needing helpful recommendations.
+
+This scenario illustrates the fundamental challenge in mechanism design: how do we evaluate and compare different allocation schemes when multiple parties have competing interests? Chapter 5 develops the theoretical framework for answering this question through formal efficiency and welfare analysis.
+
+**Learning Objectives:** By the end of this chapter, you should be able to:
+
+- Define and distinguish between different concepts of economic efficiency (allocative, Pareto, social welfare maximization)
+- Understand various welfare functions and their philosophical foundations (utilitarian, egalitarian, Nash social welfare)
+- Apply welfare analysis to multi-sided platforms and LLM advertising markets
+- Measure and compare welfare outcomes across different mechanism designs
+- Recognize the connections between efficiency, fairness, and mechanism design
+
+**Chapter Roadmap:** We begin with concrete examples to build intuition about efficiency concepts, then formalize these ideas mathematically. The chapter progresses through allocative efficiency fundamentals, social welfare functions, and their applications to platform economics. We conclude by examining welfare measurement in LLM advertising contexts, connecting efficiency analysis to the multi-objective mechanism design framework needed for your thesis research.
+
+**Connection to LLM Mechanism Design:** Efficiency analysis provides the foundation for evaluating trade-offs between revenue, quality, and fairness in LLM advertising. The concepts developed here directly support the multi-objective optimization framework central to your research, enabling you to formally characterize when mechanisms achieve desirable social outcomes and how to balance competing stakeholder interests.
+
+## Intuitive Development: Understanding Efficiency Through Examples
+
+### The Restaurant Recommendation Problem
+
+To build intuition about efficiency concepts, consider an LLM helping users find restaurants. Three users submit queries, and three restaurants want to advertise:
+
+**Users:**
+
+- Alice (values Italian food highly, budget-conscious)
+- Bob (values convenience, willing to pay premium prices)
+- Carol (values unique experiences, moderate budget)
+
+**Restaurants:**
+
+- Romano's Italian (high quality, moderate prices)
+- QuickBite (fast service, premium prices)
+- Artisan Café (unique ambiance, moderate prices)
+
+The platform can recommend different restaurant-user pairings. Let's examine three possible allocations:
+
+**Allocation 1 (Revenue Maximizing):**
+
+- Alice → QuickBite (mismatch: high price, wrong cuisine)
+- Bob → QuickBite (good match: convenience, willing to pay)
+- Carol → Artisan Café (good match: unique experience)
+
+**Allocation 2 (User Preference Matching):**
+
+- Alice → Romano's Italian (perfect match: cuisine and budget)
+- Bob → QuickBite (good match: convenience)
+- Carol → Artisan Café (good match: uniqueness)
+
+**Allocation 3 (Balanced):**
+
+- Alice → Romano's Italian (good match)
+- Bob → Artisan Café (acceptable: unique but convenient location)
+- Carol → QuickBite (mismatch: not unique, expensive)
+
+Which allocation is "best"? The answer depends on how we define efficiency and whose welfare we prioritize.
+
+### Economic Intuition Behind Different Efficiency Concepts
+
+**Allocative Efficiency** asks: Are resources allocated to their highest-valued uses? In our restaurant example, this means matching users with restaurants they value most highly. Allocation 2 appears most allocatively efficient because each user receives their preferred type of restaurant.
+
+**Pareto Efficiency** asks: Can we improve someone's outcome without making anyone else worse off? An allocation is Pareto efficient if no such improvements exist. Allocation 1 might be Pareto efficient if changing it would reduce restaurant revenues enough to make platforms worse off, even though it would help Alice.
+
+**Social Welfare Maximization** asks: What allocation maximizes some aggregate measure of total well-being? This depends on how we aggregate individual utilities—do we simply sum them (utilitarian), focus on the worst-off person (maximin), or use some other aggregation rule?
+
+### Platform Economics and Two-Sided Market Complications
+
+LLM advertising involves multi-sided platforms serving users, advertisers, and potentially content creators. This creates additional complexity:
+
+**Network Effects:** More users attract more advertisers, and more advertisers can improve service quality for users (through better content funding), but too many ads may degrade user experience.
+
+**Cross-Subsidization:** Platforms may operate at a loss on one side (free service to users) to maximize value on the other side (advertiser revenues). This makes traditional welfare analysis more complex.
+
+**Quality Considerations:** Unlike simple goods markets, the "product" (LLM responses) can vary in quality based on how ads are integrated. A response with well-integrated, relevant ads might provide higher user utility than ad-free responses with lower information quality.
+
+### Building Toward Formal Analysis
+
+These intuitive examples reveal several key insights that we'll formalize mathematically:
+
+1. **Multiple Valid Efficiency Concepts:** Different notions of efficiency can lead to different optimal allocations
+2. **Distributional Concerns:** Who benefits matters, not just total benefits
+3. **Platform-Specific Challenges:** Two-sided markets create interdependencies that complicate welfare analysis
+4. **Quality-Quantity Trade-offs:** More advertising might reduce experience quality but enable better service provision
+
+The remainder of this chapter develops formal tools for analyzing these trade-offs systematically.
+
+## Mathematical Foundations: Formal Efficiency and Welfare Theory
+
+### Allocative Efficiency and Pareto Optimality
+
+We begin with fundamental efficiency concepts in mechanism design contexts.
+
+**Definition 5.1 (Allocative Efficiency).** Given a set of agents $N = \{1, 2, \ldots, n\}$ with valuations $v_i$ for outcomes, an allocation $x = (x_1, \ldots, x_n)$ is allocatively efficient if it maximizes total value: $$x^* \in \arg\max_{x \in X} \sum_{i \in N} v_i x_i$$ where $X$ is the set of feasible allocations.
+
+In LLM advertising, this means allocating ad slots to advertisers who value them most highly. However, we must be careful about what "value" means when advertisers have private information.
+
+**Definition 5.2 (Ex-Post Allocative Efficiency).** An allocation rule $x(v)$ is ex-post allocatively efficient if for all valuation profiles $v = (v_1, \ldots, v_n)$: $$x(v) \in \arg\max_{y \in X} \sum_{i \in N} v_i y_i$$
+
+**Definition 5.3 (Pareto Efficiency).** An allocation $x$ with associated payments $p = (p_1, \ldots, p_n)$ is Pareto efficient if there exists no alternative allocation $x'$ and payments $p'$ such that:
+
+- $u_i(x', p') \geq u_i(x, p)$ for all $i \in N$
+- $u_i(x', p') > u_i(x, p)$ for at least one $i \in N$
+- The mechanism satisfies participation constraints
+
+where $u_i(x, p) = v_i x_i - p_i$ is agent $i$'s utility.
+
+**Theorem 5.1 (Allocative Efficiency and Pareto Efficiency Relationship).** In quasilinear environments with no wealth effects, every allocatively efficient mechanism is Pareto efficient, but the converse is not necessarily true.
+
+_Proof._ Suppose mechanism $(x, p)$ is allocatively efficient. Consider any alternative $(x', p')$ that Pareto dominates it. Since $u_i(x', p') \geq u_i(x, p)$ for all $i$ with at least one strict inequality: $$\sum_i [v_i x'_i - p'_i] > \sum_i [v_i x_i - p_i]$$
+
+This implies $\sum_i v_i x'_i - \sum_i p'_i > \sum_i v_i x_i - \sum_i p_i$. If the mechanism must balance its budget (reasonable for many platforms), then $\sum_i p'_i \geq 0$ and $\sum_i p_i \geq 0$, so $\sum_i v_i x'_i > \sum_i v_i x_i$, contradicting allocative efficiency of $(x, p)$. □
+
+### Social Welfare Functions and Aggregation
+
+**Definition 5.4 (Social Welfare Function).** A social welfare function $W: \mathbb{R}^n \rightarrow \mathbb{R}$ aggregates individual utilities $(u_1, \ldots, u_n)$ into a social ranking. Common examples include:
+
+1. **Utilitarian (Benthamite):** $W^U(u) = \sum_{i=1}^n u_i$
+2. **Maximin (Rawlsian):** $W^R(u) = \min_{i \in N} u_i$
+3. **Nash Social Welfare:** $W^N(u) = \prod_{i=1}^n u_i$ (assuming $u_i \geq 0$)
+4. **Weighted Utilitarian:** $W^{WU}(u) = \sum_{i=1}^n w_i u_i$ for weights $w_i > 0$
+
+Each welfare function embodies different ethical principles and leads to different optimal allocations.
+
+**Theorem 5.2 (Welfare Function Properties).**
+
+1. Utilitarian welfare maximization yields allocatively efficient outcomes in quasilinear settings
+2. Maximin welfare focuses exclusively on the worst-off agent's utility
+3. Nash social welfare provides a compromise between efficiency and equality
+
+_Proof Outline:_ (1) follows directly from quasilinearity. (2) and (3) require analyzing first-order conditions of the respective optimization problems. Details available in standard welfare economics texts. □
+
+### Platform-Specific Welfare Analysis
+
+LLM advertising platforms create value for multiple stakeholder groups. We need to extend standard welfare analysis to account for these complexities.
+
+**Definition 5.5 (Multi-Sided Platform Welfare).** For a platform serving users $U$, advertisers $A$, and the platform operator $P$, total welfare is: $$W_{total} = W_U(u^U) + W_A(u^A) + W_P(\pi^P)$$ where:
+
+- $u^U = (u_1^U, \ldots, u_{|U|}^U)$ are user utilities
+- $u^A = (u_1^A, \ldots, u_{|A|}^A)$ are advertiser utilities
+- $\pi^P$ is platform profit
+
+**Key Challenge:** User utilities depend on both ad integration quality and information value, creating interdependencies: $$u_i^U = v_i^{info} \cdot \text{quality}(response_i) - \text{disutility}(ads_i) + \text{benefit}(ad\_content_i)$$
+
+**Definition 5.6 (Quality-Adjusted Welfare).** In LLM contexts where response quality varies with advertising: $$W_{QA} = \sum_{i \in U} \left[ v_i \cdot q(x_i) - c_i(x_i) \right] + \sum_{j \in A} \left[ v_j x_j - p_j \right] + \sum_{j \in A} p_j$$ where $q(x_i)$ represents quality of response $i$ as a function of ad allocation $x$, and $c_i(x_i)$ represents user $i$'s cost from ad exposure.
+
+### Welfare Analysis in Multi-Objective Mechanisms
+
+**Definition 5.7 (Multi-Objective Social Choice).** A multi-objective social choice function maps valuation profiles to outcomes that optimize a vector of objectives: $$f(v) \in \arg\max_{x \in X} \left( \sum_i v_i x_i, \sum_i q_i x_i, \text{fairness}(x) \right)$$
+
+This creates a vector optimization problem requiring Pareto efficiency concepts.
+
+**Definition 5.8 (Pareto Efficient Multi-Objective Allocation).** An allocation $x^*$ is Pareto efficient in the multi-objective sense if there exists no $x \in X$ such that each objective is weakly improved and at least one is strictly improved.
+
+**Theorem 5.3 (Scalarization and Multi-Objective Efficiency).** An allocation $x^*$ is Pareto efficient for the multi-objective problem if and only if there exist weights $\lambda = (\lambda_1, \lambda_2, \lambda_3)$ with $\lambda_i \geq 0$ and $\sum_i \lambda_i = 1$ such that: $$x^* \in \arg\max_{x \in X} \left[ \lambda_1 \sum_i v_i x_i + \lambda_2 \sum_i q_i x_i + \lambda_3 \text{fairness}(x) \right]$$
+
+_Proof._ This follows from the fundamental theorem of multi-objective optimization. The weights $\lambda$ represent the relative importance of each objective in the social planner's preferences. □
+
+## Advanced Results: Welfare Analysis in Complex Settings
+
+### Impossibility Results and Fundamental Limitations
+
+Real-world mechanism design often faces fundamental constraints that limit achievable welfare outcomes.
+
+**Theorem 5.4 (Revenue-Efficiency Trade-off).** In settings with private information, it is generally impossible to simultaneously achieve:
+
+1. Allocative efficiency (maximize $\sum_i v_i x_i$)
+2. Revenue maximization (maximize $\sum_i p_i$)
+3. Individual rationality ($u_i \geq 0$ for all $i$)
+4. Incentive compatibility (truthful reporting optimal)
+
+_Proof Sketch._ This follows from Myerson (1981). Revenue maximization requires using virtual valuations $\psi_i(v_i) = v_i - \frac{1-F_i(v_i)}{f_i(v_i)}$ rather than true valuations, leading to allocative inefficiency when $\psi_i(v_i) \neq v_i$. □
+
+This impossibility result is crucial for understanding why multi-objective mechanism design requires explicit trade-offs.
+
+**Theorem 5.5 (Platform Competition and Welfare).** In a duopoly of platforms competing for users and advertisers:
+
+1. Competition may lead to excessive quality provision (overprovision relative to social optimum)
+2. Alternatively, competition may lead to excessive advertising (underprovision of quality)
+3. The welfare effects depend on the relative strength of network effects
+
+_Proof Outline._ The result follows from analyzing equilibrium conditions in a two-sided market model with platform competition. Platforms may compete on quality to attract users (leading to overprovision) or compete on advertiser revenues (leading to over-advertising). □
+
+### Dynamic Welfare Considerations
+
+Static welfare analysis misses important temporal aspects of platform operations.
+
+**Definition 5.9 (Dynamic Social Welfare).** With discount factor $\delta \in (0,1)$: $$W_{dynamic} = \sum_{t=0}^{\infty} \delta^t W_t(u_t^U, u_t^A, \pi_t^P)$$
+
+**Key Insight:** Platforms may accept short-term welfare losses to build user bases or improve service quality, leading to higher long-term welfare.
+
+**Theorem 5.6 (Optimal Dynamic Trade-offs).** The optimal revenue-quality trade-off parameter $\alpha_t$ in period $t$ satisfies: $$\alpha_t = \arg\max \sum_{s=t}^{\infty} \delta^{s-t} W_s(\alpha_t, user\_base_s(\alpha_t))$$
+
+where $user\_base_s(\alpha_t)$ captures how current quality choices affect future user adoption.
+
+### Welfare Measurement Challenges in AI Systems
+
+LLM advertising presents unique measurement challenges:
+
+**1. Quality Quantification:** How do we measure the quality benefit users receive from better information?
+
+**2. Attention Costs:** What is the welfare cost of user attention directed to advertising?
+
+**3. Learning Effects:** How do we account for platforms learning to provide better matches over time?
+
+**Definition 5.10 (Attention-Adjusted Welfare).** Accounting for limited user attention: $$W_{attention} = \sum_i \left[ v_i \cdot \text{benefit}(response_i) - \theta_i \cdot \text{attention\_cost}(ads_i) \right] + \text{advertiser and platform terms}$$
+
+where $\theta_i$ represents user $i$'s cost per unit of attention allocated to advertising.
+
+## Applications and Implementation: LLM Advertising Welfare Analysis
+
+### Practical Welfare Measurement Framework
+
+To implement welfare analysis in LLM advertising, we need operational measures of each stakeholder's utility.
+
+**User Welfare Measurement:**
+
+```
+Algorithm: Measure User Welfare
+Input: Query q, Response r, Ads A integrated in r
+Output: User welfare estimate
+
+1. Content_Quality := semantic_similarity(r, ideal_response(q))
+2. Ad_Relevance := average_relevance(A, q)
+3. Integration_Quality := naturalness_score(r, A)
+4. Attention_Cost := attention_time(A) × user_cost_rate
+5. Return: w₁×Content_Quality + w₂×Ad_Relevance + w₃×Integration_Quality - Attention_Cost
+```
+
+**Advertiser Welfare Measurement:**
+
+```
+Algorithm: Measure Advertiser Welfare
+Input: Advertiser i, Allocation x_i, Payment p_i, Query relevance q_i
+Output: Advertiser welfare estimate
+
+1. Expected_Clicks := x_i × q_i × base_click_rate
+2. Expected_Value := Expected_Clicks × conversion_rate × value_per_conversion
+3. Return: Expected_Value - p_i
+```
+
+**Platform Welfare Measurement:**
+
+```
+Algorithm: Measure Platform Welfare
+Input: All payments P, Operating costs C, User satisfaction scores S
+Output: Platform welfare estimate
+
+1. Revenue := sum(P)
+2. User_Retention_Value := future_value(S)
+3. Operating_Profit := Revenue - C
+4. Return: Operating_Profit + User_Retention_Value
+```
+
+### Empirical Welfare Analysis Example
+
+Consider evaluating three mechanism designs for LLM advertising:
+
+**Mechanism A (Pure Revenue):** $\alpha = 1.0$
+
+- Prioritizes highest bidders regardless of relevance
+- High advertiser payments, potentially low user satisfaction
+
+**Mechanism B (Balanced):** $\alpha = 0.5$
+
+- Balances revenue and quality considerations
+- Moderate payments, moderate user satisfaction
+
+**Mechanism C (Pure Quality):** $\alpha = 0.0$
+
+- Prioritizes relevance over payment ability
+- Lower payments, potentially higher user satisfaction
+
+**Welfare Comparison Framework:**
+
+```
+Algorithm: Compare Mechanism Welfare
+Input: Mechanisms M = {A, B, C}, User queries Q, Advertiser pool Ad
+Output: Welfare comparison table
+
+For each mechanism m in M:
+    For each query q in Q:
+        1. Run mechanism m on q with advertisers Ad
+        2. Measure user welfare W_u(m,q)
+        3. Measure advertiser welfare W_a(m,q)
+        4. Measure platform welfare W_p(m,q)
+        5. Calculate total welfare W_total(m,q)
+
+    Aggregate welfare across queries for mechanism m
+
+Return comparative welfare analysis
+```
+
+### Case Study: Book Recommendation Welfare Analysis
+
+Let's apply welfare analysis to the book recommendation scenario from the main paper.
+
+**Setup:**
+
+- Query: "Suggest books similar to 'To Kill a Mockingbird'"
+- Advertisers: BookHaven, MassMart, EspressoEdge, Velora
+- User values relevant book recommendations highly
+
+**Mechanism A Output (Revenue-Focused):** "For books similar to 'To Kill a Mockingbird,' visit MassMart for electronics and general merchandise, or try EspressoEdge coffee while reading."
+
+**Welfare Analysis A:**
+
+- User Welfare: Low (poor relevance, -2.5 utils)
+- Advertiser Welfare: Medium (high-bidders win, +3.2 utils)
+- Platform Welfare: High (high revenue, +4.1 utils)
+- Total: +4.8 utils
+
+**Mechanism B Output (Balanced):** "Try 'The Help' by Kathryn Stockett, available at BookHaven, which offers great book selections and reliable delivery for your reading needs."
+
+**Welfare Analysis B:**
+
+- User Welfare: High (relevant recommendation, +4.2 utils)
+- Advertiser Welfare: Medium (relevant advertiser wins, +2.8 utils)
+- Platform Welfare: Medium (moderate revenue, +2.7 utils)
+- Total: +9.7 utils
+
+**Key Insight:** The balanced mechanism achieves higher total welfare despite lower platform revenue, suggesting potential benefits from incorporating quality considerations.
+
+### Welfare-Optimal Mechanism Design
+
+**Problem Formulation:** Design mechanism that maximizes expected total welfare: $$\max_{(\text{allocation rule}, \text{payment rule})} \mathbb{E}[W_U + W_A + W_P]$$ subject to incentive compatibility and individual rationality constraints.
+
+**Solution Approach:**
+
+1. Characterize welfare function in terms of allocation probabilities
+2. Use optimal mechanism design techniques to find welfare-maximizing allocation
+3. Apply revenue equivalence to determine corresponding payments
+4. Verify that resulting mechanism satisfies participation constraints
+
+**Theorem 5.7 (Welfare Optimal LLM Advertising).** The welfare-optimal mechanism for LLM advertising uses allocation probabilities: $$x_i^*(v, q) = \frac{(v_i + \gamma q_i) \cdot \mathbf{1}_{v_i + \gamma q_i \geq \max_j\{v_j + \gamma q_j\}}}{\text{probability of allocation}}$$ where $\gamma > 0$ represents the relative social value of quality versus revenue.
+
+This shows that welfare optimization naturally leads to a balanced consideration of both advertiser values and relevance scores.
+
+## Chapter Synthesis
+
+This chapter has developed the theoretical foundation for evaluating efficiency and welfare in mechanism design, with particular attention to multi-sided platforms and LLM advertising applications. The key insights are:
+
+**Conceptual Foundations:**
+
+- Multiple valid concepts of efficiency (allocative, Pareto, social welfare maximization) can lead to different optimal mechanisms
+- Platform economics introduces additional complexity through network effects and cross-subsidization
+- Multi-objective settings require explicit trade-offs between competing welfare criteria
+
+**Formal Framework:**
+
+- Social welfare functions provide a principled way to aggregate stakeholder interests
+- Pareto efficiency concepts extend naturally to multi-objective mechanism design
+- Impossibility results constrain what can be achieved simultaneously
+
+**LLM Advertising Applications:**
+
+- Welfare analysis must account for quality effects, attention costs, and relevance matching
+- Empirical welfare measurement requires operational proxies for user and advertiser utility
+- Balanced mechanisms may achieve higher total welfare than pure revenue maximization
+
+**Connection to Multi-Objective Research:** These welfare analysis tools provide the foundation for your thesis research by:
+
+1. Offering formal frameworks for characterizing trade-offs between revenue, quality, and fairness
+2. Providing measurement approaches for empirical welfare analysis
+3. Establishing theoretical benchmarks (welfare-optimal mechanisms) for comparison
+4. Connecting individual mechanism properties to broader social outcomes
+
+**Key Research Implications:**
+
+- Your empirical work should measure welfare across different stakeholder groups
+- Theoretical analysis should consider multiple welfare criteria beyond platform revenue
+- Policy analysis should account for total welfare effects, not just platform or advertiser outcomes
+
+The next chapter builds on these welfare concepts to develop multi-objective optimization theory, providing the mathematical tools for formally characterizing and solving the trade-off problems central to your thesis research.
+
+## Exercises
+
+**Exercise 5.1 (Basic Efficiency Concepts)** Consider three advertisers with valuations $v_1 = 10$, $v_2 = 8$, $v_3 = 6$ competing for two ad slots. a) What allocation maximizes total value (allocative efficiency)? b) If payments are $p_1 = 5$, $p_2 = 3$, $p_3 = 0$, calculate each advertiser's utility. c) Is this allocation Pareto efficient? Explain your reasoning.
+
+**Exercise 5.2 (Social Welfare Functions)** Given utility profile $u = (3, 7, 5)$ for three agents: a) Calculate utilitarian social welfare $W^U(u)$ b) Calculate maximin social welfare $W^R(u)$ c) Calculate Nash social welfare $W^N(u)$ d) Which welfare function would you choose to prioritize equality? Efficiency?
+
+**Exercise 5.3 (Platform Welfare Analysis)** An LLM platform serves users who value response quality at $v_u = 20$ per unit and dislike ads at cost $c_u = 3$ per ad. Advertisers value slots at $v_a = 15$ and pay $p_a = 12$. a) Calculate total welfare for allocation with 2 ads integrated naturally (quality = 0.9) b) Calculate total welfare for allocation with 0 ads (quality = 1.0)  
+c) What is the welfare-optimal number of ads?
+
+**Exercise 5.4 (Multi-Objective Trade-offs)** A mechanism designer wants to maximize weighted welfare $W = \lambda R + (1-\lambda) Q$ where $R$ is revenue and $Q$ is quality. a) If $\lambda = 0.7$, does this prioritize revenue or quality? b) Derive the first-order condition for optimal allocation c) How does the optimal allocation change as $\lambda$ increases from 0 to 1?
+
+**Exercise 5.5 (LLM Advertising Welfare)** Design a welfare measurement framework for book recommendation queries: a) List three components of user welfare and how to measure each b) List two components of advertiser welfare and measurement approaches c) Explain how platform welfare depends on both short-term revenue and long-term user retention
+
+**Exercise 5.6 (Impossibility Results)** Explain why it's generally impossible to simultaneously achieve:
+
+- Perfect allocative efficiency
+- Maximum platform revenue
+- Individual rationality for all participants
+- Truthful bidding as a dominant strategy
+
+Use a simple example with two advertisers to illustrate the tension.
+
+**Exercise 5.7 (Advanced Application)** Consider the revenue-quality trade-off parameter $\alpha \in [0,1]$ from your thesis research: a) Express total welfare as a function of $\alpha$, user utilities, and advertiser utilities b) Derive the welfare-optimal value of $\alpha^*$ c) Under what conditions will $\alpha^* \neq \alpha^{revenue}$ (the platform's privately optimal choice)?
+
+## Further Reading
+
+**Foundational Welfare Economics:**
+
+- Mas-Colell, A., Whinston, M. D., & Green, J. R. (1995). _Microeconomic Theory_, Chapters 16-17. Oxford University Press.
+- Tirole, J. (1988). _The Theory of Industrial Organization_, Chapter 1. MIT Press.
+
+**Mechanism Design and Efficiency:**
+
+- Myerson, R. B. (1991). _Game Theory: Analysis of Conflict_, Chapters 6-7. Harvard University Press.
+- Krishna, V. (2009). _Auction Theory_, Chapter 3. Academic Press.
+
+**Multi-Sided Platform Economics:**
+
+- Rochet, J. C., & Tirole, J. (2003). Platform competition in two-sided markets. _Journal of the European Economic Association_, 1(4), 990-1029.
+- Armstrong, M. (2006). Competition in two-sided markets. _RAND Journal of Economics_, 37(3), 668-691.
+
+**Social Choice and Welfare:**
+
+- Sen, A. K. (2017). _Collective Choice and Social Welfare_. Harvard University Press.
+- Moulin, H. (2003). _Fair Division and Collective Welfare_. MIT Press.
+
+**Multi-Objective Optimization:**
+
+- Ehrgott, M. (2005). _Multicriteria Optimization_, Chapters 1-3. Springer.
+- Miettinen, K. (2012). _Nonlinear Multiobjective Optimization_. Springer.
+
+**Recent Applications to Digital Markets:**
+
+- Cabral, L. (2019). Attention intermediaries. _American Economic Journal: Microeconomics_, 11(4), 103-130.
+- Hagiu, A., & Wright, J. (2020). Multi-sided platforms. _International Journal of Industrial Organization_, 43, 162-174.
+
+**LLM and AI Economics:**
+
+- Agrawal, A., Gans, J., & Goldfarb, A. (2018). _Prediction Machines: The Simple Economics of Artificial Intelligence_. Harvard Business Review Press.
+- Recent papers on AI mechanism design in venues like EC, WINE, and AAAI conferences.

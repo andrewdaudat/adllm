@@ -1,0 +1,598 @@
+# Multi-Objective Optimization Theory
+
+## Chapter Introduction
+
+Imagine you're designing the perfect LLM advertising mechanism. Your platform wants to maximize revenue to fund operations, but users demand high-quality responses with relevant, well-integrated advertisements. Advertisers seek fair treatment regardless of their budget size. These objectives often conflict: the highest bidder might offer irrelevant ads, while the most relevant advertiser might bid low, and perfectly fair allocation might satisfy no one optimally.
+
+This scenario exemplifies a fundamental challenge in modern mechanism design: optimizing multiple competing objectives simultaneously. Unlike single-objective problems where we seek the unique best solution, multi-objective optimization acknowledges that "best" depends on how we balance trade-offs between conflicting goals.
+
+Consider three potential LLM responses to "Recommend a laptop for college":
+
+- **Response A**: Features the highest-bidding premium laptop brand (high revenue, low user value)
+- **Response B**: Recommends the most suitable budget laptop (high user value, low revenue)
+- **Response C**: Balances a relevant mid-range option with moderate advertising revenue
+
+None dominates the others across all objectives. Response A maximizes revenue but poorly serves users. Response B optimizes user welfare but generates little platform income. Response C compromises on both objectives but might achieve the best overall balance.
+
+**Learning Objectives:** By the end of this chapter, you should be able to:
+
+- Understand fundamental concepts of multi-objective optimization including Pareto efficiency and trade-off surfaces
+- Apply scalarization methods to convert multi-objective problems into solvable single-objective problems
+- Analyze lexicographic ordering and hierarchical approaches to objective prioritization
+- Use computational methods for approximating Pareto frontiers in complex problems
+- Connect multi-objective optimization theory to mechanism design applications in LLM advertising
+
+**Chapter Roadmap:** We begin with geometric intuition about trade-off spaces and Pareto frontiers, then develop formal mathematical frameworks for multi-objective optimization. The chapter progresses through solution methods (scalarization, lexicographic, evolutionary approaches) and computational implementation strategies. We conclude by examining applications to mechanism design and connections to your thesis research.
+
+**Connection to Multi-Objective Mechanism Design:** This chapter provides the mathematical foundation for your thesis research by establishing how to formally characterize and solve optimization problems with competing objectives. The tools developed here enable you to analyze revenue-quality-fairness trade-offs in LLM advertising, design mechanisms that achieve desired points on the trade-off frontier, and empirically estimate these relationships from data.
+
+## Intuitive Development: Understanding Trade-offs Through Visualization
+
+### The Coffee Shop Analogy
+
+Consider a coffee shop owner optimizing two objectives: profit and customer satisfaction. She faces several decisions:
+
+**Decision 1: Coffee Quality**
+
+- Premium beans: High customer satisfaction, low profit margin
+- Standard beans: Moderate satisfaction, moderate profit
+- Cheap beans: Low satisfaction, high profit margin
+
+**Decision 2: Service Speed**
+
+- Fast service: Lower quality preparation, moderate satisfaction
+- Slow service: Higher quality preparation, higher satisfaction but fewer customers
+
+**Decision 3: Pricing**
+
+- High prices: High profit per customer, fewer customers
+- Low prices: Low profit per customer, more customers
+
+Each decision involves trade-offs. We can visualize these as points in "objective space" where each axis represents one objective.
+
+```
+Customer Satisfaction
+        ^
+        |     • Premium slow service, low price
+        |   • Standard moderate service, moderate price
+        |• Cheap fast service, high price
+        |________________________>
+                                Profit
+```
+
+The coffee shop owner cannot simultaneously maximize both objectives—this is the essence of multi-objective optimization.
+
+### Pareto Efficiency Intuition
+
+**Definition (Intuitive):** A solution is Pareto efficient if you cannot improve one objective without making another objective worse.
+
+In our coffee shop example:
+
+- **Pareto Efficient**: Premium beans + optimal pricing that balances profit and satisfaction
+- **Not Pareto Efficient**: Cheap beans + high prices (could improve satisfaction without reducing profit)
+
+The set of all Pareto efficient solutions forms the **Pareto frontier**—the boundary between achievable and impossible combinations of objectives.
+
+### Multi-Dimensional Trade-offs
+
+LLM advertising involves at least three objectives:
+
+1. **Revenue**: Platform income from advertiser payments
+2. **Quality**: User experience with integrated advertisements
+3. **Fairness**: Equitable treatment of advertisers with different budgets
+
+Visualizing three-dimensional trade-offs requires more sophisticated tools, but the same principles apply. We seek the Pareto frontier in three-dimensional objective space.
+
+### Why Simple Solutions Don't Work
+
+**Naive Approach 1: Maximize Each Objective Separately**
+
+- Maximize revenue: Select highest bidders (poor quality, unfair)
+- Maximize quality: Select most relevant ads (low revenue, potentially unfair)
+- Maximize fairness: Allocate equally (poor revenue and quality)
+
+**Problem**: These solutions are typically incompatible and don't help us understand trade-offs.
+
+**Naive Approach 2: Simple Averaging**
+
+- Optimize: (Revenue + Quality + Fairness) / 3
+
+**Problem**: This assumes all objectives are equally important and measured on comparable scales. A $100 revenue increase might be weighted the same as a 0.01 quality improvement, which rarely reflects true preferences.
+
+**What We Need**: Systematic methods to characterize the entire trade-off space and enable informed decisions about objective balancing.
+
+## Mathematical Foundations: Formal Multi-Objective Optimization
+
+### Problem Formulation and Basic Concepts
+
+**Definition 6.1 (Multi-Objective Optimization Problem).** A multi-objective optimization problem (MOP) is defined as: $$\min_{x \in X} \mathbf{f}(x) = (f_1(x), f_2(x), \ldots, f_k(x))^T$$ where:
+
+- $x \in X \subseteq \mathbb{R}^n$ is the decision variable vector
+- $X$ is the feasible decision space
+- $\mathbf{f}: X \rightarrow \mathbb{R}^k$ is the vector objective function
+- $f_i: X \rightarrow \mathbb{R}$ is the $i$-th objective function
+
+**Note:** We use minimization convention. Maximization problems are converted by negating objective functions.
+
+**Definition 6.2 (Objective Space).** The objective space (or outcome space) is: $$Y = \{\mathbf{f}(x) : x \in X\} \subseteq \mathbb{R}^k$$
+
+This is the set of all achievable objective value combinations.
+
+**Definition 6.3 (Dominance Relations).** For vectors $\mathbf{y}^1, \mathbf{y}^2 \in \mathbb{R}^k$:
+
+- $\mathbf{y}^1$ **weakly dominates** $\mathbf{y}^2$ (written $\mathbf{y}^1 \preceq \mathbf{y}^2$) if $y^1_i \leq y^2_i$ for all $i$
+- $\mathbf{y}^1$ **strictly dominates** $\mathbf{y}^2$ (written $\mathbf{y}^1 \prec \mathbf{y}^2$) if $\mathbf{y}^1 \preceq \mathbf{y}^2$ and $\mathbf{y}^1 \neq \mathbf{y}^2$
+- $\mathbf{y}^1$ **dominates** $\mathbf{y}^2$ (written $\mathbf{y}^1 \triangleleft \mathbf{y}^2$) if $y^1_i \leq y^2_i$ for all $i$ and $y^1_j < y^2_j$ for at least one $j$
+
+**Definition 6.4 (Pareto Efficiency).** A point $x^* \in X$ is **Pareto efficient** (or Pareto optimal) if there exists no $x \in X$ such that $\mathbf{f}(x) \triangleleft \mathbf{f}(x^*)$.
+
+Equivalently, $x^*$ is Pareto efficient if improving any objective requires worsening at least one other objective.
+
+**Definition 6.5 (Pareto Frontier).** The Pareto frontier (or Pareto set) in decision space is: $$X_{Par} = \{x \in X : x \text{ is Pareto efficient}\}$$
+
+The Pareto frontier in objective space is: $$Y_{Par} = \{\mathbf{f}(x) : x \in X_{Par}\}$$
+
+### Fundamental Theorems
+
+**Theorem 6.1 (Existence of Pareto Efficient Solutions).** If $X$ is compact and $\mathbf{f}$ is continuous, then the Pareto frontier $X_{Par}$ is non-empty.
+
+_Proof._ Consider the scalarized problem $\min_{x \in X} \sum_{i=1}^k f_i(x)$. Since $X$ is compact and the objective is continuous, a minimizer $x^*$ exists by the Extreme Value Theorem. We claim $x^*$ is Pareto efficient. Suppose not: then there exists $x \in X$ with $\mathbf{f}(x) \triangleleft \mathbf{f}(x^*)$, implying $\sum_{i=1}^k f_i(x) < \sum_{i=1}^k f_i(x^*)$, contradicting optimality of $x^*$. □
+
+**Theorem 6.2 (Characterization via Scalarization).** Let $\lambda \in \mathbb{R}^k$ with $\lambda_i > 0$ for all $i$ and $\sum_{i=1}^k \lambda_i = 1$. If $x^*$ solves: $$\min_{x \in X} \sum_{i=1}^k \lambda_i f_i(x)$$ then $x^*$ is Pareto efficient.
+
+_Proof._ Suppose $x^*$ is not Pareto efficient. Then there exists $x \in X$ with $\mathbf{f}(x) \triangleleft \mathbf{f}(x^*)$. This implies $f_i(x) \leq f_i(x^*)$ for all $i$ with strict inequality for at least one $i$. Since $\lambda_i > 0$: $$\sum_{i=1}^k \lambda_i f_i(x) < \sum_{i=1}^k \lambda_i f_i(x^*)$$ contradicting optimality of $x^*$ for the scalarized problem. □
+
+**Theorem 6.3 (Convex Case Converse).** If the multi-objective problem is convex (i.e., $X$ is convex and each $f_i$ is convex), then every Pareto efficient point can be obtained as the solution to some weighted scalarization with $\lambda_i > 0$.
+
+This theorem is crucial—it shows that in convex problems, scalarization methods can find every Pareto efficient solution by varying the weights $\lambda$.
+
+### Scalarization Methods
+
+Scalarization converts multi-objective problems into single-objective problems that standard optimization methods can solve.
+
+**Method 1: Weighted Sum Scalarization** $$\min_{x \in X} \sum_{i=1}^k \lambda_i f_i(x)$$ where $\lambda_i \geq 0$ and $\sum_{i=1}^k \lambda_i = 1$.
+
+**Advantages**: Simple, guarantees Pareto efficiency (with $\lambda_i > 0$) **Disadvantages**: Cannot find points in non-convex regions of Pareto frontier
+
+**Method 2: $\varepsilon$-Constraint Method** Select one objective to minimize and constrain others:
+
+$$
+\begin{align}
+\min_{x \in X} \quad & f_j(x) \\
+\text{subject to} \quad & f_i(x) \leq \varepsilon_i \text{ for } i \neq j
+\end{align}
+$$
+
+**Advantages**: Can find non-convex portions of Pareto frontier **Disadvantages**: Requires choosing appropriate constraint levels $\varepsilon_i$
+
+**Method 3: Goal Programming** Minimize deviations from target values: $$\min_{x \in X} \sum_{i=1}^k \left| f_i(x) - g_i \right|^p$$ where $g_i$ are goal values and $p \geq 1$.
+
+### Lexicographic Ordering
+
+Sometimes objectives have clear priority rankings rather than smooth trade-offs.
+
+**Definition 6.6 (Lexicographic Ordering).** A solution $x^*$ is lexicographically optimal with priority order $(f_1, f_2, \ldots, f_k)$ if:
+
+1. $x^*$ minimizes $f_1(x)$ over $X$
+2. Among all $x$ that minimize $f_1$, $x^*$ minimizes $f_2(x)$
+3. And so on...
+
+**Algorithm: Lexicographic Optimization**
+
+```
+Input: Objectives f₁, f₂, ..., fₖ in priority order
+Output: Lexicographically optimal solution
+
+1. X₁ := argmin{f₁(x) : x ∈ X}
+2. For i = 2 to k:
+   3.   Xᵢ := argmin{fᵢ(x) : x ∈ Xᵢ₋₁}
+4. Return any x* ∈ Xₖ
+```
+
+**Example**: In LLM advertising, lexicographic priorities might be:
+
+1. First priority: Ensure minimum revenue threshold
+2. Second priority: Maximize quality subject to revenue constraint
+3. Third priority: Maximize fairness subject to revenue and quality constraints
+
+## Advanced Results: Computational Methods and Complex Cases
+
+### Non-Convex Multi-Objective Optimization
+
+Many real problems have non-convex Pareto frontiers that weighted scalarization cannot fully characterize.
+
+**Theorem 6.4 (Limitations of Weighted Scalarization).** In non-convex problems, the set of solutions obtainable by weighted scalarization may be a proper subset of the Pareto frontier.
+
+_Example._ Consider the bi-objective problem: $$\min_{x \in \mathbb{R}^2} (f_1(x), f_2(x)) = (x_1^2 + (x_2-1)^2, x_1^2 + (x_2+1)^2)$$
+
+The Pareto frontier in objective space is non-convex, and weighted scalarization cannot find all Pareto efficient points.
+
+**Solution: Enhanced Scalarization Methods**
+
+**Augmented Scalarization:** $$\min_{x \in X} \max_{i=1,\ldots,k} \{\lambda_i f_i(x)\} + \rho \sum_{i=1}^k f_i(x)$$ where $\rho > 0$ is a small parameter.
+
+**Achievement Scalarization:** $$\min_{x \in X} \max_{i=1,\ldots,k} \{\lambda_i (f_i(x) - z_i)\}$$ where $z_i$ are reference points.
+
+### Evolutionary Multi-Objective Optimization
+
+For complex, non-differentiable problems, evolutionary algorithms can approximate the entire Pareto frontier.
+
+**NSGA-II Algorithm (Simplified)**
+
+```
+Algorithm: Non-dominated Sorting Genetic Algorithm II
+Input: Population size N, objectives f₁, ..., fₖ
+Output: Approximation of Pareto frontier
+
+1. Initialize random population P₀ of size N
+2. For generation t = 0, 1, 2, ...:
+   3.   Create offspring Qt from Pt using crossover and mutation
+   4.   Combine: Rt = Pt ∪ Qt
+   5.   Perform non-dominated sorting on Rt
+   6.   Select best N individuals for Pt+1 using:
+        - Non-domination rank (lower is better)
+        - Crowding distance (higher is better for diversity)
+7. Return final non-dominated solutions
+```
+
+**Key Concepts:**
+
+- **Non-dominated sorting**: Rank solutions by domination levels
+- **Crowding distance**: Maintain diversity by preferring solutions in less crowded regions
+- **Elitism**: Always preserve best solutions found so far
+
+### Multi-Criteria Decision Analysis
+
+Once we have the Pareto frontier, how do we choose a single solution?
+
+**TOPSIS Method (Technique for Order Preference by Similarity to Ideal Solution)**
+
+```
+Algorithm: TOPSIS for Multi-Objective Decision Making
+Input: Pareto efficient solutions X = {x₁, ..., xₘ}, objectives f₁, ..., fₖ
+Output: Ranking of solutions
+
+1. Normalize objective matrix: rᵢⱼ = fⱼ(xᵢ) / √(Σᵢ fⱼ(xᵢ)²)
+2. Weight normalized matrix: vᵢⱼ = wⱼ × rᵢⱼ
+3. Identify ideal (best) and anti-ideal (worst) solutions:
+   - A⁺ = (max vᵢ₁, max vᵢ₂, ..., max vᵢₖ)
+   - A⁻ = (min vᵢ₁, min vᵢ₂, ..., min vᵢₖ)
+4. Calculate distances:
+   - Distance to ideal: D⁺ᵢ = √(Σⱼ (vᵢⱼ - A⁺ⱼ)²)
+   - Distance to anti-ideal: D⁻ᵢ = √(Σⱼ (vᵢⱼ - A⁻ⱼ)²)
+5. Calculate relative closeness: Cᵢ = D⁻ᵢ / (D⁺ᵢ + D⁻ᵢ)
+6. Rank solutions by decreasing Cᵢ
+```
+
+### Approximation Algorithms and Performance Guarantees
+
+**Definition 6.7 (Approximation Quality).** An approximation set $A$ has approximation ratio $\alpha \geq 1$ if for every Pareto efficient point $y^* \in Y_{Par}$, there exists $y \in A$ such that $y_i \leq \alpha y^*_i$ for all objectives $i$.
+
+**Theorem 6.5 (FPTAS for Multi-Objective Optimization).** Under certain conditions, there exists a fully polynomial-time approximation scheme (FPTAS) that produces a $(1+\varepsilon)$-approximation of the Pareto frontier in time polynomial in the input size and $1/\varepsilon$.
+
+This result is important for computationally intensive applications like real-time LLM advertising auctions.
+
+### Robust Multi-Objective Optimization
+
+Real problems often involve uncertainty in objective functions or constraints.
+
+**Definition 6.8 (Robust Pareto Efficiency).** A solution $x^*$ is robust Pareto efficient if it remains Pareto efficient for all realizations of uncertainty within a given uncertainty set $U$.
+
+**Approach**: Convert to robust optimization problem: $$\min_{x \in X} \max_{\xi \in U} \mathbf{f}(x, \xi)$$
+
+This ensures solutions perform well under worst-case scenarios.
+
+## Applications and Implementation: Multi-Objective LLM Advertising
+
+### Problem Formulation for LLM Advertising
+
+**Decision Variables:**
+
+- $x_{ij} \in [0,1]$: Probability that advertiser $i$ is selected for query $j$
+- $\alpha \in [0,1]$: Revenue-quality trade-off parameter
+
+**Objectives:**
+
+1. **Revenue**: $R(x) = \sum_i \sum_j x_{ij} p_{ij}$ (expected payments)
+2. **Quality**: $Q(x) = \sum_j q_j(x_j)$ (response quality as function of ad allocation)
+3. **Fairness**: $F(x) = -\text{Gini}(\{\sum_j x_{ij}\}_{i=1}^n)$ (negative Gini coefficient of allocations)
+
+**Constraints:**
+
+- $\sum_i x_{ij} \leq 1$ for all $j$ (at most one ad per query)
+- $x_{ij} \geq 0$ for all $i,j$
+- Incentive compatibility and individual rationality constraints
+
+### Scalarization Approach
+
+**Weighted Sum Method:** $$\max_{x,\alpha} \lambda_1 R(x) + \lambda_2 Q(x) + \lambda_3 F(x)$$
+
+**Implementation:**
+
+```
+Algorithm: Weighted Scalarization for LLM Advertising
+Input: Queries Q, Advertisers A, Weights λ = (λ₁, λ₂, λ₃)
+Output: Optimal allocation mechanism
+
+1. For each weight combination λ:
+   2.   Formulate optimization problem:
+        maximize λ₁×Revenue + λ₂×Quality + λ₃×Fairness
+        subject to mechanism design constraints
+   3.   Solve using standard optimization methods
+   4.   Store solution (allocation rule, payments)
+5. Return Pareto frontier approximation
+```
+
+### Quality Measurement in Multi-Objective Context
+
+Quality depends on how well advertisements integrate with LLM responses:
+
+**Quality Function:** $$q_j(x_j) = \text{similarity}(\text{response}_j, \text{ideal}_j) \times \text{naturalness}(x_j)$$
+
+where:
+
+- $\text{similarity}()$ measures semantic similarity between actual and ideal responses
+- $\text{naturalness}(x_j)$ measures how naturally advertisement $x_j$ integrates
+
+**Multi-Objective Quality Considerations:**
+
+- **Relevance**: How well ads match query intent
+- **Integration**: How smoothly ads blend into responses
+- **Informativeness**: Whether ads provide additional value
+- **User Experience**: Overall satisfaction with response
+
+### Case Study: Book Recommendation Multi-Objective Optimization
+
+**Setup:**
+
+- Query: "Recommend books similar to 'To Kill a Mockingbird'"
+- Advertisers: BookHaven (relevance=0.9), MassMart (relevance=0.3), EspressoEdge (relevance=0.2)
+- Bids: BookHaven=$3, MassMart=$5, EspressoEdge=$4
+
+**Objective Calculations:**
+
+**Pure Revenue (λ₁=1, λ₂=0, λ₃=0):**
+
+- Select: MassMart (highest bid)
+- Revenue: $5
+- Quality: 0.3 (poor relevance)
+- Fairness: 0 (winner-take-all)
+
+**Balanced (λ₁=0.4, λ₂=0.4, λ₃=0.2):**
+
+- Select: BookHaven (best weighted combination)
+- Revenue: $3
+- Quality: 0.9 (high relevance)
+- Fairness: 0 (still winner-take-all, but best overall)
+
+**Quality-Focused (λ₁=0.1, λ₂=0.8, λ₃=0.1):**
+
+- Select: BookHaven (highest quality)
+- Revenue: $3
+- Quality: 0.9
+- Fairness: 0
+
+### Advanced Implementation: Evolutionary Approach
+
+For complex LLM advertising problems with non-convex trade-offs:
+
+```
+Algorithm: Multi-Objective Evolutionary LLM Advertising
+Input: Queries, Advertisers, Population size N
+Output: Pareto frontier approximation
+
+1. Initialize population of N random allocation mechanisms
+2. For each generation:
+   3.   Evaluate each mechanism on all objectives (Revenue, Quality, Fairness)
+   4.   Perform non-dominated sorting
+   5.   Select parents based on:
+        - Non-domination rank (prefer non-dominated solutions)
+        - Crowding distance (prefer diverse solutions)
+   6.   Create offspring via:
+        - Crossover: Combine allocation rules from two parents
+        - Mutation: Randomly modify allocation probabilities
+   7.   Update population with best solutions
+8. Return final non-dominated set
+```
+
+### Performance Metrics for Multi-Objective LLM Systems
+
+**Hypervolume Indicator:** Measures the volume of objective space dominated by a solution set.
+
+**Generational Distance:**  
+Measures how close approximation set is to true Pareto frontier.
+
+**Spacing Metric:** Measures how evenly distributed solutions are along the frontier.
+
+**Implementation:**
+
+```
+Algorithm: Evaluate Multi-Objective Performance
+Input: Approximation set A, True Pareto frontier P (if known)
+Output: Performance metrics
+
+1. Hypervolume := volume_dominated_by(A, reference_point)
+2. If P is known:
+   3.   Generational_Distance := average_distance(A, P)
+   4.   Coverage := fraction_of_P_covered_by(A, tolerance)
+5. Spacing := variance_of_nearest_neighbor_distances(A)
+6. Return (Hypervolume, Generational_Distance, Coverage, Spacing)
+```
+
+### Integration with Mechanism Design Theory
+
+**Connection to Incentive Compatibility:** Multi-objective optimization must respect mechanism design constraints:
+
+$$\max_{x} (\text{Revenue}(x), \text{Quality}(x), \text{Fairness}(x))$$ $$\text{subject to: } IC, IR, \text{feasibility constraints}$$
+
+**Key Insight:** The Pareto frontier in mechanism design is constrained by incentive compatibility—some theoretically achievable objective combinations may be impossible to implement with truthful mechanisms.
+
+**Theorem 6.6 (Constrained Pareto Frontier).** In mechanism design settings, the implementable Pareto frontier is a subset of the unconstrained Pareto frontier, with the constraint set determined by IC and IR requirements.
+
+This theorem highlights why your thesis research must consider both multi-objective optimization theory and mechanism design constraints simultaneously.
+
+## Chapter Synthesis
+
+This chapter has developed the mathematical foundation for multi-objective optimization, providing the theoretical tools necessary for analyzing trade-offs in LLM advertising mechanisms. The key insights and their implications for your research are:
+
+**Fundamental Concepts:**
+
+- **Pareto Efficiency**: Multiple solutions can be optimal depending on how objectives are weighted
+- **Trade-off Characterization**: The Pareto frontier describes all possible efficient combinations of objectives
+- **Scalarization Methods**: Convert multi-objective problems into solvable single-objective problems
+- **Computational Approaches**: Evolutionary and approximation algorithms handle complex, non-convex cases
+
+**Technical Framework:**
+
+- Mathematical formulation of multi-objective problems with formal dominance relations
+- Theoretical guarantees for when scalarization methods find all Pareto efficient solutions
+- Computational algorithms for approximating Pareto frontiers in practice
+- Performance metrics for evaluating multi-objective optimization results
+
+**LLM Advertising Applications:**
+
+- Formal problem formulation balancing revenue, quality, and fairness objectives
+- Integration of mechanism design constraints with multi-objective optimization
+- Practical algorithms for computing trade-off frontiers in advertising contexts
+- Quality measurement approaches that support multi-objective analysis
+
+**Research Implications for Your Thesis:**
+
+1. **Theoretical Foundation**: You can now formally characterize the revenue-quality-fairness trade-off space and prove properties about achievable combinations
+
+2. **Empirical Methodology**: The scalarization approach provides a systematic way to design experiments testing different objective weightings (your α parameter)
+
+3. **Algorithm Design**: You have computational tools to find optimal mechanisms for any desired point on the trade-off frontier
+
+4. **Performance Evaluation**: You can measure how well your proposed mechanisms approximate the theoretical Pareto frontier
+
+**Key Research Questions Enabled:**
+
+- What does the empirical Pareto frontier look like for LLM advertising?
+- How do incentive compatibility constraints limit achievable trade-offs?
+- Which scalarization weights correspond to realistic platform preferences?
+- How sensitive are optimal mechanisms to changes in objective weightings?
+
+**Connection to Next Chapter:** Chapter 7 builds directly on this foundation by combining multi-objective optimization theory with mechanism design, showing how to design truthful mechanisms that achieve specific points on the Pareto frontier while maintaining incentive compatibility and individual rationality.
+
+The mathematical tools developed here—particularly scalarization methods and Pareto frontier characterization—provide the optimization framework for your thesis research, while the next chapter adds the game-theoretic structure needed for implementable mechanisms.
+
+## Exercises
+
+**Exercise 6.1 (Basic Multi-Objective Concepts)** Consider a bi-objective minimization problem with feasible objective values: $A = (3, 7)$, $B = (5, 4)$, $C = (2, 8)$, $D = (4, 6)$
+
+a) Which points are Pareto efficient? Explain your reasoning. b) Draw the objective space and identify the Pareto frontier. c) Does point $(3.5, 5.5)$ dominate any of the given points?
+
+**Exercise 6.2 (Scalarization Methods)** Consider the bi-objective problem: minimize $(f_1(x), f_2(x)) = (x^2, (x-2)^2)$ for $x \in [0, 3]$.
+
+a) Find the Pareto efficient solutions analytically. b) Solve the weighted sum scalarization $\min \lambda x^2 + (1-\lambda)(x-2)^2$ for $\lambda = 0.25, 0.5, 0.75$. c) Do these weights generate all Pareto efficient points? Why or why not?
+
+**Exercise 6.3 (LLM Advertising Multi-Objective)** An LLM platform has two advertisers bidding for inclusion in responses:
+
+- Advertiser 1: bid = $4, relevance = 0.8
+- Advertiser 2: bid = $6, relevance = 0.4
+
+The platform optimizes: $\lambda_1 \times \text{Revenue} + \lambda_2 \times \text{Quality}$ where Quality = relevance score of selected advertiser.
+
+a) Which advertiser is selected for $\lambda_1 = 0.8, \lambda_2 = 0.2$? b) Which advertiser is selected for $\lambda_1 = 0.3, \lambda_2 = 0.7$? c) Find the weight threshold where the platform switches between advertisers.
+
+**Exercise 6.4 (Pareto Frontier Characterization)** A mechanism designer faces three objectives for LLM advertising:
+
+- Revenue: $R = \sum_i p_i$ (total payments)
+- Quality: $Q = \sum_i r_i x_i$ (relevance-weighted allocation)
+- Fairness: $F = -\sum_i (x_i - \bar{x})^2$ (negative variance of allocations)
+
+a) Write the multi-objective optimization problem formally. b) Explain why these objectives might conflict with each other. c) Propose a scalarization with weights $(\lambda_1, \lambda_2, \lambda_3)$ and write the resulting single-objective problem.
+
+**Exercise 6.5 (Lexicographic Optimization)** A platform prioritizes objectives lexicographically:
+
+1. First: Ensure revenue ≥ $100
+2. Second: Maximize quality subject to revenue constraint
+3. Third: Maximize fairness subject to revenue and quality constraints
+
+a) Write this as a sequence of optimization problems. b) Explain when lexicographic ordering is preferable to weighted scalarization. c) What are the potential drawbacks of lexicographic approaches?
+
+**Exercise 6.6 (Computational Implementation)** Design a simple evolutionary algorithm for bi-objective LLM advertising:
+
+a) Define how to represent a solution (allocation mechanism) as a chromosome. b) Describe a crossover operation that combines two parent mechanisms. c) Describe a mutation operation that modifies allocation probabilities. d) Explain how to select parents using non-dominated sorting.
+
+**Exercise 6.7 (Advanced Application)** Consider the ε-constraint method for three-objective LLM advertising:
+
+$$
+\begin{align}
+\max \quad & \text{Revenue} \\
+\text{s.t.} \quad & \text{Quality} \geq \varepsilon_Q \\
+& \text{Fairness} \geq \varepsilon_F \\
+& \text{IC, IR, feasibility constraints}
+\end{align}
+$$
+
+a) How would you choose appropriate values for $\varepsilon_Q$ and $\varepsilon_F$? b) What happens if the constraints are too restrictive (no feasible solution exists)? c) Compare this approach to weighted scalarization for your thesis research.
+
+**Exercise 6.8 (Performance Evaluation)** You've implemented two multi-objective algorithms for LLM advertising and obtained approximation sets $A_1$ and $A_2$ of the Pareto frontier:
+
+$A_1 = \{(100, 0.9), (120, 0.8), (140, 0.7)\}$ (Revenue, Quality pairs) $A_2 = \{(110, 0.85), (125, 0.75), (135, 0.72)\}$
+
+a) Calculate the hypervolume for each set using reference point $(0, 0)$. b) Which set has better coverage of the Pareto frontier? c) Calculate the spacing metric for each set. d) Which algorithm would you recommend and why?
+
+## Further Reading
+
+**Foundational Multi-Objective Optimization:**
+
+- Ehrgott, M. (2005). _Multicriteria Optimization_. Springer-Verlag.
+- Miettinen, K. (2012). _Nonlinear Multiobjective Optimization_. Springer.
+- Steuer, R. E. (1986). _Multiple Criteria Optimization: Theory, Computation, and Applications_. Wiley.
+
+**Pareto Efficiency and Mathematical Theory:**
+
+- Yu, P. L. (1985). _Multiple-Criteria Decision Making: Concepts, Techniques, and Extensions_. Plenum Press.
+- Sawaragi, Y., Nakayama, H., & Tanino, T. (1985). _Theory of Multiobjective Optimization_. Academic Press.
+
+**Scalarization Methods:**
+
+- Geoffrion, A. M. (1968). Proper efficiency and the theory of vector maximization. _Journal of Mathematical Analysis and Applications_, 22(3), 618-630.
+- Pascoletti, A., & Serafini, P. (1984). Scalarizing vector optimization problems. _Journal of Optimization Theory and Applications_, 42(4), 499-524.
+
+**Evolutionary Multi-Objective Optimization:**
+
+- Deb, K. (2001). _Multi-Objective Optimization using Evolutionary Algorithms_. Wiley.
+- Coello, C. A. C., Lamont, G. B., & Van Veldhuizen, D. A. (2007). _Evolutionary Algorithms for Solving Multi-Objective Problems_. Springer.
+- Zitzler, E., Laumanns, M., & Thiele, L. (2001). SPEA2: Improving the strength Pareto evolutionary algorithm. TIK-report, 103.
+
+**Multi-Criteria Decision Analysis:**
+
+- Hwang, C. L., & Yoon, K. (1981). _Multiple Attribute Decision Making: Methods and Applications_. Springer-Verlag.
+- Roy, B. (1996). _Multicriteria Methodology for Decision Aiding_. Springer.
+- Belton, V., & Stewart, T. (2002). _Multiple Criteria Decision Analysis: An Integrated Approach_. Springer.
+
+**Applications to Economics and Mechanism Design:**
+
+- Moulin, H. (1988). _Axioms of Cooperative Decision Making_. Cambridge University Press.
+- Bolton, P., & Dewatripont, M. (2005). _Contract Theory_, Chapter 12. MIT Press.
+- Laffont, J. J., & Martimort, D. (2002). _The Theory of Incentives: The Principal-Agent Model_, Chapters 8-9. Princeton University Press.
+
+**Computational Aspects:**
+
+- Branke, J., Deb, K., Miettinen, K., & Słowiński, R. (Eds.). (2008). _Multiobjective Optimization: Interactive and Evolutionary Approaches_. Springer.
+- Talbi, E. G. (2009). _Metaheuristics: From Design to Implementation_. Wiley.
+
+**Recent Applications to Digital Markets:**
+
+- Conitzer, V., & Sandholm, T. (2002). Complexity of mechanism design. _Proceedings of the 18th Conference on Uncertainty in Artificial Intelligence_, 103-110.
+- Dütting, P., Henzinger, M., & Weber, I. (2021). Sponsored search, market equilibria, and the Hungarian method. _Information Processing Letters_, 169, 106-108.
+- Lucier, B., Paes Leme, R., & Tardos, E. (2012). On revenue in the generalized second price auction. _Proceedings of the 21st International Conference on World Wide Web_, 361-370.
+
+**Algorithmic Game Theory and Multi-Objective Mechanisms:**
+
+- Nisan, N., Roughgarden, T., Tardos, E., & Vazirani, V. V. (Eds.). (2007). _Algorithmic Game Theory_. Cambridge University Press.
+- Brânzei, S., Chen, Y., Deng, X., Filos-Ratsikas, A., Frederiksen, S. K. S., & Zhang, J. (2013). The fisher market game: Fairness applications and algorithms. _Proceedings of the 7th International Workshop on Algorithms and Computation_, 219-230.
+
+**Performance Metrics and Evaluation:**
+
+- Zitzler, E., Thiele, L., Laumanns, M., Fonseca, C. M., & Da Fonseca, V. G. (2003). Performance assessment of multiobjective optimizers: An analysis and review. _IEEE Transactions on Evolutionary Computation_, 7(2), 117-132.
+- Knowles, J., & Corne, D. (2002). On metrics for comparing nondominated sets. _Proceedings of the 2002 Congress on Evolutionary Computation_, 1, 711-716.
+
+**Special Issues and Surveys:**
+
+- Marler, R. T., & Arora, J. S. (2004). Survey of multi-objective optimization methods for engineering. _Structural and Multidisciplinary Optimization_, 26(6), 369-395.
+- Zhou, A., Qu, B. Y., Li, H., Zhao, S. Z., Suganthan, P. N., & Zhang, Q. (2011). Multiobjective evolutionary algorithms: A survey of the state of the art. _Swarm and Evolutionary Computation_, 1(1), 32-49.

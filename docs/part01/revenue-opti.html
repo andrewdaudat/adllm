@@ -1,0 +1,1567 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.6.43">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>4&nbsp; Revenue Optimization and Optimal Auctions – ADLLM</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../part02/efficiency.html" rel="next">
+<link href="../part01/ic.html" rel="prev">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-d4d76bf8491c20bad77d141916dc28e1.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-4379b0ccadffce622b03caf4c46266b3.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-bdec3157979715d7154bb60f5aa24e58.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-4104e206323135730aa08c3113d84ebc.min.css" rel="prefetch" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<style>html{ scroll-behavior: smooth; }</style>
+
+  <script>window.backupDefine = window.define; window.define = undefined;</script><script src="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.js"></script>
+  <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+  </script>
+  <script>window.define = window.backupDefine; window.backupDefine = undefined;</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.css">
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-sidebar floating">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../part01/intro-md.html">Classical MD</a></li><li class="breadcrumb-item"><a href="../part01/revenue-opti.html"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Revenue Optimization and Optimal Auctions</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">ADLLM</a> 
+        <div class="sidebar-tools-main">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Welcome</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../outline.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Outline</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Classical MD</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../part01/intro-md.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction to Mechanism Design</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../part01/auction-theory.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Auction Theory Fundamentals</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../part01/ic.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Incentive Compatibility and Truthfulness</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../part01/revenue-opti.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Revenue Optimization and Optimal Auctions</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false">
+ <span class="menu-text">Multi-objective Opti</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../part02/efficiency.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Efficiency and Welfare Analysis</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../part02/multi-objective-opti.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Multi-Objective Optimization Theory</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../part02/multi-objective-md.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Multi-Objective Mechanism Design</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../part02/fairness.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Fairness in Mechanism Design</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false">
+ <span class="menu-text">Computational MD</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../part03/computational-aspects-md.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">computational-aspects-md.html</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#chapter-introduction" id="toc-chapter-introduction" class="nav-link active" data-scroll-target="#chapter-introduction"><span class="header-section-number">4.1</span> Chapter Introduction</a></li>
+  <li><a href="#intuitive-development-the-revenue-efficiency-trade-off" id="toc-intuitive-development-the-revenue-efficiency-trade-off" class="nav-link" data-scroll-target="#intuitive-development-the-revenue-efficiency-trade-off"><span class="header-section-number">4.2</span> Intuitive Development: The Revenue-Efficiency Trade-off</a>
+  <ul class="collapse">
+  <li><a href="#the-monopolists-fundamental-problem" id="toc-the-monopolists-fundamental-problem" class="nav-link" data-scroll-target="#the-monopolists-fundamental-problem"><span class="header-section-number">4.2.1</span> The Monopolist’s Fundamental Problem</a></li>
+  <li><a href="#virtual-valuations-the-key-insight" id="toc-virtual-valuations-the-key-insight" class="nav-link" data-scroll-target="#virtual-valuations-the-key-insight"><span class="header-section-number">4.2.2</span> Virtual Valuations: The Key Insight</a></li>
+  <li><a href="#reserve-prices-theory-and-intuition" id="toc-reserve-prices-theory-and-intuition" class="nav-link" data-scroll-target="#reserve-prices-theory-and-intuition"><span class="header-section-number">4.2.3</span> Reserve Prices: Theory and Intuition</a></li>
+  <li><a href="#the-revenue-efficiency-tension" id="toc-the-revenue-efficiency-tension" class="nav-link" data-scroll-target="#the-revenue-efficiency-tension"><span class="header-section-number">4.2.4</span> The Revenue-Efficiency Tension</a></li>
+  <li><a href="#dynamic-considerations-short-term-vs.-long-term-revenue" id="toc-dynamic-considerations-short-term-vs.-long-term-revenue" class="nav-link" data-scroll-target="#dynamic-considerations-short-term-vs.-long-term-revenue"><span class="header-section-number">4.2.5</span> Dynamic Considerations: Short-term vs.&nbsp;Long-term Revenue</a></li>
+  <li><a href="#quality-revenue-trade-offs-in-llm-advertising" id="toc-quality-revenue-trade-offs-in-llm-advertising" class="nav-link" data-scroll-target="#quality-revenue-trade-offs-in-llm-advertising"><span class="header-section-number">4.2.6</span> Quality-Revenue Trade-offs in LLM Advertising</a></li>
+  </ul></li>
+  <li><a href="#mathematical-foundations" id="toc-mathematical-foundations" class="nav-link" data-scroll-target="#mathematical-foundations"><span class="header-section-number">4.3</span> Mathematical Foundations</a>
+  <ul class="collapse">
+  <li><a href="#myersons-optimal-auction-theory" id="toc-myersons-optimal-auction-theory" class="nav-link" data-scroll-target="#myersons-optimal-auction-theory"><span class="header-section-number">4.3.1</span> Myerson’s Optimal Auction Theory</a></li>
+  <li><a href="#properties-of-virtual-valuations" id="toc-properties-of-virtual-valuations" class="nav-link" data-scroll-target="#properties-of-virtual-valuations"><span class="header-section-number">4.3.2</span> Properties of Virtual Valuations</a></li>
+  <li><a href="#multi-bidder-revenue-optimization" id="toc-multi-bidder-revenue-optimization" class="nav-link" data-scroll-target="#multi-bidder-revenue-optimization"><span class="header-section-number">4.3.3</span> Multi-Bidder Revenue Optimization</a></li>
+  <li><a href="#revenue-optimization-with-asymmetric-bidders" id="toc-revenue-optimization-with-asymmetric-bidders" class="nav-link" data-scroll-target="#revenue-optimization-with-asymmetric-bidders"><span class="header-section-number">4.3.4</span> Revenue Optimization with Asymmetric Bidders</a></li>
+  <li><a href="#entry-fees-and-two-part-tariffs" id="toc-entry-fees-and-two-part-tariffs" class="nav-link" data-scroll-target="#entry-fees-and-two-part-tariffs"><span class="header-section-number">4.3.5</span> Entry Fees and Two-Part Tariffs</a></li>
+  <li><a href="#multi-unit-revenue-optimization" id="toc-multi-unit-revenue-optimization" class="nav-link" data-scroll-target="#multi-unit-revenue-optimization"><span class="header-section-number">4.3.6</span> Multi-Unit Revenue Optimization</a></li>
+  </ul></li>
+  <li><a href="#advanced-results-complex-revenue-optimization" id="toc-advanced-results-complex-revenue-optimization" class="nav-link" data-scroll-target="#advanced-results-complex-revenue-optimization"><span class="header-section-number">4.4</span> Advanced Results: Complex Revenue Optimization</a>
+  <ul class="collapse">
+  <li><a href="#revenue-optimization-with-budget-constraints" id="toc-revenue-optimization-with-budget-constraints" class="nav-link" data-scroll-target="#revenue-optimization-with-budget-constraints"><span class="header-section-number">4.4.1</span> Revenue Optimization with Budget Constraints</a></li>
+  <li><a href="#dynamic-revenue-optimization" id="toc-dynamic-revenue-optimization" class="nav-link" data-scroll-target="#dynamic-revenue-optimization"><span class="header-section-number">4.4.2</span> Dynamic Revenue Optimization</a></li>
+  <li><a href="#mechanism-design-with-externalities" id="toc-mechanism-design-with-externalities" class="nav-link" data-scroll-target="#mechanism-design-with-externalities"><span class="header-section-number">4.4.3</span> Mechanism Design with Externalities</a></li>
+  <li><a href="#robust-revenue-optimization" id="toc-robust-revenue-optimization" class="nav-link" data-scroll-target="#robust-revenue-optimization"><span class="header-section-number">4.4.4</span> Robust Revenue Optimization</a></li>
+  </ul></li>
+  <li><a href="#applications-and-implementation" id="toc-applications-and-implementation" class="nav-link" data-scroll-target="#applications-and-implementation"><span class="header-section-number">4.5</span> Applications and Implementation</a>
+  <ul class="collapse">
+  <li><a href="#reserve-price-optimization-in-practice" id="toc-reserve-price-optimization-in-practice" class="nav-link" data-scroll-target="#reserve-price-optimization-in-practice"><span class="header-section-number">4.5.1</span> Reserve Price Optimization in Practice</a></li>
+  <li><a href="#multi-dimensional-revenue-optimization" id="toc-multi-dimensional-revenue-optimization" class="nav-link" data-scroll-target="#multi-dimensional-revenue-optimization"><span class="header-section-number">4.5.2</span> Multi-Dimensional Revenue Optimization</a></li>
+  <li><a href="#platform-competition-and-revenue-optimization" id="toc-platform-competition-and-revenue-optimization" class="nav-link" data-scroll-target="#platform-competition-and-revenue-optimization"><span class="header-section-number">4.5.3</span> Platform Competition and Revenue Optimization</a></li>
+  <li><a href="#revenue-optimization-under-uncertainty" id="toc-revenue-optimization-under-uncertainty" class="nav-link" data-scroll-target="#revenue-optimization-under-uncertainty"><span class="header-section-number">4.5.4</span> Revenue Optimization Under Uncertainty</a></li>
+  <li><a href="#revenue-optimization-with-quality-constraints" id="toc-revenue-optimization-with-quality-constraints" class="nav-link" data-scroll-target="#revenue-optimization-with-quality-constraints"><span class="header-section-number">4.5.5</span> Revenue Optimization with Quality Constraints</a></li>
+  </ul></li>
+  <li><a href="#chapter-synthesis" id="toc-chapter-synthesis" class="nav-link" data-scroll-target="#chapter-synthesis"><span class="header-section-number">4.6</span> Chapter Synthesis</a></li>
+  <li><a href="#exercises" id="toc-exercises" class="nav-link" data-scroll-target="#exercises"><span class="header-section-number">4.7</span> Exercises</a></li>
+  <li><a href="#further-reading" id="toc-further-reading" class="nav-link" data-scroll-target="#further-reading"><span class="header-section-number">4.8</span> Further Reading</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../part01/intro-md.html">Classical MD</a></li><li class="breadcrumb-item"><a href="../part01/revenue-opti.html"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Revenue Optimization and Optimal Auctions</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Revenue Optimization and Optimal Auctions</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="chapter-introduction" class="level2" data-number="4.1">
+<h2 data-number="4.1" class="anchored" data-anchor-id="chapter-introduction"><span class="header-section-number">4.1</span> Chapter Introduction</h2>
+<p>Imagine you’re the revenue manager for OpenAI, tasked with maximizing income from ChatGPT’s advertising program. You face a fundamental question: Should you set high reserve prices to extract maximum value from premium advertisers, even if this means fewer ads are shown? Or should you keep barriers low to ensure high participation, accepting lower per-ad revenue for greater volume? This dilemma illustrates the core challenge of revenue optimization in mechanism design—balancing the monopolist’s desire to extract surplus against the need to maintain market participation and efficiency.</p>
+<p>The stakes are enormous. Google’s advertising revenue exceeds $200 billion annually, with even small improvements in auction design yielding billions in additional revenue. For LLM platforms, the challenge is more complex: revenue optimization must be balanced against content quality, user experience, and long-term platform credibility. A ChatGPT that maximizes short-term advertising revenue by mentioning irrelevant businesses might generate immediate income but destroy user trust and long-term value.</p>
+<p>Consider a concrete example: When a user asks ChatGPT “What’s the best way to learn Python programming?”, several educational companies might bid for inclusion in the response. Pure revenue maximization would favor the highest bidder, regardless of educational quality. But this could lead to responses like: “I recommend ExpensiveCourse.com’s $5,000 bootcamp” when free, high-quality alternatives exist. The platform must design mechanisms that balance revenue extraction with maintaining response quality and user trust.</p>
+<p><strong>Learning Objectives:</strong> By the end of this chapter, you will be able to:</p>
+<ol type="1">
+<li>Understand and apply Myerson’s optimal auction theory to design revenue-maximizing mechanisms</li>
+<li>Analyze the trade-off between revenue optimization and allocative efficiency</li>
+<li>Design reserve prices and entry fees to enhance auction revenue</li>
+<li>Apply revenue optimization techniques to multi-unit and position auctions</li>
+<li>Adapt classical revenue optimization for LLM advertising contexts where quality matters</li>
+</ol>
+<p><strong>Chapter Roadmap:</strong> We begin with the intuitive question: “Why don’t revenue-maximizing auctions simply charge the highest possible prices?” The answer leads us through Myerson’s groundbreaking analysis, showing how optimal revenue extraction requires carefully balancing exclusion against participation. We then explore practical revenue-enhancement techniques before tackling the novel challenge of revenue optimization when platform objectives extend beyond pure profit maximization.</p>
+<p><strong>Connection to LLM Mechanism Design:</strong> Classical revenue optimization assumes the seller cares only about money. LLM platforms face a more complex optimization problem: maximizing revenue subject to maintaining content quality and user satisfaction. This transforms the traditional monopolist problem into a constrained optimization challenge where revenue is one objective among several. Understanding classical revenue theory provides the foundation for tackling these multi-objective optimization problems.</p>
+</section>
+<section id="intuitive-development-the-revenue-efficiency-trade-off" class="level2" data-number="4.2">
+<h2 data-number="4.2" class="anchored" data-anchor-id="intuitive-development-the-revenue-efficiency-trade-off"><span class="header-section-number">4.2</span> Intuitive Development: The Revenue-Efficiency Trade-off</h2>
+<section id="the-monopolists-fundamental-problem" class="level3" data-number="4.2.1">
+<h3 data-number="4.2.1" class="anchored" data-anchor-id="the-monopolists-fundamental-problem"><span class="header-section-number">4.2.1</span> The Monopolist’s Fundamental Problem</h3>
+<p>Consider Maria, who owns the only advertising slot on a popular cooking blog. Three restaurants want to advertise: Luigi’s (values the slot at $100), Chez Pierre ($80), and Taco Bell ($40). If Maria knew these values, she could extract maximum surplus by charging Luigi’s $100, Pierre $80, and Taco Bell $40. But she doesn’t know their values—she only knows they’re drawn from some distribution.</p>
+<p><strong>The Information Rent Problem:</strong> Because advertisers have private information about their values, Maria must leave them “information rent” to encourage truthful participation. If she tried to extract full surplus, advertisers would lie about their values or refuse to participate entirely.</p>
+<p><strong>The Exclusion Strategy:</strong> Surprisingly, revenue maximization sometimes requires excluding even high-value participants. Suppose Maria could commit to serving only advertisers who bid above $60. This excludes Taco Bell entirely and reduces Luigi’s and Pierre’s information rents, potentially increasing total revenue despite serving fewer customers.</p>
+<p><strong>Economic Intuition:</strong> The monopolist faces a trade-off between:</p>
+<ul>
+<li><strong>Extensive margin:</strong> How many customers to serve</li>
+<li><strong>Intensive margin:</strong> How much to charge each customer</li>
+</ul>
+<p>Revenue optimization typically involves some customer exclusion to reduce information rents paid to remaining customers.</p>
+</section>
+<section id="virtual-valuations-the-key-insight" class="level3" data-number="4.2.2">
+<h3 data-number="4.2.2" class="anchored" data-anchor-id="virtual-valuations-the-key-insight"><span class="header-section-number">4.2.2</span> Virtual Valuations: The Key Insight</h3>
+<p>The breakthrough insight from Myerson’s work is that revenue optimization depends not on true valuations, but on “virtual” valuations that adjust for the information rent problem.</p>
+<p><strong>Intuitive Definition:</strong> An advertiser’s virtual valuation equals their true valuation minus the information rent that must be paid to induce truthful bidding.</p>
+<p><strong>Example:</strong> Consider advertisers with values uniformly distributed on [0, 100]. An advertiser with value <span class="math inline">v</span> has virtual valuation <span class="math inline">\psi(v) = 2v - 100</span>. Notice that:</p>
+<ul>
+<li>High-value advertisers (<span class="math inline">v &gt; 50</span>) have positive virtual valuations</li>
+<li>Low-value advertisers (<span class="math inline">v &lt; 50</span>) have negative virtual valuations</li>
+<li>The “kink” at <span class="math inline">v = 50</span> suggests excluding all advertisers below this threshold</li>
+</ul>
+<p><strong>Economic Interpretation:</strong> Serving an advertiser with negative virtual valuation reduces total revenue because the information rent paid exceeds the revenue generated.</p>
+</section>
+<section id="reserve-prices-theory-and-intuition" class="level3" data-number="4.2.3">
+<h3 data-number="4.2.3" class="anchored" data-anchor-id="reserve-prices-theory-and-intuition"><span class="header-section-number">4.2.3</span> Reserve Prices: Theory and Intuition</h3>
+<p><strong>Definition:</strong> A reserve price is the minimum bid required for participation.</p>
+<p><strong>Revenue Effect:</strong> Reserve prices serve two functions:</p>
+<ol type="1">
+<li><strong>Direct revenue:</strong> Winners pay at least the reserve price</li>
+<li><strong>Indirect revenue:</strong> Reserve prices reduce information rents by limiting participation</li>
+</ol>
+<p><strong>Example 4.1 (Optimal Reserve Price Calculation):</strong> Suppose bidder values are uniform on [0, 1] and the seller’s cost is zero. The optimal reserve price is <span class="math inline">r^* = 1/2</span>.</p>
+<p><strong>Intuition:</strong></p>
+<ul>
+<li>Setting <span class="math inline">r = 1/2</span> excludes half of potential bidders</li>
+<li>But the remaining bidders face higher second-highest bids on average</li>
+<li>The revenue gain from higher prices exceeds the revenue loss from fewer participants</li>
+<li>This is optimal despite excluding bidders with positive values (inefficient!)</li>
+</ul>
+</section>
+<section id="the-revenue-efficiency-tension" class="level3" data-number="4.2.4">
+<h3 data-number="4.2.4" class="anchored" data-anchor-id="the-revenue-efficiency-tension"><span class="header-section-number">4.2.4</span> The Revenue-Efficiency Tension</h3>
+<p>Classical economics often assumes that competitive markets achieve both high revenues and efficient allocation. Monopolistic mechanism design reveals this assumption is false:</p>
+<p><strong>Efficiency Requires:</strong> Allocating goods to those who value them most <strong>Revenue Maximization Requires:</strong> Strategic exclusion to reduce information rents</p>
+<p><strong>These objectives typically conflict.</strong></p>
+<p><strong>Example 4.2 (Efficiency vs.&nbsp;Revenue):</strong> Two bidders with values uniform on [0, 1]:</p>
+<ul>
+<li><strong>Efficient mechanism:</strong> Allocate to higher bidder, charge zero reserve price</li>
+<li><strong>Revenue-optimal mechanism:</strong> Allocate to higher bidder only if both bid above 1/2</li>
+<li><strong>Revenue gain:</strong> ~17% higher expected revenue</li>
+<li><strong>Efficiency loss:</strong> ~8% reduction in expected total value</li>
+</ul>
+<p>This trade-off is fundamental to understanding platform design choices.</p>
+</section>
+<section id="dynamic-considerations-short-term-vs.-long-term-revenue" class="level3" data-number="4.2.5">
+<h3 data-number="4.2.5" class="anchored" data-anchor-id="dynamic-considerations-short-term-vs.-long-term-revenue"><span class="header-section-number">4.2.5</span> Dynamic Considerations: Short-term vs.&nbsp;Long-term Revenue</h3>
+<p>The analysis becomes more complex when considering repeated interactions:</p>
+<p><strong>Short-term Revenue Maximization:</strong> Use high reserve prices and aggressive surplus extraction <strong>Long-term Revenue Maximization:</strong> Balance surplus extraction against:</p>
+<ul>
+<li>Platform reputation and user trust</li>
+<li>Advertiser participation and market development</li>
+<li>Network effects and platform growth</li>
+<li>Quality maintenance and user satisfaction</li>
+</ul>
+<p><strong>LLM Platform Example:</strong> A ChatGPT that maximizes immediate advertising revenue might:</p>
+<ul>
+<li>Mention expensive products regardless of relevance</li>
+<li>Prioritize high-bidding advertisers over helpful responses</li>
+<li>Extract maximum surplus from each interaction</li>
+</ul>
+<p>But this strategy could destroy user trust, reduce platform usage, and ultimately decrease long-term revenue.</p>
+</section>
+<section id="quality-revenue-trade-offs-in-llm-advertising" class="level3" data-number="4.2.6">
+<h3 data-number="4.2.6" class="anchored" data-anchor-id="quality-revenue-trade-offs-in-llm-advertising"><span class="header-section-number">4.2.6</span> Quality-Revenue Trade-offs in LLM Advertising</h3>
+<p>LLM platforms face a novel optimization challenge: revenue must be balanced against content quality. This creates a constrained optimization problem:</p>
+<p><strong>Objective:</strong> <span class="math inline">\max</span> Revenue <span class="math inline">(R)</span> <strong>Subject to:</strong> Quality <span class="math inline">(Q) \geq Q_{\min}</span></p>
+<p><strong>Alternative Formulation:</strong> <span class="math inline">\max</span> <span class="math inline">\alpha R + (1-\alpha) Q</span> where <span class="math inline">\alpha \in [0,1]</span> represents the revenue-quality trade-off parameter.</p>
+<p><strong>Economic Implications:</strong></p>
+<ul>
+<li>Pure revenue maximization (<span class="math inline">\alpha = 1</span>) may destroy content quality</li>
+<li>Pure quality maximization (<span class="math inline">\alpha = 0</span>) leaves money on the table</li>
+<li>Optimal <span class="math inline">\alpha</span> depends on user sensitivity to quality, competition, and long-term strategic considerations</li>
+</ul>
+<p>This multi-objective framework extends traditional revenue optimization to account for LLM-specific constraints.</p>
+</section>
+</section>
+<section id="mathematical-foundations" class="level2" data-number="4.3">
+<h2 data-number="4.3" class="anchored" data-anchor-id="mathematical-foundations"><span class="header-section-number">4.3</span> Mathematical Foundations</h2>
+<section id="myersons-optimal-auction-theory" class="level3" data-number="4.3.1">
+<h3 data-number="4.3.1" class="anchored" data-anchor-id="myersons-optimal-auction-theory"><span class="header-section-number">4.3.1</span> Myerson’s Optimal Auction Theory</h3>
+<p>Let’s formalize the revenue optimization problem for a single-item auction with <span class="math inline">n</span> bidders.</p>
+<p><strong>Environment:</strong></p>
+<ul>
+<li>Bidders <span class="math inline">i = 1, \ldots, n</span> with private valuations <span class="math inline">v_i</span></li>
+<li>Values independently drawn from distributions <span class="math inline">F_i(v)</span> with densities <span class="math inline">f_i(v)</span></li>
+<li>Seller has valuation <span class="math inline">v_0</span> for keeping the item (often <span class="math inline">v_0 = 0</span>)</li>
+</ul>
+<p><strong>Definition 4.1 (Virtual Valuation):</strong> Bidder <span class="math inline">i</span>’s virtual valuation is: <span class="math display">\psi_i(v_i) = v_i - \frac{1 - F_i(v_i)}{f_i(v_i)}</span></p>
+<p><strong>Interpretation:</strong> The term <span class="math inline">\frac{1 - F_i(v_i)}{f_i(v_i)}</span> represents the “hazard rate” of the distribution—it measures how likely higher types are relative to the current type.</p>
+<p><strong>Theorem 4.1 (Myerson’s Optimal Auction):</strong> The revenue-optimal auction satisfies:</p>
+<ol type="1">
+<li><strong>Allocation Rule:</strong> Allocate to bidder <span class="math inline">i</span> if and only if <span class="math inline">\psi_i(v_i) = \max\{\max_j \psi_j(v_j), 0\}</span></li>
+<li><strong>Payment Rule:</strong> The winner pays their “threshold bid”—the lowest value that would still result in winning</li>
+</ol>
+<p><strong>Proof:</strong> The seller’s expected revenue from bidder <span class="math inline">i</span> with type <span class="math inline">v_i</span> is: <span class="math display">\mathbb{E}[p_i(v_i)] = \mathbb{E}[v_i x_i(v_i) - \int_{\underline{v}_i}^{v_i} x_i(t) dt]</span></p>
+<p>where <span class="math inline">x_i(v_i)</span> is the probability of winning and the integral term represents information rent.</p>
+<p>Using integration by parts: <span class="math display">\mathbb{E}[\int_{\underline{v}_i}^{v_i} x_i(t) dt] = \mathbb{E}[x_i(v_i) \frac{1 - F_i(v_i)}{f_i(v_i)}]</span></p>
+<p>Therefore: <span class="math display">\mathbb{E}[p_i(v_i)] = \mathbb{E}[x_i(v_i)(v_i - \frac{1 - F_i(v_i)}{f_i(v_i)})] = \mathbb{E}[x_i(v_i) \psi_i(v_i)]</span></p>
+<p>Revenue maximization requires choosing <span class="math inline">x_i(v_i)</span> to maximize: <span class="math display">\sum_{i=1}^n \mathbb{E}[x_i(v_i) \psi_i(v_i)]</span></p>
+<p>subject to <span class="math inline">\sum_{i=1}^n x_i(v_i) \leq 1</span> and <span class="math inline">x_i(v_i) \geq 0</span>.</p>
+<p>This is maximized by allocating to the bidder with the highest non-negative virtual valuation.</p>
+<p><strong>Economic Interpretation:</strong> The optimal auction treats virtual valuations as if they were true valuations. Virtual valuations adjust downward to account for information rents, leading to strategic exclusion of low-value types.</p>
+</section>
+<section id="properties-of-virtual-valuations" class="level3" data-number="4.3.2">
+<h3 data-number="4.3.2" class="anchored" data-anchor-id="properties-of-virtual-valuations"><span class="header-section-number">4.3.2</span> Properties of Virtual Valuations</h3>
+<p><strong>Example 4.3 (Uniform Distribution):</strong> If <span class="math inline">v_i \sim \text{Uniform}[0, 1]</span>, then <span class="math inline">F_i(v) = v</span> and <span class="math inline">f_i(v) = 1</span>, so: <span class="math display">\psi_i(v_i) = v_i - \frac{1 - v_i}{1} = 2v_i - 1</span></p>
+<p><strong>Key Properties:</strong></p>
+<ul>
+<li><span class="math inline">\psi_i(0) = -1 &lt; 0</span> (lowest type has negative virtual value)</li>
+<li><span class="math inline">\psi_i(1/2) = 0</span> (threshold for positive virtual value)</li>
+<li><span class="math inline">\psi_i(1) = 1</span> (highest type has virtual value equal to true value)</li>
+<li><strong>Optimal reserve price:</strong> <span class="math inline">r^* = 1/2</span> (where virtual valuation equals zero)</li>
+</ul>
+<p><strong>Example 4.4 (Exponential Distribution):</strong> If <span class="math inline">v_i \sim \text{Exponential}(\lambda)</span> with density <span class="math inline">f(v) = \lambda e^{-\lambda v}</span> and CDF <span class="math inline">F(v) = 1 - e^{-\lambda v}</span>: <span class="math display">\psi_i(v_i) = v_i - \frac{e^{-\lambda v_i}}{\lambda e^{-\lambda v_i}} = v_i - \frac{1}{\lambda}</span></p>
+<p><strong>Implication:</strong> The optimal reserve price is <span class="math inline">r^* = 1/\lambda</span>, and all types above this threshold have positive virtual valuations.</p>
+<p><strong>Regularity Condition:</strong></p>
+<p><strong>Definition 4.2 (Regular Distribution):</strong> A distribution <span class="math inline">F</span> is regular if the virtual valuation <span class="math inline">\psi(v) = v - \frac{1-F(v)}{f(v)}</span> is non-decreasing in <span class="math inline">v</span>.</p>
+<p><strong>Importance:</strong> Regular distributions ensure that higher types have higher virtual valuations, simplifying the optimal auction design. Most common distributions (uniform, exponential, normal) are regular.</p>
+</section>
+<section id="multi-bidder-revenue-optimization" class="level3" data-number="4.3.3">
+<h3 data-number="4.3.3" class="anchored" data-anchor-id="multi-bidder-revenue-optimization"><span class="header-section-number">4.3.3</span> Multi-Bidder Revenue Optimization</h3>
+<p><strong>Theorem 4.2 (Symmetric Optimal Auction):</strong> With <span class="math inline">n</span> symmetric bidders having regular distributions <span class="math inline">F(v)</span>, the optimal auction:</p>
+<ol type="1">
+<li>Sets reserve price <span class="math inline">r^*</span> where <span class="math inline">\psi(r^*) = 0</span></li>
+<li>Allocates to the highest bidder if their virtual valuation exceeds zero</li>
+<li>Generates expected revenue: <span class="math display">R^* = \mathbb{E}[\max\{\psi(v_{(1)}), 0\}]</span> where <span class="math inline">v_{(1)}</span> is the highest order statistic.</li>
+</ol>
+<p><strong>Comparison with Standard Auctions:</strong></p>
+<p><strong>Second-Price Auction (no reserve):</strong> <span class="math display">R_{SP} = \mathbb{E}[v_{(2)}]</span></p>
+<p><strong>Second-Price Auction (optimal reserve):</strong> <span class="math display">R_{SP}^* = \mathbb{E}[\max\{v_{(2)}, r^*\} \cdot \mathbf{1}\{v_{(1)} \geq r^*\}]</span></p>
+<p><strong>Revenue Ranking:</strong> <span class="math inline">R^* \geq R_{SP}^* \geq R_{SP}</span></p>
+<p><strong>Example 4.5 (Revenue Comparison):</strong> With 2 bidders and uniform valuations:</p>
+<ul>
+<li><span class="math inline">R_{SP} = 1/3</span> (standard second-price)</li>
+<li><span class="math inline">R_{SP}^* = 5/12</span> (second-price with optimal reserve)</li>
+<li><span class="math inline">R^* = 5/12</span> (Myerson optimal)</li>
+</ul>
+<p>In this case, adding the optimal reserve price to a second-price auction achieves full revenue optimality.</p>
+</section>
+<section id="revenue-optimization-with-asymmetric-bidders" class="level3" data-number="4.3.4">
+<h3 data-number="4.3.4" class="anchored" data-anchor-id="revenue-optimization-with-asymmetric-bidders"><span class="header-section-number">4.3.4</span> Revenue Optimization with Asymmetric Bidders</h3>
+<p>When bidders have different distributions, the analysis becomes more complex.</p>
+<p><strong>Theorem 4.3 (Asymmetric Optimal Auction):</strong> With asymmetric bidders, the optimal auction:</p>
+<ol type="1">
+<li>Computes virtual valuations <span class="math inline">\psi_i(v_i)</span> for each bidder type</li>
+<li>Allocates to bidder <span class="math inline">i</span> if <span class="math inline">\psi_i(v_i) = \max_j \{\psi_j(v_j), 0\}</span></li>
+<li>May involve different “handicaps” for different bidder types</li>
+</ol>
+<p><strong>Example 4.6 (Strong vs.&nbsp;Weak Bidders):</strong></p>
+<ul>
+<li>Strong bidder: <span class="math inline">v_1 \sim \text{Uniform}[0, 2]</span>, so <span class="math inline">\psi_1(v_1) = 2v_1 - 2</span></li>
+<li>Weak bidder: <span class="math inline">v_2 \sim \text{Uniform}[0, 1]</span>, so <span class="math inline">\psi_2(v_2) = 2v_2 - 1</span></li>
+</ul>
+<p><strong>Optimal allocation:</strong></p>
+<ul>
+<li>Strong bidder wins if <span class="math inline">2v_1 - 2 &gt; \max\{2v_2 - 1, 0\}</span></li>
+<li>This creates a “handicap” favoring the weak bidder to extract more surplus from the strong bidder</li>
+</ul>
+<p><strong>Economic Intuition:</strong> The strong bidder faces more competition and pays higher information rents. The optimal auction balances this by sometimes favoring the weak bidder, reducing the strong bidder’s information rent.</p>
+</section>
+<section id="entry-fees-and-two-part-tariffs" class="level3" data-number="4.3.5">
+<h3 data-number="4.3.5" class="anchored" data-anchor-id="entry-fees-and-two-part-tariffs"><span class="header-section-number">4.3.5</span> Entry Fees and Two-Part Tariffs</h3>
+<p>Revenue can often be enhanced through entry fees or two-part pricing structures.</p>
+<p><strong>Definition 4.3 (Entry Fee Mechanism):</strong> Bidders pay fee <span class="math inline">F</span> to participate, then compete in auction with allocation rule <span class="math inline">x(\cdot)</span> and payment rule <span class="math inline">p(\cdot)</span>.</p>
+<p><strong>Theorem 4.4 (Optimal Entry Fee):</strong> The optimal entry fee <span class="math inline">F^*</span> maximizes: <span class="math display">\Pi(F) = F \cdot n \cdot \text{Prob}(\text{participation}) + \mathbb{E}[\text{auction revenue} | \text{participation}]</span></p>
+<p><strong>Trade-off:</strong> Higher entry fees increase per-participant revenue but reduce participation.</p>
+<p><strong>Application 4.1 (LLM Platform Entry Fees):</strong> An LLM advertising platform might charge:</p>
+<ul>
+<li>Monthly participation fee: <span class="math inline">F</span></li>
+<li>Per-click payments based on auction outcomes</li>
+</ul>
+<p><strong>Optimization:</strong> Choose <span class="math inline">F</span> to balance:</p>
+<ul>
+<li>Revenue from guaranteed fees</li>
+<li>Reduced advertiser participation</li>
+<li>Lower competition in individual auctions</li>
+</ul>
+</section>
+<section id="multi-unit-revenue-optimization" class="level3" data-number="4.3.6">
+<h3 data-number="4.3.6" class="anchored" data-anchor-id="multi-unit-revenue-optimization"><span class="header-section-number">4.3.6</span> Multi-Unit Revenue Optimization</h3>
+<p>Digital advertising often involves multiple units (ad slots, time periods, user segments).</p>
+<p><strong>Environment:</strong></p>
+<ul>
+<li><span class="math inline">k</span> identical units available</li>
+<li>Bidders may demand multiple units</li>
+<li>Values may exhibit complementarities or substitutabilities</li>
+</ul>
+<p><strong>Theorem 4.5 (Multi-Unit Myerson Auction):</strong> For <span class="math inline">k</span> identical units with unit-demand bidders:</p>
+<ol type="1">
+<li>Rank bidders by virtual valuations <span class="math inline">\psi_i(v_i)</span></li>
+<li>Allocate to top <span class="math inline">k</span> bidders with non-negative virtual valuations</li>
+<li>Charge each winner their threshold virtual valuation</li>
+</ol>
+<p><strong>Implementation:</strong></p>
+<pre><code>Multi-Unit Optimal Auction:
+1. Collect bids {v₁, v₂, ..., vₙ}
+2. Calculate virtual valuations: ψᵢ = vᵢ - (1-F(vᵢ))/f(vᵢ)
+3. Rank by virtual valuations: ψ₍₁₎ ≥ ψ₍₂₎ ≥ ... ≥ ψ₍ₙ₎
+4. Allocate to top k bidders with ψ₍ᵢ₎ ≥ 0
+5. Charge winner i: payment such that ψᵢ(payment) = ψ₍ₖ₊₁₎</code></pre>
+<p><strong>Revenue Comparison:</strong></p>
+<ul>
+<li><strong>Uniform pricing:</strong> All winners pay the same price</li>
+<li><strong>Discriminatory pricing:</strong> Winners pay different prices based on their virtual valuations</li>
+<li><strong>Optimal mechanism:</strong> Maximizes revenue subject to incentive constraints</li>
+</ul>
+</section>
+</section>
+<section id="advanced-results-complex-revenue-optimization" class="level2" data-number="4.4">
+<h2 data-number="4.4" class="anchored" data-anchor-id="advanced-results-complex-revenue-optimization"><span class="header-section-number">4.4</span> Advanced Results: Complex Revenue Optimization</h2>
+<section id="revenue-optimization-with-budget-constraints" class="level3" data-number="4.4.1">
+<h3 data-number="4.4.1" class="anchored" data-anchor-id="revenue-optimization-with-budget-constraints"><span class="header-section-number">4.4.1</span> Revenue Optimization with Budget Constraints</h3>
+<p>Real advertisers face budget constraints that affect their participation and bidding strategies.</p>
+<p><strong>Model Setup:</strong></p>
+<ul>
+<li>Bidder <span class="math inline">i</span> has private valuation <span class="math inline">v_i</span> and budget <span class="math inline">B_i</span></li>
+<li>Budget may be private information</li>
+<li>Payment cannot exceed budget: <span class="math inline">p_i \leq B_i</span></li>
+</ul>
+<p><strong>Theorem 4.6 (Revenue Optimization with Budgets):</strong> With budget-constrained bidders, the optimal mechanism may involve:</p>
+<ol type="1">
+<li><strong>Lottery allocations:</strong> Bidders receive probabilities rather than deterministic outcomes</li>
+<li><strong>All-pay components:</strong> Bidders pay regardless of winning</li>
+<li><strong>Discrimination:</strong> Different treatment based on budget levels</li>
+</ol>
+<p><strong>Example 4.7 (Budget-Constrained Mechanism):</strong> Consider bidders with values <span class="math inline">v_i \sim \text{Uniform}[0, 1]</span> and budgets <span class="math inline">B_i \sim \text{Uniform}[0, 1]</span>:</p>
+<p><strong>Standard Mechanism:</strong> May exclude high-value, low-budget bidders <strong>Optimal Mechanism:</strong> Offers different “packages” based on budget-value combinations</p>
+<p><strong>Implementation Complexity:</strong> Budget-constrained optimal mechanisms are often complex and may not be practical for real-time implementation.</p>
+</section>
+<section id="dynamic-revenue-optimization" class="level3" data-number="4.4.2">
+<h3 data-number="4.4.2" class="anchored" data-anchor-id="dynamic-revenue-optimization"><span class="header-section-number">4.4.2</span> Dynamic Revenue Optimization</h3>
+<p>Repeated interactions create new opportunities for revenue optimization through intertemporal price discrimination.</p>
+<p><strong>Model:</strong></p>
+<ul>
+<li><span class="math inline">T</span> periods of interaction</li>
+<li>Bidder types may be persistent or i.i.d. across periods</li>
+<li>Platform can condition on history</li>
+</ul>
+<p><strong>Theorem 4.7 (Dynamic Optimal Mechanism):</strong> In dynamic settings, the optimal mechanism:</p>
+<ol type="1">
+<li><strong>Smooths allocation</strong> across time periods</li>
+<li><strong>Builds reputation</strong> effects through consistent high-quality service</li>
+<li><strong>Extracts surplus</strong> through intertemporal bundling</li>
+</ol>
+<p><strong>Key Insight:</strong> Dynamic mechanisms can achieve higher revenue than repeated static mechanisms by exploiting intertemporal substitution.</p>
+<p><strong>Application 4.2 (LLM Advertising Over Time):</strong></p>
+<pre><code>Dynamic LLM Revenue Optimization:
+Period 1: Attract advertisers with favorable terms
+Period 2-T: Gradually increase revenue extraction as relationships develop
+Consideration: Balance short-term revenue against long-term advertiser retention</code></pre>
+</section>
+<section id="mechanism-design-with-externalities" class="level3" data-number="4.4.3">
+<h3 data-number="4.4.3" class="anchored" data-anchor-id="mechanism-design-with-externalities"><span class="header-section-number">4.4.3</span> Mechanism Design with Externalities</h3>
+<p>LLM advertising creates externalities—one advertiser’s presence affects others’ values and user experience.</p>
+<p><strong>Model Extensions:</strong></p>
+<ul>
+<li><strong>Network externalities:</strong> More advertisers may increase or decrease platform value</li>
+<li><strong>Quality externalities:</strong> Low-quality ads affect user experience for all advertisers</li>
+<li><strong>Competition externalities:</strong> Competing advertisers may have negative externalities</li>
+</ul>
+<p><strong>Theorem 4.8 (Revenue Optimization with Externalities):</strong> When externalities are present, the optimal mechanism must account for:</p>
+<ol type="1">
+<li><strong>Direct revenue</strong> from each participant</li>
+<li><strong>Indirect effects</strong> on other participants’ willingness to pay</li>
+<li><strong>Platform quality</strong> effects on long-term participation</li>
+</ol>
+<p><strong>Complexity:</strong> Externalities make optimal mechanism design significantly more complex, often requiring approximation methods.</p>
+</section>
+<section id="robust-revenue-optimization" class="level3" data-number="4.4.4">
+<h3 data-number="4.4.4" class="anchored" data-anchor-id="robust-revenue-optimization"><span class="header-section-number">4.4.4</span> Robust Revenue Optimization</h3>
+<p>Classical revenue optimization assumes the seller knows bidder value distributions. Robust approaches relax this assumption.</p>
+<p><strong>Definition 4.4 (Robust Revenue Optimization):</strong> Design mechanisms that perform well across a range of possible bidder distributions.</p>
+<p><strong>Approaches:</strong></p>
+<ol type="1">
+<li><strong>Minimax:</strong> Maximize worst-case revenue across distribution family</li>
+<li><strong>Regret minimization:</strong> Minimize regret relative to ex-post optimal mechanism</li>
+<li><strong>Prior-free:</strong> Use mechanisms that don’t require distributional assumptions</li>
+</ol>
+<p><strong>Theorem 4.9 (Prior-Free Revenue Optimization):</strong> Simple mechanisms like second-price auctions with appropriately chosen reserve prices achieve good revenue performance without requiring knowledge of bidder distributions.</p>
+<p><strong>Practical Importance:</strong> Real platforms often lack precise knowledge of advertiser value distributions, making robust approaches essential.</p>
+</section>
+</section>
+<section id="applications-and-implementation" class="level2" data-number="4.5">
+<h2 data-number="4.5" class="anchored" data-anchor-id="applications-and-implementation"><span class="header-section-number">4.5</span> Applications and Implementation</h2>
+<section id="reserve-price-optimization-in-practice" class="level3" data-number="4.5.1">
+<h3 data-number="4.5.1" class="anchored" data-anchor-id="reserve-price-optimization-in-practice"><span class="header-section-number">4.5.1</span> Reserve Price Optimization in Practice</h3>
+<p><strong>Google AdWords Implementation:</strong> Google uses sophisticated reserve pricing that varies by:</p>
+<ul>
+<li>Keyword competitiveness</li>
+<li>Advertiser quality scores</li>
+<li>Historical performance data</li>
+<li>Real-time market conditions</li>
+</ul>
+<p><strong>Dynamic Reserve Pricing Algorithm:</strong></p>
+<pre><code>Adaptive Reserve Price Setting:
+1. Initialize: r₀ = baseline reserve price
+2. For each auction period t:
+   a. Observe market outcomes (bids, clicks, revenue)
+   b. Update distribution estimates F̂ₜ(v)
+   c. Recompute optimal reserve: rₜ₊₁ = argmax revenue given F̂ₜ
+   d. Adjust for market feedback and competition effects
+3. Implement reserve price with confidence intervals for robustness</code></pre>
+<p><strong>Performance Metrics:</strong></p>
+<ul>
+<li>Revenue per auction</li>
+<li>Fill rate (percentage of auctions with winners)</li>
+<li>Advertiser satisfaction and retention</li>
+<li>Long-term platform health</li>
+</ul>
+<p><strong>Application 4.3 (LLM Platform Reserve Prices):</strong></p>
+<p>For LLM advertising, reserve prices must balance revenue optimization with content quality:</p>
+<pre><code>Quality-Adjusted Reserve Pricing:
+Input: Query context, advertiser pool, quality requirements
+
+1. Compute baseline reserve price from value distribution
+2. Adjust for content integration difficulty:
+   - Higher reserves for hard-to-integrate categories
+   - Lower reserves for naturally relevant advertisers
+3. Apply quality filters:
+   - Exclude advertisers below quality threshold regardless of bid
+   - Set higher reserves for advertisers with quality concerns
+4. Dynamic adjustment based on user satisfaction metrics</code></pre>
+<p><strong>Key Considerations:</strong></p>
+<ul>
+<li>Reserve prices should reflect integration quality, not just advertiser values</li>
+<li>User experience metrics must be monitored alongside revenue</li>
+<li>Long-term platform credibility may justify short-term revenue sacrifices</li>
+</ul>
+</section>
+<section id="multi-dimensional-revenue-optimization" class="level3" data-number="4.5.2">
+<h3 data-number="4.5.2" class="anchored" data-anchor-id="multi-dimensional-revenue-optimization"><span class="header-section-number">4.5.2</span> Multi-Dimensional Revenue Optimization</h3>
+<p>Real advertisers have complex, multi-dimensional preferences that affect revenue optimization strategies.</p>
+<p><strong>Advertiser Type Space:</strong></p>
+<ul>
+<li>Value per click: <span class="math inline">v_i</span></li>
+<li>Quality requirements: <span class="math inline">q_i</span></li>
+<li>Brand safety concerns: <span class="math inline">s_i</span></li>
+<li>Target audience specificity: <span class="math inline">a_i</span></li>
+</ul>
+<p><strong>Menu-Based Revenue Optimization:</strong></p>
+<pre><code>LLM Advertising Menu Design:
+Option A: Premium integration, high visibility, strict quality standards
+  - Price: $p_A$
+  - Target: High-value, quality-conscious advertisers
+
+Option B: Standard integration, moderate visibility, standard quality
+  - Price: $p_B$
+  - Target: Mainstream advertisers
+
+Option C: Basic mention, low visibility, minimal quality requirements
+  - Price: $p_C$
+  - Target: Price-sensitive, volume-focused advertisers</code></pre>
+<p><strong>Optimization Problem:</strong> Choose prices <span class="math inline">(p_A, p_B, p_C)</span> to maximize: <span class="math display">\sum_{\text{types}} \text{Probability}(\text{choose option}) \times \text{Price of option}</span> subject to incentive compatibility constraints.</p>
+<p><strong>Solution Approach:</strong></p>
+<ol type="1">
+<li><strong>Segment advertisers</strong> by type characteristics</li>
+<li><strong>Design options</strong> tailored to each segment</li>
+<li><strong>Set prices</strong> to maximize revenue while ensuring self-selection</li>
+<li><strong>Monitor and adjust</strong> based on market response</li>
+</ol>
+</section>
+<section id="platform-competition-and-revenue-optimization" class="level3" data-number="4.5.3">
+<h3 data-number="4.5.3" class="anchored" data-anchor-id="platform-competition-and-revenue-optimization"><span class="header-section-number">4.5.3</span> Platform Competition and Revenue Optimization</h3>
+<p>LLM platforms compete for both users and advertisers, affecting optimal revenue strategies.</p>
+<p><strong>Competitive Considerations:</strong></p>
+<ul>
+<li><strong>User sensitivity:</strong> Aggressive revenue extraction may drive users to competitors</li>
+<li><strong>Advertiser multi-homing:</strong> Advertisers may use multiple platforms</li>
+<li><strong>Quality differentiation:</strong> Platforms compete on content quality as well as price</li>
+<li><strong>Network effects:</strong> Platform size affects value to all participants</li>
+</ul>
+<p><strong>Game-Theoretic Model:</strong> Platforms simultaneously choose revenue parameters <span class="math inline">(r_1, r_2)</span> affecting:</p>
+<ul>
+<li>Platform revenues: <span class="math inline">R_i(r_1, r_2)</span></li>
+<li>User utilities: <span class="math inline">U_i(r_1, r_2)</span></li>
+<li>Advertiser participation: <span class="math inline">N_i(r_1, r_2)</span></li>
+</ul>
+<p><strong>Equilibrium Analysis:</strong></p>
+<pre><code>Platform Competition Equilibrium:
+1. Platforms choose revenue strategies simultaneously
+2. Users and advertisers respond optimally to platform choices
+3. Equilibrium balances competitive pressures against revenue maximization</code></pre>
+<p><strong>Strategic Implications:</strong></p>
+<ul>
+<li>Platforms may under-extract revenue to maintain competitive position</li>
+<li>Quality competition may dominate price competition</li>
+<li>First-mover advantages in establishing user base</li>
+<li>Network effects can create winner-take-all dynamics</li>
+</ul>
+</section>
+<section id="revenue-optimization-under-uncertainty" class="level3" data-number="4.5.4">
+<h3 data-number="4.5.4" class="anchored" data-anchor-id="revenue-optimization-under-uncertainty"><span class="header-section-number">4.5.4</span> Revenue Optimization Under Uncertainty</h3>
+<p>LLM platforms face significant uncertainty about advertiser values, user preferences, and content integration effects.</p>
+<p><strong>Sources of Uncertainty:</strong></p>
+<ul>
+<li><strong>Advertiser learning:</strong> Advertisers discover their true values through experience</li>
+<li><strong>User preference shifts:</strong> User tolerance for advertising may change over time</li>
+<li><strong>Technology evolution:</strong> Improved content integration may change value propositions</li>
+<li><strong>Competitive dynamics:</strong> New entrants may disrupt established patterns</li>
+</ul>
+<p><strong>Robust Revenue Strategies:</strong></p>
+<pre><code>Uncertainty-Robust Revenue Optimization:
+1. Diversification: Don't rely on single revenue source or advertiser segment
+2. Flexibility: Design mechanisms that can adapt to changing conditions
+3. Learning: Invest in data collection and preference estimation
+4. Insurance: Maintain revenue stability through guaranteed income sources</code></pre>
+<p><strong>Implementation Example:</strong></p>
+<pre><code>Adaptive LLM Revenue Mechanism:
+Base Strategy: Conservative reserve prices ensuring stable participation
+Learning Component: Gradually test higher prices with subset of traffic
+Adjustment Rule: Increase prices when performance metrics support it
+Rollback Mechanism: Quickly reduce prices if user satisfaction drops</code></pre>
+</section>
+<section id="revenue-optimization-with-quality-constraints" class="level3" data-number="4.5.5">
+<h3 data-number="4.5.5" class="anchored" data-anchor-id="revenue-optimization-with-quality-constraints"><span class="header-section-number">4.5.5</span> Revenue Optimization with Quality Constraints</h3>
+<p>LLM platforms must optimize revenue subject to maintaining content quality—a constraint absent in classical auction theory.</p>
+<p><strong>Constrained Optimization Framework:</strong> <span class="math display">\max_{(x, p)} \mathbb{E}[\text{Revenue}(x, p)]</span> <span class="math display">\text{subject to: } \mathbb{E}[\text{Quality}(x)] \geq Q_{\min}</span> <span class="math display">\text{and IC, IR constraints}</span></p>
+<p><strong>Quality-Revenue Production Frontier:</strong></p>
+<pre><code>Quality-Revenue Trade-off Analysis:
+1. For each quality level Q ∈ [Q_min, Q_max]:
+   a. Solve revenue optimization problem subject to quality ≥ Q
+   b. Record optimal revenue R*(Q)
+2. Plot frontier: {(Q, R*(Q)) : Q ∈ [Q_min, Q_max]}
+3. Choose operating point based on platform objectives</code></pre>
+<p><strong>Practical Implementation:</strong></p>
+<pre><code>Quality-Constrained Auction:
+1. Pre-filter advertisers: Remove those below quality threshold
+2. Apply quality weights: Modify bids by quality scores
+3. Run revenue-optimal auction on quality-adjusted bids
+4. Monitor outcomes: Track both revenue and quality metrics
+5. Adjust parameters: Modify quality weights based on performance</code></pre>
+<p><strong>Application 4.4 (Multi-Objective LLM Mechanism):</strong></p>
+<p>Design a mechanism that balances revenue and quality using parameter <span class="math inline">\alpha \in [0,1]</span>:</p>
+<pre><code>Parameterized LLM Auction:
+Objective: α × Revenue + (1-α) × Quality
+
+Allocation Rule:
+- Compute scores: s_i = α × b_i + (1-α) × q_i × v̂_i
+- Allocate to highest scorer: winner = argmax_i s_i
+
+Payment Rule:
+- Winner pays: p = (α × b_{(2)} + (1-α) × q_{(2)} × v̂_{(2)}) / q_winner
+
+where:
+- b_i = advertiser i's bid
+- q_i = advertiser i's relevance/quality score
+- v̂_i = estimated value based on historical performance
+- (2) denotes second-highest values</code></pre>
+<p><strong>Parameter Selection:</strong></p>
+<ul>
+<li><span class="math inline">\alpha = 1</span>: Pure revenue maximization</li>
+<li><span class="math inline">\alpha = 0</span>: Pure quality maximization</li>
+<li><span class="math inline">\alpha \in (0,1)</span>: Balanced optimization</li>
+<li>Optimal <span class="math inline">\alpha</span> depends on user sensitivity, competition, and long-term strategy</li>
+</ul>
+</section>
+</section>
+<section id="chapter-synthesis" class="level2" data-number="4.6">
+<h2 data-number="4.6" class="anchored" data-anchor-id="chapter-synthesis"><span class="header-section-number">4.6</span> Chapter Synthesis</h2>
+<p>This chapter has developed the theoretical foundation for revenue optimization in mechanism design and demonstrated its application to digital advertising, particularly the novel challenges of LLM advertising. Let’s synthesize the key insights:</p>
+<p><strong>The Information-Revenue Trade-off:</strong> Revenue optimization fundamentally involves managing the tension between extracting surplus and providing incentives for participation. Myerson’s breakthrough was showing that optimal revenue extraction requires treating “virtual” rather than true valuations as the basis for allocation decisions.</p>
+<p><strong>Strategic Exclusion is Optimal:</strong> Counterintuitively, revenue-maximizing mechanisms often exclude participants with positive values. This exclusion reduces the information rents that must be paid to remaining participants, increasing overall revenue despite lower participation.</p>
+<p><strong>Reserve Prices as Revenue Tools:</strong> Reserve prices serve dual functions—directly increasing winner payments and indirectly reducing information rents. Optimal reserve prices depend on the distribution of bidder values and the competitive environment.</p>
+<p><strong>Multi-Dimensional Complexity:</strong> Real-world revenue optimization often involves multi-dimensional bidder types, making optimal mechanisms complex or impossible to implement. Practical approaches use menu mechanisms, approximation algorithms, or dimension reduction techniques.</p>
+<p><strong>Dynamic and Competitive Effects:</strong> Revenue optimization in practice must account for repeated interactions, competitive dynamics, and long-term platform development. Pure short-term revenue maximization may be suboptimal when considering these broader effects.</p>
+<p><strong>Quality-Revenue Trade-offs in LLM Contexts:</strong> LLM platforms face a novel constraint—revenue optimization must be balanced against content quality and user experience. This transforms the classical monopolist problem into a multi-objective optimization challenge.</p>
+<p><strong>Implementation Challenges:</strong> Moving from theoretical optimal mechanisms to practical implementations requires addressing computational constraints, robustness to distributional assumptions, and adaptability to changing market conditions.</p>
+<p><strong>Platform-Specific Considerations:</strong> LLM advertising introduces unique revenue optimization challenges:</p>
+<ul>
+<li>Integration quality affects advertiser values in uncertain ways</li>
+<li>User experience is more sensitive to advertising quality than in traditional formats</li>
+<li>Content generation creates real-time computational constraints</li>
+<li>Long-term platform credibility may be more important than short-term revenue</li>
+</ul>
+<p><strong>Connection to Subsequent Chapters:</strong></p>
+<ul>
+<li>Chapter 5 will explore efficiency and welfare implications of revenue optimization, showing how profit maximization affects social welfare</li>
+<li>Chapters 6-7 will develop multi-objective optimization theory needed for formal treatment of quality-revenue trade-offs</li>
+<li>Chapter 8 will examine fairness considerations, showing how revenue optimization may conflict with fairness objectives</li>
+<li>Chapters 12-13 will apply these revenue optimization concepts specifically to LLM advertising mechanism design</li>
+</ul>
+<p><strong>Research Opportunities:</strong> The intersection of revenue optimization with LLM advertising suggests several promising research directions:</p>
+<ol type="1">
+<li><strong>Quality-Contingent Revenue Optimization:</strong> Developing optimal mechanisms when payment can depend on realized content quality</li>
+<li><strong>Multi-Objective Mechanism Revenue:</strong> Extending Myerson’s framework to settings with multiple, competing objectives</li>
+<li><strong>Dynamic Quality-Revenue Balance:</strong> Optimal intertemporal trade-offs between revenue extraction and quality maintenance</li>
+<li><strong>Robust Revenue Optimization:</strong> Revenue optimization under uncertainty about user preferences, advertiser values, and technology evolution</li>
+</ol>
+<p><strong>Practical Guidelines:</strong> For practitioners designing revenue optimization systems:</p>
+<ol type="1">
+<li><strong>Start with Theory:</strong> Use Myerson’s framework as the baseline, then adapt for practical constraints</li>
+<li><strong>Balance Objectives:</strong> Don’t optimize revenue in isolation—consider quality, user experience, and long-term platform health</li>
+<li><strong>Test Incrementally:</strong> Use A/B testing to validate theoretical predictions and optimize parameters</li>
+<li><strong>Monitor Comprehensively:</strong> Track revenue, quality, user satisfaction, and competitive position simultaneously</li>
+<li><strong>Maintain Flexibility:</strong> Design systems that can adapt as market conditions and platform objectives evolve</li>
+</ol>
+<p><strong>Strategic Insights for LLM Platforms:</strong></p>
+<p><strong>Revenue-Quality Optimization Requires New Theory:</strong> Classical revenue optimization assumes the seller cares only about money. LLM platforms must balance revenue against content quality, user satisfaction, and long-term credibility. This necessitates new theoretical frameworks that extend beyond traditional mechanism design.</p>
+<p><strong>User Experience as a Constraint:</strong> Unlike traditional advertising auctions where user experience is secondary, LLM platforms must treat user satisfaction as a binding constraint on revenue optimization. Mechanisms that maximize short-term revenue while degrading user experience are ultimately self-defeating.</p>
+<p><strong>Quality Uncertainty Creates New Risks:</strong> In traditional auctions, the item being sold is well-defined. LLM advertising involves selling integration opportunities where the quality and value are uncertain at the time of bidding. This uncertainty affects both advertiser bidding strategies and platform revenue optimization.</p>
+<p><strong>Network Effects Amplify Revenue-Quality Trade-offs:</strong> LLM platforms exhibit strong network effects—better content attracts more users, which attracts more advertisers, which generates more revenue for content improvement. Revenue optimization strategies must account for these feedback loops rather than treating each auction in isolation.</p>
+<p>Understanding revenue optimization theory provides the foundation for designing sustainable, profitable LLM advertising systems that balance commercial objectives with user experience and content quality. The next chapters will build on this foundation to develop the multi-objective optimization frameworks needed for practical LLM advertising mechanism design.</p>
+</section>
+<section id="exercises" class="level2" data-number="4.7">
+<h2 data-number="4.7" class="anchored" data-anchor-id="exercises"><span class="header-section-number">4.7</span> Exercises</h2>
+<p><strong>Exercise 4.1 (Basic Revenue Optimization):</strong> Consider a single-item auction with two bidders whose valuations are independently drawn from Uniform[0, 1].</p>
+<ol type="a">
+<li>Calculate the virtual valuations for each bidder. b) Determine the optimal reserve price. c) Compute the expected revenue of the optimal mechanism. d) Compare this to the expected revenue of a second-price auction without reserve prices. e) What fraction of efficient trades does the optimal mechanism eliminate?</li>
+</ol>
+<p><strong>Exercise 4.2 (Asymmetric Revenue Optimization):</strong> Two bidders compete for an advertising slot. Bidder 1’s value is Uniform[0, 2], while Bidder 2’s value is Uniform[0, 1].</p>
+<ol type="a">
+<li>Calculate virtual valuations for both bidders. b) Determine when each bidder should win in the optimal mechanism. c) Does the optimal mechanism sometimes favor the “weaker” bidder? Explain why. d) Calculate the expected revenue and compare to symmetric mechanisms.</li>
+</ol>
+<p><strong>Exercise 4.3 (Multi-Unit Revenue Optimization):</strong> A platform has 3 identical advertising slots to allocate among 5 bidders with values drawn from Exponential(1).</p>
+<ol type="a">
+<li>Design the optimal mechanism for allocating the 3 slots. b) How does the optimal reserve price compare to the single-unit case? c) Calculate the expected number of slots allocated. d) Compare revenue to a uniform-price auction with the same reserve price.</li>
+</ol>
+<p><strong>Exercise 4.4 (LLM Quality-Revenue Trade-off):</strong> An LLM platform uses the parameterized mechanism: <span class="math inline">s_i = \alpha \cdot b_i + (1-\alpha) \cdot q_i \cdot \hat{v}_i</span> where <span class="math inline">q_i</span> is advertiser <span class="math inline">i</span>’s quality score.</p>
+<ol type="a">
+<li>For what values of <span class="math inline">\alpha</span> does this mechanism reduce to pure revenue or pure quality maximization? b) How does the optimal bidding strategy change as <span class="math inline">\alpha</span> varies? c) Design an experiment to determine the optimal <span class="math inline">\alpha</span> for a given platform. d) Analyze how user sensitivity to advertising quality should affect the choice of <span class="math inline">\alpha</span>.</li>
+</ol>
+<p><strong>Exercise 4.5 (Dynamic Revenue Optimization):</strong> An advertiser participates in daily LLM auctions over 30 days. The platform can condition current prices on past performance.</p>
+<ol type="a">
+<li>How might the platform use reputation effects to increase long-term revenue? b) Design a dynamic pricing mechanism that rewards consistent high-quality advertisers. c) Analyze the trade-off between short-term revenue extraction and long-term relationship building. d) What happens if advertisers can switch platforms costlessly?</li>
+</ol>
+<p><strong>Exercise 4.6 (Budget-Constrained Revenue Optimization):</strong> Advertisers have private valuations <span class="math inline">v_i \sim \text{Uniform}[0, 1]</span> and budget constraints <span class="math inline">B_i \sim \text{Uniform}[0, 0.8]</span>.</p>
+<ol type="a">
+<li>Explain why standard optimal auctions may not work with budget constraints. b) Design a mechanism that accounts for budget constraints while maximizing revenue. c) Should the platform offer financing or payment plans to budget-constrained advertisers? d) How do budget constraints affect the revenue-efficiency trade-off?</li>
+</ol>
+<p><strong>Exercise 4.7 (Robust Revenue Optimization):</strong> A platform is uncertain whether advertiser values follow Uniform[0, 1] or Exponential(1) distributions.</p>
+<ol type="a">
+<li>Calculate the optimal reserve price for each distribution. b) Design a robust mechanism that performs well under both distributions. c) Quantify the cost of robustness in terms of revenue loss. d) How should the platform learn about the true distribution over time?</li>
+</ol>
+<p><strong>Exercise 4.8 (Competitive Revenue Optimization):</strong> Two LLM platforms compete for users and advertisers. Platform quality depends on revenue extraction aggressiveness.</p>
+<ol type="a">
+<li>Model this as a game between platforms choosing revenue extraction parameters. b) Find the Nash equilibrium extraction levels. c) Compare equilibrium revenues to the monopolist optimum. d) How do network effects change the competitive dynamics?</li>
+</ol>
+<p><strong>Exercise 4.9 (Entry Fees and Two-Part Tariffs):</strong> Consider combining entry fees with per-auction payments for LLM advertising.</p>
+<ol type="a">
+<li>Design the optimal combination of entry fee and auction mechanism. b) How does the optimal entry fee depend on advertiser value distributions? c) What are the benefits and costs of entry fees compared to pure per-auction pricing? d) How might entry fees affect platform competition and advertiser multi-homing?</li>
+</ol>
+<p><strong>Exercise 4.10 (Implementation and Testing):</strong> You’re tasked with implementing revenue optimization for a major LLM platform.</p>
+<ol type="a">
+<li>Design an A/B testing framework to optimize reserve prices. b) What metrics should you track beyond immediate revenue? c) How would you detect and respond to strategic manipulation by advertisers? d) Create a plan for gradually transitioning from simple to optimal mechanisms.</li>
+</ol>
+</section>
+<section id="further-reading" class="level2" data-number="4.8">
+<h2 data-number="4.8" class="anchored" data-anchor-id="further-reading"><span class="header-section-number">4.8</span> Further Reading</h2>
+<p><strong>Classical Revenue Optimization and Myerson Theory:</strong></p>
+<ul>
+<li>Myerson, R. B. (1981). “Optimal auction design.” <em>Mathematics of Operations Research</em>, 6(1), 58-73. [The foundational paper establishing virtual valuations and optimal auction theory]</li>
+<li>Riley, J. G., &amp; Samuelson, W. F. (1981). “Optimal auctions.” <em>American Economic Review</em>, 71(3), 381-392. [Independent development of similar results with geometric intuition]</li>
+<li>Bulow, J., &amp; Roberts, J. (1989). “The simple economics of optimal auctions.” <em>Journal of Political Economy</em>, 97(5), 1060-1090. [Accessible exposition of Myerson’s results with economic intuition]</li>
+</ul>
+<p><strong>Multi-Unit and Position Auction Revenue Optimization:</strong></p>
+<ul>
+<li>Ausubel, L. M., &amp; Cramton, P. (2002). “Demand reduction and inefficiency in multi-unit auctions.” <em>Journal of Public Economics</em>, 87(2), 329-370. [Revenue optimization in multi-unit settings]</li>
+<li>Edelman, B., Ostrovsky, M., &amp; Schwarz, M. (2007). “Internet advertising and the generalized second-price auction: Selling billions of dollars worth of keywords.” <em>American Economic Review</em>, 97(1), 242-259. [Revenue analysis of Google’s position auction]</li>
+<li>Varian, H. R. (2007). “Position auctions.” <em>International Journal of Industrial Organization</em>, 25(6), 1163-1178. [Theoretical foundation for position auction revenue optimization]</li>
+</ul>
+<p><strong>Asymmetric and Multi-Dimensional Revenue Optimization:</strong></p>
+<ul>
+<li>Maskin, E., &amp; Riley, J. (1984). “Optimal auctions with risk averse buyers.” <em>Econometrica</em>, 52(6), 1473-1518. [Extension to risk-averse bidders]</li>
+<li>Armstrong, M. (1996). “Multiproduct nonlinear pricing.” <em>Econometrica</em>, 64(1), 51-75. [Multi-dimensional mechanism design and revenue optimization]</li>
+<li>Rochet, J. C., &amp; Choné, P. (1998). “Ironing, sweeping, and multidimensional screening.” <em>Econometrica</em>, 66(4), 783-826. [Advanced techniques for multi-dimensional revenue optimization]</li>
+</ul>
+<p><strong>Reserve Prices and Entry Fees:</strong></p>
+<ul>
+<li>Harris, M., &amp; Raviv, A. (1981). “Allocation mechanisms and the design of auctions.” <em>Econometrica</em>, 49(6), 1477-1499. [Early work on reserve prices]</li>
+<li>Levin, D., &amp; Smith, J. L. (1994). “Equilibrium in auctions with entry.” <em>American Economic Review</em>, 84(3), 585-599. [Entry fees and participation effects]</li>
+<li>McAfee, R. P., &amp; McMillan, J. (1987). “Auctions with entry.” <em>Economics Letters</em>, 23(4), 343-347. [Simple model of entry fees in auctions]</li>
+</ul>
+<p><strong>Budget Constraints and Financial Constraints:</strong></p>
+<ul>
+<li>Che, Y. K., &amp; Gale, I. (1998). “Standard auctions with financially constrained bidders.” <em>The Review of Economic Studies</em>, 65(1), 1-21. [Foundational work on budget-constrained mechanism design]</li>
+<li>Dobzinski, S., Lavi, R., &amp; Nisan, N. (2012). “Multi-unit auctions with budget limits.” <em>Games and Economic Behavior</em>, 74(2), 486-503. [Algorithmic approaches to budget-constrained revenue optimization]</li>
+<li>Pai, M. M., &amp; Vohra, R. (2014). “Optimal auctions with financially constrained buyers.” <em>Journal of Economic Theory</em>, 150, 383-425. [Advanced theory of optimal mechanisms with budget constraints]</li>
+</ul>
+<p><strong>Dynamic and Repeated Revenue Optimization:</strong></p>
+<ul>
+<li>Athey, S., &amp; Segal, I. (2013). “An efficient dynamic mechanism.” <em>Econometrica</em>, 81(6), 2463-2485. [Dynamic mechanism design for revenue optimization]</li>
+<li>Board, S., &amp; Skrzypacz, A. (2016). “Revenue management with forward-looking buyers.” <em>Journal of Political Economy</em>, 124(4), 1046-1087. [Intertemporal revenue optimization]</li>
+<li>Pavan, A., Segal, I., &amp; Toikka, J. (2014). “Dynamic mechanism design: A myersonian approach.” <em>Econometrica</em>, 82(2), 601-653. [Extension of Myerson’s approach to dynamic settings]</li>
+</ul>
+<p><strong>Robust and Prior-Free Revenue Optimization:</strong></p>
+<ul>
+<li>Hartline, J. D., &amp; Roughgarden, T. (2009). “Simple versus optimal mechanisms.” <em>Proceedings of the 10th ACM conference on Electronic commerce</em>, 225-234. [Prior-free approaches to revenue optimization]</li>
+<li>Carroll, G. (2017). “Robustness and linear contracts.” <em>American Economic Review</em>, 107(6), 1582-1615. [Robust mechanism design techniques]</li>
+<li>Bergemann, D., &amp; Morris, S. (2005). “Robust mechanism design.” <em>Econometrica</em>, 73(6), 1771-1813. [Foundational work on robustness in mechanism design]</li>
+</ul>
+<p><strong>Platform Competition and Revenue Optimization:</strong></p>
+<ul>
+<li>Armstrong, M. (2006). “Competition in two-sided markets.” <em>RAND Journal of Economics</em>, 37(3), 668-691. [Platform competition effects on pricing]</li>
+<li>Rochet, J. C., &amp; Tirole, J. (2003). “Platform competition in two-sided markets.” <em>Journal of the European Economic Association</em>, 1(4), 990-1029. [Two-sided market competition and revenue optimization]</li>
+<li>Cabral, L. (2011). “Dynamic price competition with network effects.” <em>The Review of Economic Studies</em>, 78(1), 83-111. [Dynamic competition in network industries]</li>
+</ul>
+<p><strong>Computational and Algorithmic Revenue Optimization:</strong></p>
+<ul>
+<li>Hartline, J. D. (2013). “Mechanism design and approximation.” <em>Book draft</em>. [Available online, comprehensive treatment of computational revenue optimization]</li>
+<li>Roughgarden, T., &amp; Tardos, E. (2007). “Introduction to the inefficiency of equilibria.” <em>Algorithmic Game Theory</em>, Cambridge University Press, 443-459. [Computational aspects of revenue optimization]</li>
+<li>Devanur, N. R., &amp; Hartline, J. D. (2009). “Limited and online supply and the bayesian foundations of prior-free mechanism design.” <em>Proceedings of the 10th ACM conference on Electronic commerce</em>, 41-50. [Online revenue optimization algorithms]</li>
+</ul>
+<p><strong>LLM and AI-Specific Revenue Applications:</strong></p>
+<ul>
+<li>Hajiaghayi, M. T., Lahaie, S., Rezaei, K., &amp; Shin, S. (2024). “Ad Auctions for LLMs via Retrieval Augmented Generation.” <em>arXiv preprint arXiv:2406.09459</em>. [Direct application to LLM advertising revenue optimization]</li>
+<li>Duetting, P., Mirrokni, V., Paes Leme, R., Xu, H., &amp; Zuo, S. (2023). “Mechanism design for large language models.” <em>arXiv preprint arXiv:2310.10826</em>. [Alternative approaches to LLM mechanism revenue optimization]</li>
+<li>Feizi, S., Hajiaghayi, M. T., Rezaei, K., &amp; Shin, S. (2023). “Online advertisements with LLMs: Opportunities and challenges.” <em>arXiv preprint arXiv:2311.07601</em>. [Broader perspective on LLM advertising economics]</li>
+</ul>
+<p><strong>Quality and Multi-Objective Optimization:</strong></p>
+<ul>
+<li>Ghosh, A., &amp; Mahdian, M. (2008). “Externalities in online advertising.” <em>Proceedings of the 17th international conference on World Wide Web</em>, 161-168. [Quality considerations in advertising auctions]</li>
+<li>Jeziorski, P., &amp; Segal, I. (2015). “What makes them click: Empirical analysis of consumer demand for search advertising.” <em>American Economic Journal: Microeconomics</em>, 7(3), 24-53. [Empirical analysis of quality effects in advertising]</li>
+</ul>
+<p><strong>Empirical Studies and Real-World Applications:</strong></p>
+<ul>
+<li>Varian, H. R. (2009). “Online ad auctions.” <em>American Economic Review</em>, 99(2), 430-434. [Real-world performance of revenue optimization in online advertising]</li>
+<li>Athey, S., &amp; Nekipelov, D. (2010). “A structural model of sponsored search advertising auctions.” <em>Sixth ad auctions workshop</em>, 15. [Empirical evaluation of revenue optimization techniques]</li>
+<li>Goldfarb, A., &amp; Tucker, C. (2011). “Online display advertising: Targeting and obtrusiveness.” <em>Marketing Science</em>, 30(3), 389-404. [Quality-revenue trade-offs in display advertising]</li>
+</ul>
+<p>These references provide a comprehensive foundation for understanding revenue optimization from basic theory through advanced applications and real-world implementations. The progression moves from classical theoretical results through computational and practical considerations to cutting-edge applications in AI and digital platforms.</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const disableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'prefetch';
+    }
+  }
+  const enableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'stylesheet';
+    }
+  }
+  const manageTransitions = (selector, allowTransitions) => {
+    const els = window.document.querySelectorAll(selector);
+    for (let i=0; i < els.length; i++) {
+      const el = els[i];
+      if (allowTransitions) {
+        el.classList.remove('notransition');
+      } else {
+        el.classList.add('notransition');
+      }
+    }
+  }
+  const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+    const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+    const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+    let newTheme = '';
+    if(darkModeDefault) {
+      newTheme = isAlternate ? baseTheme : alternateTheme;
+    } else {
+      newTheme = isAlternate ? alternateTheme : baseTheme;
+    }
+    const changeGiscusTheme = () => {
+      // From: https://github.com/giscus/giscus/issues/336
+      const sendMessage = (message) => {
+        const iframe = document.querySelector('iframe.giscus-frame');
+        if (!iframe) return;
+        iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+      }
+      sendMessage({
+        setConfig: {
+          theme: newTheme
+        }
+      });
+    }
+    const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+    if (isGiscussLoaded) {
+      changeGiscusTheme();
+    }
+  }
+  const toggleColorMode = (alternate) => {
+    // Switch the stylesheets
+    const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+    manageTransitions('#quarto-margin-sidebar .nav-link', false);
+    if (alternate) {
+      enableStylesheet(alternateStylesheets);
+      for (const sheetNode of alternateStylesheets) {
+        if (sheetNode.id === "quarto-bootstrap") {
+          toggleBodyColorMode(sheetNode);
+        }
+      }
+    } else {
+      disableStylesheet(alternateStylesheets);
+      toggleBodyColorPrimary();
+    }
+    manageTransitions('#quarto-margin-sidebar .nav-link', true);
+    // Switch the toggles
+    const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+    for (let i=0; i < toggles.length; i++) {
+      const toggle = toggles[i];
+      if (toggle) {
+        if (alternate) {
+          toggle.classList.add("alternate");     
+        } else {
+          toggle.classList.remove("alternate");
+        }
+      }
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455)
+    if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+      manageTransitions("body", false);
+      window.scrollTo(0, 1);
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+        manageTransitions("body", true);
+      }, 40);  
+    }
+  }
+  const isFileUrl = () => { 
+    return window.location.protocol === 'file:';
+  }
+  const hasAlternateSentinel = () => {  
+    let styleSentinel = getColorSchemeSentinel();
+    if (styleSentinel !== null) {
+      return styleSentinel === "alternate";
+    } else {
+      return false;
+    }
+  }
+  const setStyleSentinel = (alternate) => {
+    const value = alternate ? "alternate" : "default";
+    if (!isFileUrl()) {
+      window.localStorage.setItem("quarto-color-scheme", value);
+    } else {
+      localAlternateSentinel = value;
+    }
+  }
+  const getColorSchemeSentinel = () => {
+    if (!isFileUrl()) {
+      const storageValue = window.localStorage.getItem("quarto-color-scheme");
+      return storageValue != null ? storageValue : localAlternateSentinel;
+    } else {
+      return localAlternateSentinel;
+    }
+  }
+  const darkModeDefault = false;
+  let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+  // Dark / light mode switch
+  window.quartoToggleColorScheme = () => {
+    // Read the current dark / light value 
+    let toAlternate = !hasAlternateSentinel();
+    toggleColorMode(toAlternate);
+    setStyleSentinel(toAlternate);
+    toggleGiscusIfUsed(toAlternate, darkModeDefault);
+  };
+  // Ensure there is a toggle, if there isn't float one in the top right
+  if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+    const a = window.document.createElement('a');
+    a.classList.add('top-right');
+    a.classList.add('quarto-color-scheme-toggle');
+    a.href = "";
+    a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+    const i = window.document.createElement("i");
+    i.classList.add('bi');
+    a.appendChild(i);
+    window.document.body.appendChild(a);
+  }
+  // Switch to dark mode if need be
+  if (hasAlternateSentinel()) {
+    toggleColorMode(true);
+  } else {
+    toggleColorMode(false);
+  }
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+          // target, if specified
+          link.setAttribute("target", "_blank");
+          if (link.getAttribute("rel") === null) {
+            link.setAttribute("rel", "noopener");
+          }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../part01/ic.html" class="pagination-link" aria-label="Incentive Compatibility and Truthfulness">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Incentive Compatibility and Truthfulness</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../part02/efficiency.html" class="pagination-link" aria-label="Efficiency and Welfare Analysis">
+        <span class="nav-page-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Efficiency and Welfare Analysis</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+<script src="../site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>
