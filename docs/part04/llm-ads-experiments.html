@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Outline – ADLLM</title>
+<title>llm-ads-experiments – ADLLM</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -23,26 +23,26 @@ ul.task-list li input[type="checkbox"] {
 </style>
 
 
-<script src="site_libs/quarto-nav/quarto-nav.js"></script>
-<script src="site_libs/quarto-nav/headroom.min.js"></script>
-<script src="site_libs/clipboard/clipboard.min.js"></script>
-<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
-<script src="site_libs/quarto-search/fuse.min.js"></script>
-<script src="site_libs/quarto-search/quarto-search.js"></script>
-<meta name="quarto:offset" content="./">
-<link href="./part01/intro-md.html" rel="next">
-<link href="./index.html" rel="prev">
-<script src="site_libs/quarto-html/quarto.js"></script>
-<script src="site_libs/quarto-html/popper.min.js"></script>
-<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
-<script src="site_libs/quarto-html/anchor.min.js"></script>
-<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-d4d76bf8491c20bad77d141916dc28e1.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark-4379b0ccadffce622b03caf4c46266b3.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
-<script src="site_libs/bootstrap/bootstrap.min.js"></script>
-<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-bdec3157979715d7154bb60f5aa24e58.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="site_libs/bootstrap/bootstrap-dark-4104e206323135730aa08c3113d84ebc.min.css" rel="prefetch" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../part04/future.html" rel="next">
+<link href="../part04/llm-ads-moop.html" rel="prev">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-d4d76bf8491c20bad77d141916dc28e1.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-4379b0ccadffce622b03caf4c46266b3.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-bdec3157979715d7154bb60f5aa24e58.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-4104e206323135730aa08c3113d84ebc.min.css" rel="prefetch" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -84,7 +84,7 @@ ul.task-list li input[type="checkbox"] {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./outline.html">Outline</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../part04/llm-ads.html">LLM Ads</a></li><li class="breadcrumb-item"><a href="../part04/llm-ads-experiments.html"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">llm-ads-experiments.html</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -99,7 +99,7 @@ ul.task-list li input[type="checkbox"] {
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
     <div class="pt-lg-2 mt-2 text-left sidebar-header">
     <div class="sidebar-title mb-0 py-0">
-      <a href="./">ADLLM</a> 
+      <a href="../">ADLLM</a> 
         <div class="sidebar-tools-main">
   <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
 </div>
@@ -114,13 +114,13 @@ ul.task-list li input[type="checkbox"] {
     <ul class="list-unstyled mt-1">
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./index.html" class="sidebar-item-text sidebar-link">
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Welcome</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./outline.html" class="sidebar-item-text sidebar-link active">
+  <a href="../outline.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Outline</span></a>
   </div>
 </li>
@@ -135,25 +135,25 @@ ul.task-list li input[type="checkbox"] {
       <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./part01/intro-md.html" class="sidebar-item-text sidebar-link">
+  <a href="../part01/intro-md.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction to Mechanism Design</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./part01/auction-theory.html" class="sidebar-item-text sidebar-link">
+  <a href="../part01/auction-theory.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Auction Theory Fundamentals</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./part01/ic.html" class="sidebar-item-text sidebar-link">
+  <a href="../part01/ic.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Incentive Compatibility and Truthfulness</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./part01/revenue-opti.html" class="sidebar-item-text sidebar-link">
+  <a href="../part01/revenue-opti.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Revenue Optimization and Optimal Auctions</span></span></a>
   </div>
 </li>
@@ -170,25 +170,25 @@ ul.task-list li input[type="checkbox"] {
       <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./part02/efficiency.html" class="sidebar-item-text sidebar-link">
+  <a href="../part02/efficiency.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Efficiency and Welfare Analysis</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./part02/multi-objective-opti.html" class="sidebar-item-text sidebar-link">
+  <a href="../part02/multi-objective-opti.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Multi-Objective Optimization Theory</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./part02/multi-objective-md.html" class="sidebar-item-text sidebar-link">
+  <a href="../part02/multi-objective-md.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Multi-Objective Mechanism Design</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./part02/fairness.html" class="sidebar-item-text sidebar-link">
+  <a href="../part02/fairness.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Fairness in Mechanism Design</span></span></a>
   </div>
 </li>
@@ -205,19 +205,19 @@ ul.task-list li input[type="checkbox"] {
       <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./part03/computational-aspects-md.html" class="sidebar-item-text sidebar-link">
+  <a href="../part03/computational-aspects-md.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Computational Aspects of Mechanism Design</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./part03/learn-adapt.html" class="sidebar-item-text sidebar-link">
+  <a href="../part03/learn-adapt.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Learning and Adaptation in Mechanisms</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./part03/platform-econ.html" class="sidebar-item-text sidebar-link">
+  <a href="../part03/platform-econ.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Platform Economics and Two-Sided Markets</span></span></a>
   </div>
 </li>
@@ -225,34 +225,34 @@ ul.task-list li input[type="checkbox"] {
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="false">
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
  <span class="menu-text">LLM Ads</span></a>
-          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="false" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 ">  
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./part04/llm-ads.html" class="sidebar-item-text sidebar-link">
+  <a href="../part04/llm-ads.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Introduction to LLM Advertising Markets</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./part04/llm-ads-moop.html" class="sidebar-item-text sidebar-link">
+  <a href="../part04/llm-ads-moop.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">llm-ads-moop.html</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./part04/llm-ads-experiments.html" class="sidebar-item-text sidebar-link">
+  <a href="../part04/llm-ads-experiments.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">llm-ads-experiments.html</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./part04/future.html" class="sidebar-item-text sidebar-link">
+  <a href="../part04/future.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">future.html</span></span></a>
   </div>
 </li>
@@ -263,382 +263,17 @@ ul.task-list li input[type="checkbox"] {
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        <nav id="TOC" role="doc-toc" class="toc-active">
-    <h2 id="toc-title">On this page</h2>
-   
-  <ul>
-  <li><a href="#part-i-classical-mechanism-design-foundations" id="toc-part-i-classical-mechanism-design-foundations" class="nav-link active" data-scroll-target="#part-i-classical-mechanism-design-foundations">Part I: Classical Mechanism Design Foundations</a>
-  <ul class="collapse">
-  <li><a href="#chapter-1-introduction-to-mechanism-design" id="toc-chapter-1-introduction-to-mechanism-design" class="nav-link" data-scroll-target="#chapter-1-introduction-to-mechanism-design">Chapter 1: Introduction to Mechanism Design</a></li>
-  <li><a href="#chapter-2-auction-theory-fundamentals" id="toc-chapter-2-auction-theory-fundamentals" class="nav-link" data-scroll-target="#chapter-2-auction-theory-fundamentals">Chapter 2: Auction Theory Fundamentals</a></li>
-  <li><a href="#chapter-3-incentive-compatibility-and-truthfulness" id="toc-chapter-3-incentive-compatibility-and-truthfulness" class="nav-link" data-scroll-target="#chapter-3-incentive-compatibility-and-truthfulness">Chapter 3: Incentive Compatibility and Truthfulness</a></li>
-  <li><a href="#chapter-4-revenue-optimization-and-optimal-auctions" id="toc-chapter-4-revenue-optimization-and-optimal-auctions" class="nav-link" data-scroll-target="#chapter-4-revenue-optimization-and-optimal-auctions">Chapter 4: Revenue Optimization and Optimal Auctions</a></li>
-  </ul></li>
-  <li><a href="#part-ii-advanced-mechanism-design-and-multi-objective-theory" id="toc-part-ii-advanced-mechanism-design-and-multi-objective-theory" class="nav-link" data-scroll-target="#part-ii-advanced-mechanism-design-and-multi-objective-theory">Part II: Advanced Mechanism Design and Multi-Objective Theory</a>
-  <ul class="collapse">
-  <li><a href="#chapter-5-efficiency-and-welfare-analysis" id="toc-chapter-5-efficiency-and-welfare-analysis" class="nav-link" data-scroll-target="#chapter-5-efficiency-and-welfare-analysis">Chapter 5: Efficiency and Welfare Analysis</a></li>
-  <li><a href="#chapter-6-multi-objective-optimization-theory" id="toc-chapter-6-multi-objective-optimization-theory" class="nav-link" data-scroll-target="#chapter-6-multi-objective-optimization-theory">Chapter 6: Multi-Objective Optimization Theory</a></li>
-  <li><a href="#chapter-7-multi-objective-mechanism-design" id="toc-chapter-7-multi-objective-mechanism-design" class="nav-link" data-scroll-target="#chapter-7-multi-objective-mechanism-design">Chapter 7: Multi-Objective Mechanism Design</a></li>
-  <li><a href="#chapter-8-fairness-in-mechanism-design" id="toc-chapter-8-fairness-in-mechanism-design" class="nav-link" data-scroll-target="#chapter-8-fairness-in-mechanism-design">Chapter 8: Fairness in Mechanism Design</a></li>
-  </ul></li>
-  <li><a href="#part-iii-computational-mechanism-design-and-ai-applications" id="toc-part-iii-computational-mechanism-design-and-ai-applications" class="nav-link" data-scroll-target="#part-iii-computational-mechanism-design-and-ai-applications">Part III: Computational Mechanism Design and AI Applications</a>
-  <ul class="collapse">
-  <li><a href="#chapter-9-computational-aspects-of-mechanism-design" id="toc-chapter-9-computational-aspects-of-mechanism-design" class="nav-link" data-scroll-target="#chapter-9-computational-aspects-of-mechanism-design">Chapter 9: Computational Aspects of Mechanism Design</a></li>
-  <li><a href="#chapter-10-learning-and-adaptation-in-mechanisms" id="toc-chapter-10-learning-and-adaptation-in-mechanisms" class="nav-link" data-scroll-target="#chapter-10-learning-and-adaptation-in-mechanisms">Chapter 10: Learning and Adaptation in Mechanisms</a></li>
-  <li><a href="#chapter-11-platform-economics-and-two-sided-markets" id="toc-chapter-11-platform-economics-and-two-sided-markets" class="nav-link" data-scroll-target="#chapter-11-platform-economics-and-two-sided-markets">Chapter 11: Platform Economics and Two-Sided Markets</a></li>
-  </ul></li>
-  <li><a href="#part-iv-llm-advertising-and-implementation" id="toc-part-iv-llm-advertising-and-implementation" class="nav-link" data-scroll-target="#part-iv-llm-advertising-and-implementation">Part IV: LLM Advertising and Implementation</a>
-  <ul class="collapse">
-  <li><a href="#chapter-12-introduction-to-llm-advertising-markets" id="toc-chapter-12-introduction-to-llm-advertising-markets" class="nav-link" data-scroll-target="#chapter-12-introduction-to-llm-advertising-markets">Chapter 12: Introduction to LLM Advertising Markets</a></li>
-  <li><a href="#chapter-13-multi-objective-llm-advertising-mechanisms" id="toc-chapter-13-multi-objective-llm-advertising-mechanisms" class="nav-link" data-scroll-target="#chapter-13-multi-objective-llm-advertising-mechanisms">Chapter 13: Multi-Objective LLM Advertising Mechanisms</a></li>
-  <li><a href="#chapter-14-experimental-design-and-empirical-methods" id="toc-chapter-14-experimental-design-and-empirical-methods" class="nav-link" data-scroll-target="#chapter-14-experimental-design-and-empirical-methods">Chapter 14: Experimental Design and Empirical Methods</a></li>
-  <li><a href="#chapter-15-implementation-and-future-directions" id="toc-chapter-15-implementation-and-future-directions" class="nav-link" data-scroll-target="#chapter-15-implementation-and-future-directions">Chapter 15: Implementation and Future Directions</a></li>
-  </ul></li>
-  </ul>
-</nav>
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+        
     </div>
 <!-- main -->
-<main class="content" id="quarto-document-content">
-
-<header id="title-block-header" class="quarto-title-block default">
-<div class="quarto-title">
-<h1 class="title">Outline</h1>
-</div>
+<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../part04/llm-ads.html">LLM Ads</a></li><li class="breadcrumb-item"><a href="../part04/llm-ads-experiments.html"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">llm-ads-experiments.html</span></a></li></ol></nav></header>
 
 
 
-<div class="quarto-title-meta">
-
-    
-  
-    
-  </div>
-  
 
 
-</header>
 
-
-<p>Foundations of Multi-Objective Mechanism Design for Digital Markets</p>
-<p><strong>Overall Objective:</strong> This book provides a comprehensive foundation in mechanism design theory, multi-objective optimization, and their applications to digital advertising markets, with particular emphasis on AI-powered platforms. Students will master both classical auction theory and modern computational approaches needed for designing and analyzing multi-objective mechanisms in LLM advertising contexts.</p>
-<p><strong>Learning Outcomes:</strong> - Master fundamental mechanism design principles including incentive compatibility, individual rationality, and revenue optimization - Understand multi-objective optimization theory and its application to mechanism design problems - Develop skills in analyzing trade-offs between competing objectives (revenue, efficiency, fairness) in digital markets - Gain proficiency in both theoretical characterization and computational implementation of auction mechanisms for AI-powered advertising platforms</p>
-<section id="part-i-classical-mechanism-design-foundations" class="level2">
-<h2 class="anchored" data-anchor-id="part-i-classical-mechanism-design-foundations">Part I: Classical Mechanism Design Foundations</h2>
-<section id="chapter-1-introduction-to-mechanism-design" class="level3">
-<h3 class="anchored" data-anchor-id="chapter-1-introduction-to-mechanism-design">Chapter 1: Introduction to Mechanism Design</h3>
-<ul>
-<li><strong>Objective:</strong> Understand the fundamental problem of mechanism design and its relevance to digital markets</li>
-<li><strong>Motivation:</strong> Mechanism design is the “engineering” side of game theory - essential for designing fair and efficient systems where participants have private information</li>
-<li><strong>Core Topics:</strong>
-<ul>
-<li>The revelation principle and direct mechanisms</li>
-<li>Social choice functions and implementation theory</li>
-<li>Information asymmetries in digital platforms</li>
-<li>Strategic behavior vs.&nbsp;truthful reporting</li>
-<li>Overview of digital advertising as mechanism design problem</li>
-<li>Platform economics and two-sided markets</li>
-<li>Introduction to LLM advertising challenges</li>
-<li>Historical evolution from traditional to AI-powered advertising</li>
-</ul></li>
-<li><strong>Applications:</strong> eBay auctions, Google AdWords, platform marketplace design</li>
-<li><strong>Prerequisites:</strong> Basic game theory, undergraduate microeconomics</li>
-</ul>
-</section>
-<section id="chapter-2-auction-theory-fundamentals" class="level3">
-<h3 class="anchored" data-anchor-id="chapter-2-auction-theory-fundamentals">Chapter 2: Auction Theory Fundamentals</h3>
-<ul>
-<li><strong>Objective:</strong> Master basic auction formats and their strategic properties</li>
-<li><strong>Motivation:</strong> Auctions are the most common mechanism for resource allocation in digital markets, forming the foundation for advertising platforms</li>
-<li><strong>Core Topics:</strong>
-<ul>
-<li>First-price vs.&nbsp;second-price auctions</li>
-<li>English and Dutch auction formats</li>
-<li>Private vs.&nbsp;common value auctions</li>
-<li>Bidding strategies and equilibrium analysis</li>
-<li>Revenue equivalence theorem</li>
-<li>Winner’s curse and its implications</li>
-<li>Multi-unit and combinatorial auctions</li>
-<li>Position auctions in search advertising</li>
-</ul></li>
-<li><strong>Applications:</strong> Traditional art auctions, spectrum auctions, sponsored search</li>
-<li><strong>Prerequisites:</strong> Chapter 1, basic probability theory</li>
-</ul>
-</section>
-<section id="chapter-3-incentive-compatibility-and-truthfulness" class="level3">
-<h3 class="anchored" data-anchor-id="chapter-3-incentive-compatibility-and-truthfulness">Chapter 3: Incentive Compatibility and Truthfulness</h3>
-<ul>
-<li><strong>Objective:</strong> Understand when and why participants reveal private information truthfully</li>
-<li><strong>Motivation:</strong> Truthful mechanisms are crucial for platform operators to make good decisions and for participants to avoid complex strategic calculations</li>
-<li><strong>Core Topics:</strong>
-<ul>
-<li>Dominant strategy incentive compatibility (DSIC)</li>
-<li>Bayesian Nash incentive compatibility</li>
-<li>The taxation principle and payment rules</li>
-<li>Myerson’s lemma and revenue characterization</li>
-<li>Individual rationality constraints</li>
-<li>Ex-post vs.&nbsp;ex-ante properties</li>
-<li>Randomized mechanisms and truthfulness</li>
-<li>Implementation in dominant strategies</li>
-</ul></li>
-<li><strong>Applications:</strong> Second-price auctions, VCG mechanisms, mechanism design for digital platforms</li>
-<li><strong>Prerequisites:</strong> Chapters 1-2, intermediate probability</li>
-</ul>
-</section>
-<section id="chapter-4-revenue-optimization-and-optimal-auctions" class="level3">
-<h3 class="anchored" data-anchor-id="chapter-4-revenue-optimization-and-optimal-auctions">Chapter 4: Revenue Optimization and Optimal Auctions</h3>
-<ul>
-<li><strong>Objective:</strong> Learn how to design mechanisms that maximize seller/platform revenue</li>
-<li><strong>Motivation:</strong> Platform profitability often depends on revenue optimization, but pure revenue maximization may conflict with other objectives</li>
-<li><strong>Core Topics:</strong>
-<ul>
-<li>Myerson’s optimal auction theory</li>
-<li>Regular vs.&nbsp;irregular distributions</li>
-<li>Reserve prices and their effects</li>
-<li>Ironing procedures for non-regular cases</li>
-<li>Virtual valuations and allocation rules</li>
-<li>Revenue vs.&nbsp;efficiency trade-offs</li>
-<li>Optimal mechanisms with budget constraints</li>
-<li>Multi-dimensional mechanism design basics</li>
-</ul></li>
-<li><strong>Applications:</strong> Reserve prices in online auctions, premium pricing strategies, advertising auction design</li>
-<li><strong>Prerequisites:</strong> Chapters 1-3, calculus and optimization</li>
-</ul>
-</section>
-</section>
-<section id="part-ii-advanced-mechanism-design-and-multi-objective-theory" class="level2">
-<h2 class="anchored" data-anchor-id="part-ii-advanced-mechanism-design-and-multi-objective-theory">Part II: Advanced Mechanism Design and Multi-Objective Theory</h2>
-<section id="chapter-5-efficiency-and-welfare-analysis" class="level3">
-<h3 class="anchored" data-anchor-id="chapter-5-efficiency-and-welfare-analysis">Chapter 5: Efficiency and Welfare Analysis</h3>
-<ul>
-<li><strong>Objective:</strong> Understand different notions of efficiency and welfare in mechanism design</li>
-<li><strong>Motivation:</strong> Platforms must balance multiple stakeholder interests, requiring formal frameworks for measuring and comparing welfare outcomes</li>
-<li><strong>Core Topics:</strong>
-<ul>
-<li>Allocative efficiency and Pareto optimality</li>
-<li>Social welfare maximization</li>
-<li>Utilitarian vs.&nbsp;egalitarian welfare functions</li>
-<li>Nash social welfare and fairness concepts</li>
-<li>Deadweight loss measurement</li>
-<li>Consumer vs.&nbsp;producer surplus</li>
-<li>Platform welfare and network effects</li>
-<li>Welfare analysis in two-sided markets</li>
-</ul></li>
-<li><strong>Applications:</strong> Antitrust analysis of platforms, regulatory policy evaluation, platform design choices</li>
-<li><strong>Prerequisites:</strong> Chapters 1-4, welfare economics basics</li>
-</ul>
-</section>
-<section id="chapter-6-multi-objective-optimization-theory" class="level3">
-<h3 class="anchored" data-anchor-id="chapter-6-multi-objective-optimization-theory">Chapter 6: Multi-Objective Optimization Theory</h3>
-<ul>
-<li><strong>Objective:</strong> Master the mathematical foundations of multi-objective optimization</li>
-<li><strong>Motivation:</strong> Real mechanism design problems involve multiple competing objectives that cannot be reduced to a single measure</li>
-<li><strong>Core Topics:</strong>
-<ul>
-<li>Pareto efficiency and Pareto frontiers</li>
-<li>Scalarization methods and weighted objectives</li>
-<li>Lexicographic ordering and hierarchical objectives</li>
-<li>Multi-criteria decision analysis</li>
-<li>Trade-off analysis and sensitivity</li>
-<li>Computational approaches to multi-objective problems</li>
-<li>Approximation algorithms for multi-objective optimization</li>
-<li>Evolutionary and metaheuristic approaches</li>
-</ul></li>
-<li><strong>Applications:</strong> Portfolio optimization, engineering design, resource allocation problems</li>
-<li><strong>Prerequisites:</strong> Chapter 5, linear algebra, basic optimization theory</li>
-</ul>
-</section>
-<section id="chapter-7-multi-objective-mechanism-design" class="level3">
-<h3 class="anchored" data-anchor-id="chapter-7-multi-objective-mechanism-design">Chapter 7: Multi-Objective Mechanism Design</h3>
-<ul>
-<li><strong>Objective:</strong> Synthesize mechanism design with multi-objective optimization theory</li>
-<li><strong>Motivation:</strong> This represents the core theoretical framework needed for the thesis research on LLM advertising</li>
-<li><strong>Core Topics:</strong>
-<ul>
-<li>Defining multiple objectives in mechanism contexts</li>
-<li>Revenue-efficiency-fairness trade-offs</li>
-<li>Characterizing feasible objective combinations</li>
-<li>Pareto optimal mechanisms</li>
-<li>Implementation of multi-objective social choice functions</li>
-<li>Impossibility results and fundamental limitations</li>
-<li>Computational complexity of multi-objective mechanisms</li>
-<li>Approximation and heuristic approaches</li>
-</ul></li>
-<li><strong>Applications:</strong> Platform design with multiple stakeholders, regulatory mechanism design, multi-sided market optimization</li>
-<li><strong>Prerequisites:</strong> Chapters 4-6, advanced optimization</li>
-</ul>
-</section>
-<section id="chapter-8-fairness-in-mechanism-design" class="level3">
-<h3 class="anchored" data-anchor-id="chapter-8-fairness-in-mechanism-design">Chapter 8: Fairness in Mechanism Design</h3>
-<ul>
-<li><strong>Objective:</strong> Understand different fairness concepts and their implementation in mechanisms</li>
-<li><strong>Motivation:</strong> Fairness considerations are increasingly important in AI systems and platform regulation, affecting long-term platform sustainability</li>
-<li><strong>Core Topics:</strong>
-<ul>
-<li>Envy-freeness and proportionality concepts</li>
-<li>Egalitarian and maximin fairness</li>
-<li>Fair division and cake-cutting connections</li>
-<li>Fairness in auction design</li>
-<li>Discrimination and bias in algorithmic mechanisms</li>
-<li>Group fairness vs.&nbsp;individual fairness</li>
-<li>Fairness-efficiency trade-offs</li>
-<li>Regulatory approaches to fairness</li>
-</ul></li>
-<li><strong>Applications:</strong> Fair allocation in platforms, anti-discrimination policies, equitable advertising access</li>
-<li><strong>Prerequisites:</strong> Chapters 3, 5, 7, social choice theory basics</li>
-</ul>
-</section>
-</section>
-<section id="part-iii-computational-mechanism-design-and-ai-applications" class="level2">
-<h2 class="anchored" data-anchor-id="part-iii-computational-mechanism-design-and-ai-applications">Part III: Computational Mechanism Design and AI Applications</h2>
-<section id="chapter-9-computational-aspects-of-mechanism-design" class="level3">
-<h3 class="anchored" data-anchor-id="chapter-9-computational-aspects-of-mechanism-design">Chapter 9: Computational Aspects of Mechanism Design</h3>
-<ul>
-<li><strong>Objective:</strong> Bridge theoretical mechanism design with computational implementation</li>
-<li><strong>Motivation:</strong> Real mechanisms must be computationally tractable and implementable at scale in digital platforms</li>
-<li><strong>Core Topics:</strong>
-<ul>
-<li>Algorithmic mechanism design principles</li>
-<li>Computational complexity of truthful mechanisms</li>
-<li>Approximation mechanisms and performance guarantees</li>
-<li>Online mechanism design and learning</li>
-<li>Automated mechanism design approaches</li>
-<li>Auction algorithms and data structures</li>
-<li>Scalability and distributed implementation</li>
-<li>Real-time constraints in digital advertising</li>
-</ul></li>
-<li><strong>Applications:</strong> High-frequency trading mechanisms, real-time advertising auctions, cloud resource allocation</li>
-<li><strong>Prerequisites:</strong> Chapters 1-4, algorithms and data structures, computational complexity</li>
-</ul>
-</section>
-<section id="chapter-10-learning-and-adaptation-in-mechanisms" class="level3">
-<h3 class="anchored" data-anchor-id="chapter-10-learning-and-adaptation-in-mechanisms">Chapter 10: Learning and Adaptation in Mechanisms</h3>
-<ul>
-<li><strong>Objective:</strong> Understand how mechanisms can learn and adapt over time</li>
-<li><strong>Motivation:</strong> AI-powered platforms can continuously improve their mechanisms using machine learning, but this raises new theoretical questions</li>
-<li><strong>Core Topics:</strong>
-<ul>
-<li>Online learning in mechanism design</li>
-<li>Multi-armed bandits for mechanism optimization</li>
-<li>Regret minimization in auctions</li>
-<li>Adaptive reserve pricing</li>
-<li>Learning user preferences and valuations</li>
-<li>Strategic learning by participants</li>
-<li>Long-term vs.&nbsp;short-term incentives</li>
-<li>Mechanism design with changing populations</li>
-</ul></li>
-<li><strong>Applications:</strong> Dynamic pricing in platforms, personalized advertising auctions, adaptive market mechanisms</li>
-<li><strong>Prerequisites:</strong> Chapters 3, 9, basic machine learning</li>
-</ul>
-</section>
-<section id="chapter-11-platform-economics-and-two-sided-markets" class="level3">
-<h3 class="anchored" data-anchor-id="chapter-11-platform-economics-and-two-sided-markets">Chapter 11: Platform Economics and Two-Sided Markets</h3>
-<ul>
-<li><strong>Objective:</strong> Apply mechanism design to platform and marketplace contexts</li>
-<li><strong>Motivation:</strong> Understanding platform economics is essential for LLM advertising, where platforms serve both users and advertisers</li>
-<li><strong>Core Topics:</strong>
-<ul>
-<li>Network effects and platform adoption</li>
-<li>Two-sided market theory and pricing</li>
-<li>Platform competition and differentiation</li>
-<li>Chicken-and-egg problems in platform growth</li>
-<li>Monetization strategies for digital platforms</li>
-<li>User attention as a scarce resource</li>
-<li>Quality and trust in platform ecosystems</li>
-<li>Regulatory challenges for dominant platforms</li>
-</ul></li>
-<li><strong>Applications:</strong> Social media advertising, marketplace design, app store economics</li>
-<li><strong>Prerequisites:</strong> Chapters 2, 5, industrial organization basics</li>
-</ul>
-</section>
-</section>
-<section id="part-iv-llm-advertising-and-implementation" class="level2">
-<h2 class="anchored" data-anchor-id="part-iv-llm-advertising-and-implementation">Part IV: LLM Advertising and Implementation</h2>
-<section id="chapter-12-introduction-to-llm-advertising-markets" class="level3">
-<h3 class="anchored" data-anchor-id="chapter-12-introduction-to-llm-advertising-markets">Chapter 12: Introduction to LLM Advertising Markets</h3>
-<ul>
-<li><strong>Objective:</strong> Understand the unique characteristics of advertising in AI-generated content</li>
-<li><strong>Motivation:</strong> LLM advertising represents a new frontier requiring novel mechanism design approaches</li>
-<li><strong>Core Topics:</strong>
-<ul>
-<li>Retrieval-Augmented Generation (RAG) framework</li>
-<li>Content-advertising integration challenges</li>
-<li>User attention and cognitive processing</li>
-<li>Quality measurement in AI-generated content</li>
-<li>Relevance scoring and matching problems</li>
-<li>Privacy and personalization trade-offs</li>
-<li>Trust and transparency in AI advertising</li>
-<li>Regulatory and ethical considerations</li>
-</ul></li>
-<li><strong>Applications:</strong> ChatGPT advertising, AI writing assistants, conversational commerce</li>
-<li><strong>Prerequisites:</strong> Chapters 1, 11, basic understanding of LLMs</li>
-</ul>
-</section>
-<section id="chapter-13-multi-objective-llm-advertising-mechanisms" class="level3">
-<h3 class="anchored" data-anchor-id="chapter-13-multi-objective-llm-advertising-mechanisms">Chapter 13: Multi-Objective LLM Advertising Mechanisms</h3>
-<ul>
-<li><strong>Objective:</strong> Apply multi-objective mechanism design specifically to LLM advertising contexts</li>
-<li><strong>Motivation:</strong> This chapter directly supports the thesis research by providing the specific theoretical framework needed</li>
-<li><strong>Core Topics:</strong>
-<ul>
-<li>Revenue-quality-fairness objective formulation</li>
-<li>Segment-based auction design</li>
-<li>Probabilistic allocation in RAG frameworks</li>
-<li>Quality metrics for integrated advertising</li>
-<li>Fairness considerations in AI-generated content</li>
-<li>User welfare in LLM advertising</li>
-<li>Dynamic and sequential advertising decisions</li>
-<li>Cross-platform mechanism design</li>
-</ul></li>
-<li><strong>Applications:</strong> The original research paper’s segment auctions, conversational advertising design</li>
-<li><strong>Prerequisites:</strong> Chapters 7, 8, 12</li>
-</ul>
-</section>
-<section id="chapter-14-experimental-design-and-empirical-methods" class="level3">
-<h3 class="anchored" data-anchor-id="chapter-14-experimental-design-and-empirical-methods">Chapter 14: Experimental Design and Empirical Methods</h3>
-<ul>
-<li><strong>Objective:</strong> Learn how to test mechanism design theories through experiments and empirical analysis</li>
-<li><strong>Motivation:</strong> Validating theoretical predictions requires careful experimental design and statistical analysis</li>
-<li><strong>Core Topics:</strong>
-<ul>
-<li>Laboratory vs.&nbsp;field experiments in mechanism design</li>
-<li>Treatment design for multi-objective mechanisms</li>
-<li>Measuring quality, fairness, and efficiency</li>
-<li>Statistical analysis of auction data</li>
-<li>Causal inference in mechanism evaluation</li>
-<li>A/B testing for platform mechanisms</li>
-<li>Simulation and computational experiments</li>
-<li>External validity and generalization</li>
-</ul></li>
-<li><strong>Applications:</strong> Platform A/B testing, mechanism comparison studies, policy evaluation</li>
-<li><strong>Prerequisites:</strong> Chapters 7, 13, statistics and econometrics</li>
-</ul>
-</section>
-<section id="chapter-15-implementation-and-future-directions" class="level3">
-<h3 class="anchored" data-anchor-id="chapter-15-implementation-and-future-directions">Chapter 15: Implementation and Future Directions</h3>
-<ul>
-<li><strong>Objective:</strong> Synthesize learning and identify future research opportunities</li>
-<li><strong>Motivation:</strong> Prepare students to contribute original research and understand the evolving landscape</li>
-<li><strong>Core Topics:</strong>
-<ul>
-<li>From theory to practice: implementation challenges</li>
-<li>Scalability and real-world constraints</li>
-<li>Emerging technologies and mechanism design</li>
-<li>AI safety and mechanism design</li>
-<li>Decentralized and blockchain-based mechanisms</li>
-<li>Privacy-preserving mechanism design</li>
-<li>Global and cross-cultural considerations</li>
-<li>Open research questions and future directions</li>
-</ul></li>
-<li><strong>Applications:</strong> Practical platform implementation, research proposal development, policy recommendations</li>
-<li><strong>Prerequisites:</strong> All previous chapters</li>
-</ul>
-<hr>
-<p><strong>Book Summary:</strong> This comprehensive treatment provides students with both the classical foundations and cutting-edge applications needed to conduct original research in multi-objective mechanism design for LLM advertising. The progression from basic concepts through advanced theory to specific applications ensures students can both understand existing literature and contribute novel theoretical and empirical insights to this emerging field.</p>
-
-
-</section>
-</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
@@ -1209,13 +844,13 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="./index.html" class="pagination-link" aria-label="Welcome">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Welcome</span>
+      <a href="../part04/llm-ads-moop.html" class="pagination-link" aria-label="llm-ads-moop.html">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">llm-ads-moop.html</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./part01/intro-md.html" class="pagination-link" aria-label="Introduction to Mechanism Design">
-        <span class="nav-page-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction to Mechanism Design</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="../part04/future.html" class="pagination-link" aria-label="future.html">
+        <span class="nav-page-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">future.html</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
@@ -1224,5 +859,5 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 
 
 
-<script src="site_libs/quarto-html/zenscroll-min.js"></script>
+<script src="../site_libs/quarto-html/zenscroll-min.js"></script>
 </body></html>

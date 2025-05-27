@@ -29,6 +29,14 @@ book:
     - part: Computational MD
       chapters:
         - part03/computational-aspects-md.qmd
+        - part03/learn-adapt.qmd
+        - part03/platform-econ.qmd
+    - part: LLM Ads
+      chapters:
+        - part04/llm-ads.qmd
+        - part04/llm-ads-moop.qmd
+        - part04/llm-ads-experiments.qmd
+        - part04/future.qmd
 
 format:
   html:

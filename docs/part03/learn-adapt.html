@@ -1,0 +1,2067 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.6.43">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>10&nbsp; Learning and Adaptation in Mechanisms – ADLLM</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../part03/platform-econ.html" rel="next">
+<link href="../part03/computational-aspects-md.html" rel="prev">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-d4d76bf8491c20bad77d141916dc28e1.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-4379b0ccadffce622b03caf4c46266b3.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-bdec3157979715d7154bb60f5aa24e58.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-4104e206323135730aa08c3113d84ebc.min.css" rel="prefetch" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<style>html{ scroll-behavior: smooth; }</style>
+
+  <script>window.backupDefine = window.define; window.define = undefined;</script><script src="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.js"></script>
+  <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+  </script>
+  <script>window.define = window.backupDefine; window.backupDefine = undefined;</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.css">
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-sidebar floating">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../part03/computational-aspects-md.html">Computational MD</a></li><li class="breadcrumb-item"><a href="../part03/learn-adapt.html"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Learning and Adaptation in Mechanisms</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">ADLLM</a> 
+        <div class="sidebar-tools-main">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Welcome</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../outline.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Outline</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="false">
+ <span class="menu-text">Classical MD</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../part01/intro-md.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction to Mechanism Design</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../part01/auction-theory.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Auction Theory Fundamentals</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../part01/ic.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Incentive Compatibility and Truthfulness</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../part01/revenue-opti.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Revenue Optimization and Optimal Auctions</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false">
+ <span class="menu-text">Multi-objective Opti</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../part02/efficiency.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Efficiency and Welfare Analysis</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../part02/multi-objective-opti.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Multi-Objective Optimization Theory</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../part02/multi-objective-md.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Multi-Objective Mechanism Design</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../part02/fairness.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Fairness in Mechanism Design</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">Computational MD</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../part03/computational-aspects-md.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Computational Aspects of Mechanism Design</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../part03/learn-adapt.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Learning and Adaptation in Mechanisms</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../part03/platform-econ.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Platform Economics and Two-Sided Markets</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="false">
+ <span class="menu-text">LLM Ads</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../part04/llm-ads.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Introduction to LLM Advertising Markets</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../part04/llm-ads-moop.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">llm-ads-moop.html</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../part04/llm-ads-experiments.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">llm-ads-experiments.html</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../part04/future.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">future.html</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#chapter-introduction" id="toc-chapter-introduction" class="nav-link active" data-scroll-target="#chapter-introduction"><span class="header-section-number">10.1</span> Chapter Introduction</a></li>
+  <li><a href="#intuitive-development-why-static-mechanisms-fail" id="toc-intuitive-development-why-static-mechanisms-fail" class="nav-link" data-scroll-target="#intuitive-development-why-static-mechanisms-fail"><span class="header-section-number">10.2</span> Intuitive Development: Why Static Mechanisms Fail</a>
+  <ul class="collapse">
+  <li><a href="#the-dynamic-environment-challenge" id="toc-the-dynamic-environment-challenge" class="nav-link" data-scroll-target="#the-dynamic-environment-challenge"><span class="header-section-number">10.2.1</span> The Dynamic Environment Challenge</a></li>
+  <li><a href="#multi-armed-bandit-intuition" id="toc-multi-armed-bandit-intuition" class="nav-link" data-scroll-target="#multi-armed-bandit-intuition"><span class="header-section-number">10.2.2</span> Multi-Armed Bandit Intuition</a></li>
+  <li><a href="#strategic-complications-in-learning" id="toc-strategic-complications-in-learning" class="nav-link" data-scroll-target="#strategic-complications-in-learning"><span class="header-section-number">10.2.3</span> Strategic Complications in Learning</a></li>
+  <li><a href="#contextual-learning-in-llm-advertising" id="toc-contextual-learning-in-llm-advertising" class="nav-link" data-scroll-target="#contextual-learning-in-llm-advertising"><span class="header-section-number">10.2.4</span> Contextual Learning in LLM Advertising</a></li>
+  <li><a href="#online-learning-vs.-batch-learning" id="toc-online-learning-vs.-batch-learning" class="nav-link" data-scroll-target="#online-learning-vs.-batch-learning"><span class="header-section-number">10.2.5</span> Online Learning vs.&nbsp;Batch Learning</a></li>
+  </ul></li>
+  <li><a href="#mathematical-foundations-learning-theory-for-mechanisms" id="toc-mathematical-foundations-learning-theory-for-mechanisms" class="nav-link" data-scroll-target="#mathematical-foundations-learning-theory-for-mechanisms"><span class="header-section-number">10.3</span> Mathematical Foundations: Learning Theory for Mechanisms</a>
+  <ul class="collapse">
+  <li><a href="#formal-framework-for-learning-mechanisms" id="toc-formal-framework-for-learning-mechanisms" class="nav-link" data-scroll-target="#formal-framework-for-learning-mechanisms"><span class="header-section-number">10.3.1</span> Formal Framework for Learning Mechanisms</a></li>
+  <li><a href="#regret-analysis-for-mechanism-learning" id="toc-regret-analysis-for-mechanism-learning" class="nav-link" data-scroll-target="#regret-analysis-for-mechanism-learning"><span class="header-section-number">10.3.2</span> Regret Analysis for Mechanism Learning</a></li>
+  <li><a href="#upper-confidence-bound-for-mechanism-selection" id="toc-upper-confidence-bound-for-mechanism-selection" class="nav-link" data-scroll-target="#upper-confidence-bound-for-mechanism-selection"><span class="header-section-number">10.3.3</span> Upper Confidence Bound for Mechanism Selection</a></li>
+  <li><a href="#contextual-bandits-for-mechanism-design" id="toc-contextual-bandits-for-mechanism-design" class="nav-link" data-scroll-target="#contextual-bandits-for-mechanism-design"><span class="header-section-number">10.3.4</span> Contextual Bandits for Mechanism Design</a></li>
+  <li><a href="#thompson-sampling-for-mechanism-learning" id="toc-thompson-sampling-for-mechanism-learning" class="nav-link" data-scroll-target="#thompson-sampling-for-mechanism-learning"><span class="header-section-number">10.3.5</span> Thompson Sampling for Mechanism Learning</a></li>
+  <li><a href="#strategic-robustness-in-learning-mechanisms" id="toc-strategic-robustness-in-learning-mechanisms" class="nav-link" data-scroll-target="#strategic-robustness-in-learning-mechanisms"><span class="header-section-number">10.3.6</span> Strategic Robustness in Learning Mechanisms</a></li>
+  </ul></li>
+  <li><a href="#advanced-results-multi-objective-learning-and-adaptation" id="toc-advanced-results-multi-objective-learning-and-adaptation" class="nav-link" data-scroll-target="#advanced-results-multi-objective-learning-and-adaptation"><span class="header-section-number">10.4</span> Advanced Results: Multi-Objective Learning and Adaptation</a>
+  <ul class="collapse">
+  <li><a href="#learning-pareto-optimal-trade-offs" id="toc-learning-pareto-optimal-trade-offs" class="nav-link" data-scroll-target="#learning-pareto-optimal-trade-offs"><span class="header-section-number">10.4.1</span> Learning Pareto-Optimal Trade-offs</a></li>
+  <li><a href="#adaptive-user-preference-learning" id="toc-adaptive-user-preference-learning" class="nav-link" data-scroll-target="#adaptive-user-preference-learning"><span class="header-section-number">10.4.2</span> Adaptive User Preference Learning</a></li>
+  <li><a href="#dynamic-mechanism-adaptation" id="toc-dynamic-mechanism-adaptation" class="nav-link" data-scroll-target="#dynamic-mechanism-adaptation"><span class="header-section-number">10.4.3</span> Dynamic Mechanism Adaptation</a></li>
+  <li><a href="#multi-agent-learning-in-mechanism-design" id="toc-multi-agent-learning-in-mechanism-design" class="nav-link" data-scroll-target="#multi-agent-learning-in-mechanism-design"><span class="header-section-number">10.4.4</span> Multi-Agent Learning in Mechanism Design</a></li>
+  </ul></li>
+  <li><a href="#applications-and-implementation-adaptive-llm-advertising" id="toc-applications-and-implementation-adaptive-llm-advertising" class="nav-link" data-scroll-target="#applications-and-implementation-adaptive-llm-advertising"><span class="header-section-number">10.5</span> Applications and Implementation: Adaptive LLM Advertising</a>
+  <ul class="collapse">
+  <li><a href="#implementing-adaptive-segment-auctions" id="toc-implementing-adaptive-segment-auctions" class="nav-link" data-scroll-target="#implementing-adaptive-segment-auctions"><span class="header-section-number">10.5.1</span> Implementing Adaptive Segment Auctions</a></li>
+  <li><a href="#quality-prediction-and-learning" id="toc-quality-prediction-and-learning" class="nav-link" data-scroll-target="#quality-prediction-and-learning"><span class="header-section-number">10.5.2</span> Quality Prediction and Learning</a></li>
+  <li><a href="#user-preference-learning-implementation" id="toc-user-preference-learning-implementation" class="nav-link" data-scroll-target="#user-preference-learning-implementation"><span class="header-section-number">10.5.3</span> User Preference Learning Implementation</a></li>
+  <li><a href="#performance-monitoring-and-change-detection" id="toc-performance-monitoring-and-change-detection" class="nav-link" data-scroll-target="#performance-monitoring-and-change-detection"><span class="header-section-number">10.5.4</span> Performance Monitoring and Change Detection</a></li>
+  <li><a href="#ab-testing-framework-for-mechanism-learning" id="toc-ab-testing-framework-for-mechanism-learning" class="nav-link" data-scroll-target="#ab-testing-framework-for-mechanism-learning"><span class="header-section-number">10.5.5</span> A/B Testing Framework for Mechanism Learning</a></li>
+  <li><a href="#strategic-robustness-implementation" id="toc-strategic-robustness-implementation" class="nav-link" data-scroll-target="#strategic-robustness-implementation"><span class="header-section-number">10.5.6</span> Strategic Robustness Implementation</a></li>
+  <li><a href="#real-time-implementation-architecture" id="toc-real-time-implementation-architecture" class="nav-link" data-scroll-target="#real-time-implementation-architecture"><span class="header-section-number">10.5.7</span> Real-Time Implementation Architecture</a></li>
+  </ul></li>
+  <li><a href="#chapter-synthesis" id="toc-chapter-synthesis" class="nav-link" data-scroll-target="#chapter-synthesis"><span class="header-section-number">10.6</span> Chapter Synthesis</a></li>
+  <li><a href="#exercises" id="toc-exercises" class="nav-link" data-scroll-target="#exercises"><span class="header-section-number">10.7</span> Exercises</a>
+  <ul class="collapse">
+  <li><a href="#basic-exercises" id="toc-basic-exercises" class="nav-link" data-scroll-target="#basic-exercises"><span class="header-section-number">10.7.1</span> Basic Exercises</a></li>
+  <li><a href="#intermediate-exercises" id="toc-intermediate-exercises" class="nav-link" data-scroll-target="#intermediate-exercises"><span class="header-section-number">10.7.2</span> Intermediate Exercises</a></li>
+  <li><a href="#advanced-exercises" id="toc-advanced-exercises" class="nav-link" data-scroll-target="#advanced-exercises"><span class="header-section-number">10.7.3</span> Advanced Exercises</a></li>
+  <li><a href="#research-level-exercises" id="toc-research-level-exercises" class="nav-link" data-scroll-target="#research-level-exercises"><span class="header-section-number">10.7.4</span> Research-Level Exercises</a></li>
+  </ul></li>
+  <li><a href="#further-reading" id="toc-further-reading" class="nav-link" data-scroll-target="#further-reading"><span class="header-section-number">10.8</span> Further Reading</a>
+  <ul class="collapse">
+  <li><a href="#foundational-texts-on-learning-theory" id="toc-foundational-texts-on-learning-theory" class="nav-link" data-scroll-target="#foundational-texts-on-learning-theory"><span class="header-section-number">10.8.1</span> Foundational Texts on Learning Theory</a></li>
+  <li><a href="#mechanism-design-with-learning" id="toc-mechanism-design-with-learning" class="nav-link" data-scroll-target="#mechanism-design-with-learning"><span class="header-section-number">10.8.2</span> Mechanism Design with Learning</a></li>
+  <li><a href="#multi-objective-and-contextual-learning" id="toc-multi-objective-and-contextual-learning" class="nav-link" data-scroll-target="#multi-objective-and-contextual-learning"><span class="header-section-number">10.8.3</span> Multi-Objective and Contextual Learning</a></li>
+  <li><a href="#learning-in-digital-advertising" id="toc-learning-in-digital-advertising" class="nav-link" data-scroll-target="#learning-in-digital-advertising"><span class="header-section-number">10.8.4</span> Learning in Digital Advertising</a></li>
+  <li><a href="#llm-and-ai-powered-advertising-emerging-literature" id="toc-llm-and-ai-powered-advertising-emerging-literature" class="nav-link" data-scroll-target="#llm-and-ai-powered-advertising-emerging-literature"><span class="header-section-number">10.8.5</span> LLM and AI-Powered Advertising (Emerging Literature)</a></li>
+  <li><a href="#practical-implementation-and-systems" id="toc-practical-implementation-and-systems" class="nav-link" data-scroll-target="#practical-implementation-and-systems"><span class="header-section-number">10.8.6</span> Practical Implementation and Systems</a></li>
+  <li><a href="#privacy-and-strategic-considerations" id="toc-privacy-and-strategic-considerations" class="nav-link" data-scroll-target="#privacy-and-strategic-considerations"><span class="header-section-number">10.8.7</span> Privacy and Strategic Considerations</a></li>
+  <li><a href="#specialized-venues-and-resources" id="toc-specialized-venues-and-resources" class="nav-link" data-scroll-target="#specialized-venues-and-resources"><span class="header-section-number">10.8.8</span> Specialized Venues and Resources</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../part03/computational-aspects-md.html">Computational MD</a></li><li class="breadcrumb-item"><a href="../part03/learn-adapt.html"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Learning and Adaptation in Mechanisms</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Learning and Adaptation in Mechanisms</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="chapter-introduction" class="level2" data-number="10.1">
+<h2 data-number="10.1" class="anchored" data-anchor-id="chapter-introduction"><span class="header-section-number">10.1</span> Chapter Introduction</h2>
+<p>Consider the evolution of Google’s keyword advertising platform over its first decade of operation. When AdWords launched in 2000, the system used simple position-based pricing with minimal learning capabilities. By 2010, the platform had evolved into a sophisticated ecosystem that continuously learned advertiser valuations, predicted click-through rates, adapted reserve prices, and optimized auction parameters across billions of queries daily. This transformation illustrates a fundamental shift in mechanism design: from static, one-size-fits-all approaches to adaptive systems that learn and improve through interaction.</p>
+<p>In the context of LLM advertising, this evolution becomes even more critical. Unlike traditional search advertising where user queries and advertiser content remain relatively stable, LLM platforms face constantly evolving queries, dynamic advertiser populations, and shifting user expectations about content quality. A mechanism that performs optimally today may become obsolete tomorrow as language models improve, advertiser strategies adapt, and user sophistication increases.</p>
+<p>The challenge is particularly acute for multi-objective mechanisms like the segment auction from your main research paper. The optimal trade-off parameter <span class="math inline">\alpha</span> between revenue and quality is not a fixed constant—it depends on market conditions, competitive dynamics, user preferences, and technological capabilities, all of which evolve continuously. A static mechanism cannot adapt to these changes, potentially leaving substantial value unrealized or user satisfaction compromised.</p>
+<p><strong>Learning Objectives:</strong> By the end of this chapter, you will:</p>
+<ol type="1">
+<li>Understand how learning algorithms can be integrated into mechanism design while preserving incentive properties</li>
+<li>Master multi-armed bandit approaches for mechanism parameter optimization</li>
+<li>Analyze the trade-offs between exploration and exploitation in adaptive mechanisms</li>
+<li>Design mechanisms that learn user preferences and advertiser valuations simultaneously</li>
+<li>Handle the strategic challenges that arise when participants can influence the learning process</li>
+<li>Apply these techniques to optimize LLM advertising mechanisms in dynamic environments</li>
+</ol>
+<p><strong>Chapter Roadmap:</strong> We begin with intuitive examples showing why static mechanisms fail in dynamic environments, then develop formal frameworks for learning in mechanism design. The mathematical treatment covers regret minimization, strategic robustness, and convergence analysis. We conclude with applications to multi-objective LLM advertising, including adaptive parameter selection and strategic learning robustness.</p>
+<p><strong>Connection to Multi-Objective LLM Advertising:</strong> This chapter directly addresses one of the key challenges in your thesis research: how to optimize the revenue-quality trade-off when optimal parameters change over time. The learning mechanisms developed here will enable LLM advertising platforms to adapt continuously while maintaining theoretical guarantees about performance and incentive compatibility.</p>
+</section>
+<section id="intuitive-development-why-static-mechanisms-fail" class="level2" data-number="10.2">
+<h2 data-number="10.2" class="anchored" data-anchor-id="intuitive-development-why-static-mechanisms-fail"><span class="header-section-number">10.2</span> Intuitive Development: Why Static Mechanisms Fail</h2>
+<section id="the-dynamic-environment-challenge" class="level3" data-number="10.2.1">
+<h3 data-number="10.2.1" class="anchored" data-anchor-id="the-dynamic-environment-challenge"><span class="header-section-number">10.2.1</span> The Dynamic Environment Challenge</h3>
+<p>Traditional mechanism design assumes a static world where participant types, preferences, and market conditions remain constant. This assumption breaks down dramatically in digital platforms where change is the only constant.</p>
+<p><strong>Example: Search Advertising Evolution</strong> Consider how search advertising has evolved:</p>
+<ul>
+<li><strong>2000s:</strong> Simple keyword matching, limited advertiser sophistication</li>
+<li><strong>2010s:</strong> Quality scores, advanced bidding strategies, machine learning optimization</li>
+<li><strong>2020s:</strong> AI-generated ad copy, real-time personalization, cross-platform attribution</li>
+</ul>
+<p>A mechanism designed for 2000s advertisers would perform poorly in today’s environment. The optimal reserve prices, allocation rules, and quality thresholds have all shifted dramatically.</p>
+<p><strong>LLM Advertising Complications</strong> The evolution challenge becomes even more complex in LLM advertising:</p>
+<p><em>Query Evolution:</em> User queries become more sophisticated as people learn to interact with AI systems. Early ChatGPT users asked simple questions; experienced users craft complex, multi-part prompts that require different advertising approaches.</p>
+<p><em>Quality Standards Evolution:</em> User expectations for natural ad integration increase over time. What seemed like acceptable ad placement in early LLM systems may appear jarring to experienced users.</p>
+<p><em>Advertiser Learning:</em> Advertisers continuously optimize their bidding strategies, content quality, and targeting approaches. A mechanism that initially extracted high revenue may see declining performance as advertisers become more strategic.</p>
+<p><em>Technology Changes:</em> Improvements in language models, relevance computation, and quality measurement alter the fundamental trade-offs between revenue and quality.</p>
+</section>
+<section id="multi-armed-bandit-intuition" class="level3" data-number="10.2.2">
+<h3 data-number="10.2.2" class="anchored" data-anchor-id="multi-armed-bandit-intuition"><span class="header-section-number">10.2.2</span> Multi-Armed Bandit Intuition</h3>
+<p>The core insight behind learning mechanisms is to treat mechanism design as a <em>multi-armed bandit problem</em>. Imagine a platform operator facing multiple slot machines (different mechanisms) and trying to maximize long-term payoff without knowing which machine is best.</p>
+<p><strong>The Exploration-Exploitation Dilemma:</strong></p>
+<ul>
+<li><strong>Exploitation:</strong> Use the mechanism that has performed best so far</li>
+<li><strong>Exploration:</strong> Try different mechanisms to discover potentially better options</li>
+</ul>
+<p><strong>Example: Learning Optimal α in Segment Auctions</strong> Consider an LLM platform trying to learn the optimal trade-off parameter <span class="math inline">\alpha</span> for the segment auction:</p>
+<p><em>Day 1-10:</em> Platform tests <span class="math inline">\alpha = 0.3</span> (quality-focused), observes high user engagement but low revenue <em>Day 11-20:</em> Platform tests <span class="math inline">\alpha = 0.7</span> (revenue-focused), observes high revenue but declining user satisfaction <em>Day 21-30:</em> Platform tests <span class="math inline">\alpha = 0.5</span> (balanced), observes moderate performance on both metrics</p>
+<p>The challenge: How much time should the platform spend exploring different <span class="math inline">\alpha</span> values versus exploiting the best-known option?</p>
+</section>
+<section id="strategic-complications-in-learning" class="level3" data-number="10.2.3">
+<h3 data-number="10.2.3" class="anchored" data-anchor-id="strategic-complications-in-learning"><span class="header-section-number">10.2.3</span> Strategic Complications in Learning</h3>
+<p>Learning mechanisms face an additional challenge that doesn’t exist in standard bandit problems: participants may strategically manipulate the learning process.</p>
+<p><strong>Example: Advertiser Manipulation</strong> Suppose an LLM platform is learning optimal reserve prices through experimentation:</p>
+<p><em>Week 1:</em> Platform sets high reserve prices, few advertisers participate <em>Week 2:</em> Platform lowers reserves, participation increases, revenue rises <em>Week 3:</em> Platform concludes lower reserves are better</p>
+<p>But clever advertisers might coordinate to bid low during the learning phase, manipulating the platform into adopting permanently low reserve prices. Once the learning phase ends, they could raise bids to exploit the lower reserves.</p>
+<p><strong>The Regret-Robustness Trade-off:</strong></p>
+<ul>
+<li><strong>Fast Learning (Low Regret):</strong> Adapt quickly to new information, but vulnerable to manipulation</li>
+<li><strong>Robust Learning:</strong> Resistant to strategic manipulation, but may adapt slowly to legitimate changes</li>
+</ul>
+</section>
+<section id="contextual-learning-in-llm-advertising" class="level3" data-number="10.2.4">
+<h3 data-number="10.2.4" class="anchored" data-anchor-id="contextual-learning-in-llm-advertising"><span class="header-section-number">10.2.4</span> Contextual Learning in LLM Advertising</h3>
+<p>Unlike standard bandit problems where arms have fixed reward distributions, LLM advertising mechanisms must adapt to <em>contextual</em> information that changes with each query.</p>
+<p><strong>Context Dimensions:</strong></p>
+<ul>
+<li><strong>Query Characteristics:</strong> Length, complexity, topic, user intent</li>
+<li><strong>Advertiser Pool:</strong> Number of bidders, bid distributions, relevance scores</li>
+<li><strong>Temporal Factors:</strong> Time of day, seasonality, recent platform changes</li>
+<li><strong>User History:</strong> Previous interactions, inferred preferences, engagement patterns</li>
+</ul>
+<p><strong>Example: Context-Dependent Quality-Revenue Trade-offs</strong> The optimal <span class="math inline">\alpha</span> parameter might vary based on context:</p>
+<ul>
+<li><strong>Product Queries:</strong> Users expect commercial content, higher <span class="math inline">\alpha</span> (revenue focus) acceptable</li>
+<li><strong>Health Questions:</strong> Users prioritize accuracy, lower <span class="math inline">\alpha</span> (quality focus) essential</li>
+<li><strong>Creative Tasks:</strong> Mixed preferences, moderate <span class="math inline">\alpha</span> (balanced) optimal</li>
+</ul>
+<p>A learning mechanism must discover these context-dependent optimal policies through interaction.</p>
+</section>
+<section id="online-learning-vs.-batch-learning" class="level3" data-number="10.2.5">
+<h3 data-number="10.2.5" class="anchored" data-anchor-id="online-learning-vs.-batch-learning"><span class="header-section-number">10.2.5</span> Online Learning vs.&nbsp;Batch Learning</h3>
+<p>LLM platforms face the <em>online learning</em> problem where decisions must be made in real-time as data arrives, rather than the <em>batch learning</em> problem where all data is available simultaneously.</p>
+<p><strong>Online Learning Challenges:</strong></p>
+<ul>
+<li><strong>Immediate Decisions:</strong> Cannot wait to collect more data before responding to current query</li>
+<li><strong>Non-stationarity:</strong> Optimal policies change over time as markets evolve</li>
+<li><strong>Computational Constraints:</strong> Learning algorithms must run within strict latency bounds</li>
+<li><strong>Partial Feedback:</strong> Only observe outcomes for chosen actions, not counterfactuals</li>
+</ul>
+<p><strong>Example: Real-time α Selection</strong> When a user submits a query, the platform must:</p>
+<ol type="1">
+<li>Instantly classify the query context</li>
+<li>Select appropriate <span class="math inline">\alpha</span> based on current knowledge</li>
+<li>Run segment auction with chosen <span class="math inline">\alpha</span></li>
+<li>Observe outcomes and update knowledge</li>
+<li>Repeat for next query (potentially milliseconds later)</li>
+</ol>
+<p>This cycle must complete thousands of times per second while continuously improving mechanism performance.</p>
+</section>
+</section>
+<section id="mathematical-foundations-learning-theory-for-mechanisms" class="level2" data-number="10.3">
+<h2 data-number="10.3" class="anchored" data-anchor-id="mathematical-foundations-learning-theory-for-mechanisms"><span class="header-section-number">10.3</span> Mathematical Foundations: Learning Theory for Mechanisms</h2>
+<section id="formal-framework-for-learning-mechanisms" class="level3" data-number="10.3.1">
+<h3 data-number="10.3.1" class="anchored" data-anchor-id="formal-framework-for-learning-mechanisms"><span class="header-section-number">10.3.1</span> Formal Framework for Learning Mechanisms</h3>
+<p>Let’s formalize the learning mechanism design problem. Consider a platform operating over time horizon <span class="math inline">T</span>, facing a sequence of decision problems.</p>
+<p><strong>Time Structure:</strong> At each time <span class="math inline">t = 1, 2, \ldots, T</span>:</p>
+<ol type="1">
+<li>Context <span class="math inline">x_t</span> arrives (query characteristics, advertiser pool)</li>
+<li>Platform chooses mechanism <span class="math inline">M_t</span> from mechanism class <span class="math inline">\mathcal{M}</span></li>
+<li>Mechanism <span class="math inline">M_t</span> executes, producing allocation <span class="math inline">a_t</span> and payments <span class="math inline">p_t</span></li>
+<li>Platform observes reward <span class="math inline">r_t = f(a_t, p_t, x_t)</span></li>
+<li>Platform updates its policy for future decisions</li>
+</ol>
+<p><strong>Definition 10.1 (Learning Mechanism).</strong> A <em>learning mechanism</em> is a sequence of functions <span class="math inline">\{\pi_t\}_{t=1}^T</span> where <span class="math inline">\pi_t: \mathcal{H}_t \to \mathcal{M}</span> maps the history <span class="math inline">\mathcal{H}_t = \{(x_s, M_s, r_s)\}_{s=1}^{t-1}</span> to a mechanism choice.</p>
+<p><strong>Objective:</strong> Maximize cumulative reward while maintaining mechanism properties: <span class="math display">\max \mathbb{E}\left[\sum_{t=1}^T r_t\right] \text{ subject to IC, IR, and other constraints}</span></p>
+</section>
+<section id="regret-analysis-for-mechanism-learning" class="level3" data-number="10.3.2">
+<h3 data-number="10.3.2" class="anchored" data-anchor-id="regret-analysis-for-mechanism-learning"><span class="header-section-number">10.3.2</span> Regret Analysis for Mechanism Learning</h3>
+<p>The fundamental performance measure for learning mechanisms is <em>regret</em>—the difference between the cumulative reward achieved and the best possible reward in hindsight.</p>
+<p><strong>Definition 10.2 (Regret).</strong> The regret of a learning mechanism after <span class="math inline">T</span> rounds is: <span class="math display">R_T = \max_{M \in \mathcal{M}} \sum_{t=1}^T \mathbb{E}[r_t(M, x_t)] - \sum_{t=1}^T \mathbb{E}[r_t(M_t, x_t)]</span></p>
+<p>where <span class="math inline">r_t(M, x_t)</span> is the expected reward from using mechanism <span class="math inline">M</span> in context <span class="math inline">x_t</span>.</p>
+<p><strong>Theorem 10.3 (Fundamental Regret Lower Bound).</strong> For any learning mechanism over a mechanism class <span class="math inline">\mathcal{M}</span> with <span class="math inline">K = |\mathcal{M}|</span> mechanisms, the regret satisfies: <span class="math display">R_T \geq \Omega\left(\sqrt{KT}\right)</span></p>
+<p><em>Proof Sketch.</em> The proof uses information-theoretic arguments. In the worst case, the optimal mechanism is chosen adversarially to be the one about which the learning algorithm has the least information. The <span class="math inline">\sqrt{T}</span> scaling arises from the fundamental trade-off between exploration and exploitation in online learning. □</p>
+<p>This lower bound shows that some regret is unavoidable—perfect learning is impossible in online settings.</p>
+</section>
+<section id="upper-confidence-bound-for-mechanism-selection" class="level3" data-number="10.3.3">
+<h3 data-number="10.3.3" class="anchored" data-anchor-id="upper-confidence-bound-for-mechanism-selection"><span class="header-section-number">10.3.3</span> Upper Confidence Bound for Mechanism Selection</h3>
+<p>The Upper Confidence Bound (UCB) algorithm provides a principled approach to mechanism selection that achieves near-optimal regret bounds.</p>
+<p><strong>Algorithm 10.4 (UCB for Mechanism Learning).</strong></p>
+<pre><code>Initialize: For each mechanism M ∈ M, set count[M] = 0, reward[M] = 0
+
+For each round t:
+    For each mechanism M:
+        If count[M] = 0:
+            confidence[M] = ∞
+        Else:
+            confidence[M] = sqrt((2 log t) / count[M])
+
+        upper_bound[M] = reward[M]/count[M] + confidence[M]
+
+    Select M_t = argmax_M upper_bound[M]
+    Execute mechanism M_t, observe reward r_t
+    Update: count[M_t] += 1, reward[M_t] += r_t</code></pre>
+<p><strong>Theorem 10.5 (UCB Regret Bound).</strong> The UCB algorithm achieves regret: <span class="math display">R_T \leq O\left(\sqrt{KT \log T}\right)</span></p>
+<p><em>Proof.</em> The key insight is that UCB balances exploration and exploitation optimally. The confidence intervals ensure that suboptimal mechanisms are selected with decreasing frequency, while the optimal mechanism is identified with increasing confidence.</p>
+<p>For any suboptimal mechanism <span class="math inline">M</span> with gap <span class="math inline">\Delta_M = r^*(x) - r_M(x)</span>, the number of times <span class="math inline">M</span> is selected is bounded by: <span class="math display">\mathbb{E}[N_T(M)] \leq \frac{8 \log T}{\Delta_M^2} + O(1)</span></p>
+<p>Summing over all mechanisms and using the gap-dependent analysis yields the stated bound. □</p>
+</section>
+<section id="contextual-bandits-for-mechanism-design" class="level3" data-number="10.3.4">
+<h3 data-number="10.3.4" class="anchored" data-anchor-id="contextual-bandits-for-mechanism-design"><span class="header-section-number">10.3.4</span> Contextual Bandits for Mechanism Design</h3>
+<p>In LLM advertising, optimal mechanisms depend on context (query type, advertiser pool, etc.). This leads to the <em>contextual bandit</em> framework.</p>
+<p><strong>Definition 10.6 (Contextual Mechanism Learning).</strong> In contextual mechanism learning:</p>
+<ul>
+<li>Context space <span class="math inline">\mathcal{X}</span> contains all possible query/advertiser configurations</li>
+<li>Mechanism reward function <span class="math inline">r: \mathcal{M} \times \mathcal{X} \to \mathbb{R}</span> depends on both mechanism and context</li>
+<li>Goal: Learn policy <span class="math inline">\pi: \mathcal{X} \to \mathcal{M}</span> that maximizes context-dependent rewards</li>
+</ul>
+<p><strong>LinUCB for Parameterized Mechanisms:</strong> Suppose mechanisms are parameterized by vector <span class="math inline">\theta \in \mathbb{R}^d</span> (e.g., <span class="math inline">\theta = \alpha</span> for segment auctions), and rewards are linear in features: <span class="math display">r_t(\theta) = \phi(x_t)^T \theta + \epsilon_t</span></p>
+<p>where <span class="math inline">\phi(x_t) \in \mathbb{R}^d</span> are context features and <span class="math inline">\epsilon_t</span> is noise.</p>
+<p><strong>Algorithm 10.7 (LinUCB for Mechanism Learning).</strong></p>
+<pre><code>Initialize: A_0 = I_d (identity matrix), b_0 = 0 ∈ R^d
+
+For each round t:
+    Observe context x_t with features φ(x_t)
+
+    Compute:
+        θ̂_t = A_{t-1}^{-1} b_{t-1}  // Parameter estimate
+        width_t = α sqrt(φ(x_t)^T A_{t-1}^{-1} φ(x_t))  // Confidence width
+
+    Select mechanism parameter:
+        θ_t = argmax_θ [φ(x_t)^T θ̂_t + width_t]
+
+    Execute mechanism with parameter θ_t, observe reward r_t
+
+    Update:
+        A_t = A_{t-1} + φ(x_t) φ(x_t)^T
+        b_t = b_{t-1} + r_t φ(x_t)</code></pre>
+<p><strong>Theorem 10.8 (LinUCB Regret Bound).</strong> Under appropriate regularity conditions, LinUCB achieves regret: <span class="math display">R_T = O\left(d\sqrt{T \log T}\right)</span></p>
+<p>where <span class="math inline">d</span> is the feature dimension.</p>
+<p><em>Proof Sketch.</em> The analysis uses concentration of measure for linear functions. The key insight is that as more data accumulates, the confidence ellipsoids around the parameter estimates shrink, leading to better mechanism selection. The <span class="math inline">d</span> dependence reflects the curse of dimensionality in contextual learning. □</p>
+</section>
+<section id="thompson-sampling-for-mechanism-learning" class="level3" data-number="10.3.5">
+<h3 data-number="10.3.5" class="anchored" data-anchor-id="thompson-sampling-for-mechanism-learning"><span class="header-section-number">10.3.5</span> Thompson Sampling for Mechanism Learning</h3>
+<p>An alternative to UCB is Thompson Sampling, which uses Bayesian posterior sampling for exploration.</p>
+<p><strong>Algorithm 10.9 (Thompson Sampling for Mechanism Parameters).</strong></p>
+<pre><code>Initialize: Prior distribution P_0(θ) over mechanism parameters
+
+For each round t:
+    Sample θ̃_t ~ P_{t-1}(θ)  // Sample from posterior
+    Execute mechanism with parameter θ̃_t
+    Observe reward r_t
+    Update posterior: P_t(θ) ∝ P_{t-1}(θ) · L(r_t | θ, x_t)</code></pre>
+<p>For the linear case with Gaussian priors and noise, this reduces to:</p>
+<p><strong>Theorem 10.10 (Thompson Sampling Regret).</strong> For linear contextual bandits with Gaussian priors, Thompson Sampling achieves: <span class="math display">R_T = O\left(d\sqrt{T}\right)</span></p>
+<p>with high probability, matching the lower bound up to logarithmic factors.</p>
+<p>Thompson Sampling often performs better empirically than UCB because it naturally balances exploration and exploitation through posterior uncertainty.</p>
+</section>
+<section id="strategic-robustness-in-learning-mechanisms" class="level3" data-number="10.3.6">
+<h3 data-number="10.3.6" class="anchored" data-anchor-id="strategic-robustness-in-learning-mechanisms"><span class="header-section-number">10.3.6</span> Strategic Robustness in Learning Mechanisms</h3>
+<p>When participants can influence the learning process, additional robustness considerations arise.</p>
+<p><strong>Definition 10.11 (Strategic Learning Environment).</strong> In a strategic learning environment:</p>
+<ul>
+<li>Participants observe the learning algorithm</li>
+<li>Participants can coordinate actions to influence learning outcomes</li>
+<li>Participants maximize long-term utility, not just short-term rewards</li>
+</ul>
+<p><strong>Example: Reserve Price Manipulation</strong> Suppose advertisers learn that the platform uses Thompson Sampling to optimize reserve prices. Advertisers might coordinate to bid very low during early rounds, causing the platform to learn that low reserves are optimal. Once learning converges, advertisers can bid higher while facing permanently low reserves.</p>
+<p><strong>Robust Learning Mechanisms:</strong> Several approaches address strategic manipulation:</p>
+<ol type="1">
+<li><strong>Commitment:</strong> Platform commits to mechanism for fixed periods, limiting manipulation incentives</li>
+<li><strong>Robust Bandits:</strong> Use algorithms designed to handle adversarial reward sequences</li>
+<li><strong>Strategic Bandit Algorithms:</strong> Explicitly account for strategic behavior in learning</li>
+</ol>
+<p><strong>Theorem 10.12 (Robust UCB).</strong> Consider a modified UCB algorithm that uses robust confidence bounds: <span class="math display">\text{confidence}[M] = C \sqrt{\frac{\log T}{\text{count}[M]}}</span></p>
+<p>where <span class="math inline">C</span> is chosen large enough to handle potential manipulation. This achieves regret: <span class="math display">R_T = O\left(\sqrt{KT \log T}\right)</span></p>
+<p>even under strategic manipulation, but with larger constants than standard UCB.</p>
+</section>
+</section>
+<section id="advanced-results-multi-objective-learning-and-adaptation" class="level2" data-number="10.4">
+<h2 data-number="10.4" class="anchored" data-anchor-id="advanced-results-multi-objective-learning-and-adaptation"><span class="header-section-number">10.4</span> Advanced Results: Multi-Objective Learning and Adaptation</h2>
+<section id="learning-pareto-optimal-trade-offs" class="level3" data-number="10.4.1">
+<h3 data-number="10.4.1" class="anchored" data-anchor-id="learning-pareto-optimal-trade-offs"><span class="header-section-number">10.4.1</span> Learning Pareto-Optimal Trade-offs</h3>
+<p>In multi-objective mechanism design, the learning problem becomes more complex because we must learn not just which mechanism is best, but what trade-offs are achievable and desirable.</p>
+<p><strong>Multi-Objective Regret Definition:</strong> For objectives <span class="math inline">(R_t, Q_t)</span> (revenue and quality), define regret with respect to the Pareto frontier:</p>
+<p><strong>Definition 10.13 (Pareto Regret).</strong> The Pareto regret after <span class="math inline">T</span> rounds is: <span class="math display">R_T^{\text{Pareto}} = \min_{\alpha \in [0,1]} \sum_{t=1}^T \left[\alpha (R_t^*(\alpha) - R_t) + (1-\alpha)(Q_t^*(\alpha) - Q_t)\right]</span></p>
+<p>where <span class="math inline">(R_t^*(\alpha), Q_t^*(\alpha))</span> is the optimal revenue-quality pair for trade-off parameter <span class="math inline">\alpha</span> in round <span class="math inline">t</span>.</p>
+<p><strong>Algorithm 10.14 (Multi-Objective UCB).</strong></p>
+<pre><code>Initialize: For each α ∈ {0, 0.1, 0.2, ..., 1.0}:
+    count[α] = 0, revenue[α] = 0, quality[α] = 0
+
+For each round t:
+    For each α:
+        If count[α] = 0:
+            utility[α] = ∞
+        Else:
+            # Current trade-off preference (could be learned)
+            current_α = LearnCurrentPreference(t)
+
+            expected_utility = (current_α * revenue[α]/count[α] +
+                              (1-current_α) * quality[α]/count[α])
+
+            confidence = sqrt((2 log t) / count[α])
+            utility[α] = expected_utility + confidence
+
+    Select α_t = argmax_α utility[α]
+    Execute segment auction with parameter α_t
+    Observe revenue r_t and quality q_t
+
+    Update: count[α_t] += 1, revenue[α_t] += r_t, quality[α_t] += q_t</code></pre>
+<p><strong>Theorem 10.15 (Multi-Objective Learning Convergence).</strong> Under appropriate conditions, Multi-Objective UCB converges to the Pareto frontier with regret: <span class="math display">R_T^{\text{Pareto}} = O\left(\sqrt{KT \log T}\right)</span></p>
+<p>where <span class="math inline">K</span> is the number of trade-off parameters explored.</p>
+</section>
+<section id="adaptive-user-preference-learning" class="level3" data-number="10.4.2">
+<h3 data-number="10.4.2" class="anchored" data-anchor-id="adaptive-user-preference-learning"><span class="header-section-number">10.4.2</span> Adaptive User Preference Learning</h3>
+<p>A sophisticated LLM platform should learn not just optimal mechanism parameters, but also user preferences for quality versus commercial content.</p>
+<p><strong>User Preference Model:</strong> Assume each user <span class="math inline">u</span> has preference parameter <span class="math inline">\beta_u \in [0,1]</span> where:</p>
+<ul>
+<li><span class="math inline">\beta_u = 0</span>: User strongly prefers quality over commercial content</li>
+<li><span class="math inline">\beta_u = 1</span>: User accepts commercial content for better services</li>
+<li>User satisfaction: <span class="math inline">U_u(R, Q) = \beta_u \cdot f_R(R) + (1-\beta_u) \cdot f_Q(Q)</span></li>
+</ul>
+<p><strong>Hierarchical Learning Framework:</strong></p>
+<ol type="1">
+<li><strong>Individual Level:</strong> Learn each user’s preference <span class="math inline">\beta_u</span></li>
+<li><strong>Population Level:</strong> Learn distribution of preferences across users</li>
+<li><strong>Context Level:</strong> Learn how preferences vary with query context</li>
+</ol>
+<p><strong>Algorithm 10.16 (Hierarchical Preference Learning).</strong></p>
+<pre><code>Initialize:
+    For each user u: β̂_u = 0.5, count_u = 0
+    Population prior: P(β) = Beta(1, 1)
+
+For each query from user u with context x:
+    # Individual preference estimate
+    if count_u &gt; 0:
+        individual_preference = β̂_u
+    else:
+        individual_preference = sample from P(β)
+
+    # Context adjustment
+    context_adjustment = ContextModel(x, individual_preference)
+    current_preference = individual_preference + context_adjustment
+
+    # Select mechanism parameter
+    α_t = SelectMechanism(current_preference)
+
+    # Execute and observe
+    Execute mechanism with α_t
+    Observe user engagement e_t ∈ [0, 1]
+
+    # Update individual preference
+    Update β̂_u using engagement feedback e_t
+    count_u += 1
+
+    # Update population distribution
+    Update P(β) with new observation</code></pre>
+<p><strong>Theorem 10.17 (Preference Learning Convergence).</strong> Under smoothness assumptions on user utility functions, the hierarchical preference learning algorithm achieves:</p>
+<ol type="1">
+<li><strong>Individual Convergence:</strong> <span class="math inline">|\hat{\beta}_u - \beta_u| \rightarrow 0</span> as the number of interactions with user <span class="math inline">u</span> grows</li>
+<li><strong>Population Convergence:</strong> The empirical preference distribution converges to the true distribution</li>
+<li><strong>Regret Bound:</strong> Overall regret is <span class="math inline">O(\sqrt{NT})</span> where <span class="math inline">N</span> is the number of users and <span class="math inline">T</span> is the time horizon</li>
+</ol>
+</section>
+<section id="dynamic-mechanism-adaptation" class="level3" data-number="10.4.3">
+<h3 data-number="10.4.3" class="anchored" data-anchor-id="dynamic-mechanism-adaptation"><span class="header-section-number">10.4.3</span> Dynamic Mechanism Adaptation</h3>
+<p>Real platforms face non-stationary environments where optimal mechanisms change over time due to market evolution, technological advances, or regulatory changes.</p>
+<p><strong>Change Detection in Mechanism Performance:</strong> Use statistical tests to detect when mechanism performance shifts significantly.</p>
+<p><strong>Algorithm 10.18 (Change-Point Detection for Mechanisms).</strong></p>
+<pre><code>Initialize:
+    window_size = W
+    detection_threshold = τ
+    current_performance = []
+
+For each round t:
+    Execute current best mechanism M_t
+    Observe reward r_t
+    current_performance.append(r_t)
+
+    if len(current_performance) &gt;= 2*W:
+        # Compare recent performance to historical
+        recent_mean = mean(current_performance[-W:])
+        historical_mean = mean(current_performance[-2*W:-W])
+
+        # Statistical test for change
+        test_statistic = |recent_mean - historical_mean| /
+                        sqrt(var(current_performance) / W)
+
+        if test_statistic &gt; τ:
+            # Change detected: restart learning
+            ResetLearningAlgorithm()
+            current_performance = current_performance[-W:]</code></pre>
+<p><strong>Theorem 10.19 (Adaptive Regret with Change Points).</strong> For an environment with <span class="math inline">S</span> change points, adaptive learning algorithms achieve regret: <span class="math display">R_T = O\left(\sqrt{T(K + S) \log T}\right)</span></p>
+<p>The additional <span class="math inline">S</span> term reflects the cost of detecting and adapting to changes.</p>
+</section>
+<section id="multi-agent-learning-in-mechanism-design" class="level3" data-number="10.4.4">
+<h3 data-number="10.4.4" class="anchored" data-anchor-id="multi-agent-learning-in-mechanism-design"><span class="header-section-number">10.4.4</span> Multi-Agent Learning in Mechanism Design</h3>
+<p>When multiple advertisers learn simultaneously, the environment becomes non-stationary from each advertiser’s perspective, complicating the learning process.</p>
+<p><strong>Game-Theoretic Learning Framework:</strong></p>
+<ul>
+<li>Each advertiser <span class="math inline">i</span> uses learning algorithm <span class="math inline">\mathcal{A}_i</span> to optimize bidding strategy</li>
+<li>Platform uses learning algorithm <span class="math inline">\mathcal{A}_P</span> to optimize mechanism parameters</li>
+<li>System dynamics emerge from interaction of all learning algorithms</li>
+</ul>
+<p><strong>Definition 10.20 (Learning Equilibrium).</strong> A learning equilibrium is a configuration where:</p>
+<ol type="1">
+<li>Each advertiser’s learning algorithm converges given others’ strategies</li>
+<li>Platform’s learning algorithm converges given advertiser strategies</li>
+<li>No participant benefits from unilaterally changing their learning algorithm</li>
+</ol>
+<p><strong>Theorem 10.21 (Existence of Learning Equilibria).</strong> Under appropriate conditions (bounded strategy spaces, contractive learning dynamics), learning equilibria exist for multi-agent mechanism learning games.</p>
+<p><strong>Challenges in Multi-Agent Learning:</strong></p>
+<ul>
+<li><strong>Non-stationarity:</strong> Other agents’ learning makes environment non-stationary</li>
+<li><strong>Coordination:</strong> Multiple equilibria may exist, requiring coordination mechanisms</li>
+<li><strong>Strategic Learning:</strong> Agents may manipulate others’ learning processes</li>
+</ul>
+</section>
+</section>
+<section id="applications-and-implementation-adaptive-llm-advertising" class="level2" data-number="10.5">
+<h2 data-number="10.5" class="anchored" data-anchor-id="applications-and-implementation-adaptive-llm-advertising"><span class="header-section-number">10.5</span> Applications and Implementation: Adaptive LLM Advertising</h2>
+<section id="implementing-adaptive-segment-auctions" class="level3" data-number="10.5.1">
+<h3 data-number="10.5.1" class="anchored" data-anchor-id="implementing-adaptive-segment-auctions"><span class="header-section-number">10.5.1</span> Implementing Adaptive Segment Auctions</h3>
+<p>The segment auction from your main paper can be enhanced with learning capabilities to adapt the trade-off parameter <span class="math inline">\alpha</span> dynamically.</p>
+<p><strong>System Architecture:</strong></p>
+<pre><code>AdaptiveSegmentAuction:
+    Components:
+        - ContextExtractor: Extract features from queries and advertiser pools
+        - ParameterLearner: Learn optimal α values using contextual bandits
+        - QualityPredictor: Predict quality scores for different mechanisms
+        - PerformanceMonitor: Track revenue, quality, and user satisfaction
+        - ChangeDetector: Identify when relearning is needed
+
+    ExecutionFlow:
+        1. Extract context features φ(x_t)
+        2. Select α_t using LinUCB or Thompson Sampling
+        3. Run standard segment auction with α_t
+        4. Observe outcomes and update learning algorithm
+        5. Monitor for performance changes</code></pre>
+<p><strong>Context Feature Engineering:</strong> Effective learning requires informative context features:</p>
+<p><em>Query Features:</em></p>
+<ul>
+<li>Query length and complexity scores</li>
+<li>Topic classification (product, information, creative, etc.)</li>
+<li>Intent classification (commercial, informational, navigational)</li>
+<li>Urgency indicators (time-sensitive keywords)</li>
+</ul>
+<p><em>Advertiser Pool Features:</em></p>
+<ul>
+<li>Number of active advertisers</li>
+<li>Bid distribution statistics (mean, variance, range)</li>
+<li>Relevance score distribution</li>
+<li>Historical performance metrics</li>
+</ul>
+<p><em>Temporal Features:</em></p>
+<ul>
+<li>Time of day, day of week, seasonality</li>
+<li>Recent platform changes or updates</li>
+<li>Market condition indicators</li>
+</ul>
+<p><em>User Features (when available):</em></p>
+<ul>
+<li>Historical engagement patterns</li>
+<li>Inferred preference for quality vs.&nbsp;commercial content</li>
+<li>Device type and context</li>
+</ul>
+<p><strong>Implementation Example:</strong></p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> AdaptiveSegmentAuction:</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, feature_dim, alpha_grid):</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.feature_dim <span class="op">=</span> feature_dim</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.alpha_grid <span class="op">=</span> alpha_grid  <span class="co"># [0.0, 0.1, 0.2, ..., 1.0]</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>        <span class="co"># LinUCB parameters for each alpha value</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.A <span class="op">=</span> {alpha: np.eye(feature_dim) <span class="cf">for</span> alpha <span class="kw">in</span> alpha_grid}</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.b <span class="op">=</span> {alpha: np.zeros(feature_dim) <span class="cf">for</span> alpha <span class="kw">in</span> alpha_grid}</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.alpha_confidence <span class="op">=</span> <span class="fl">2.0</span></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> select_alpha(<span class="va">self</span>, context_features):</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>        <span class="co">"""Select optimal alpha using LinUCB"""</span></span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>        best_alpha <span class="op">=</span> <span class="va">None</span></span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>        best_value <span class="op">=</span> <span class="op">-</span><span class="bu">float</span>(<span class="st">'inf'</span>)</span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> alpha <span class="kw">in</span> <span class="va">self</span>.alpha_grid:</span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>            <span class="co"># Compute confidence bound</span></span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>            theta_hat <span class="op">=</span> np.linalg.solve(<span class="va">self</span>.A[alpha], <span class="va">self</span>.b[alpha])</span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>            confidence_width <span class="op">=</span> <span class="va">self</span>.alpha_confidence <span class="op">*</span> np.sqrt(</span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>                context_features.T <span class="op">@</span> np.linalg.solve(<span class="va">self</span>.A[alpha], context_features)</span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>            )</span>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a>            <span class="co"># Upper confidence bound</span></span>
+<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a>            ucb_value <span class="op">=</span> context_features.T <span class="op">@</span> theta_hat <span class="op">+</span> confidence_width</span>
+<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> ucb_value <span class="op">&gt;</span> best_value:</span>
+<span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a>                best_value <span class="op">=</span> ucb_value</span>
+<span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a>                best_alpha <span class="op">=</span> alpha</span>
+<span id="cb8-29"><a href="#cb8-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-30"><a href="#cb8-30" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> best_alpha</span>
+<span id="cb8-31"><a href="#cb8-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-32"><a href="#cb8-32" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> update(<span class="va">self</span>, alpha, context_features, reward):</span>
+<span id="cb8-33"><a href="#cb8-33" aria-hidden="true" tabindex="-1"></a>        <span class="co">"""Update LinUCB parameters"""</span></span>
+<span id="cb8-34"><a href="#cb8-34" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.A[alpha] <span class="op">+=</span> np.outer(context_features, context_features)</span>
+<span id="cb8-35"><a href="#cb8-35" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.b[alpha] <span class="op">+=</span> reward <span class="op">*</span> context_features</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="quality-prediction-and-learning" class="level3" data-number="10.5.2">
+<h3 data-number="10.5.2" class="anchored" data-anchor-id="quality-prediction-and-learning"><span class="header-section-number">10.5.2</span> Quality Prediction and Learning</h3>
+<p>Accurate quality prediction is crucial for multi-objective learning. We need to predict quality scores before running the full mechanism.</p>
+<p><strong>Quality Prediction Architecture:</strong></p>
+<pre><code>QualityPredictor:
+    Inputs:
+        - Query text and context
+        - Selected advertiser content
+        - Integration method (segment position, style)
+
+    Models:
+        - FastQualityEstimator: Lightweight model for real-time prediction
+        - AccurateQualityModel: Expensive model for ground truth measurement
+        - QualityConfidence: Uncertainty estimation for predictions
+
+    Learning Process:
+        1. Use FastQualityEstimator for mechanism selection
+        2. Periodically measure ground truth with AccurateQualityModel
+        3. Update FastQualityEstimator using ground truth feedback
+        4. Adjust confidence bounds based on prediction accuracy</code></pre>
+<p><strong>Multi-Level Quality Learning:</strong></p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> QualityLearner:</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>):</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.fast_predictor <span class="op">=</span> FastQualityModel()</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.accurate_model <span class="op">=</span> AccurateQualityModel()</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.prediction_errors <span class="op">=</span> []</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.confidence_model <span class="op">=</span> ConfidenceModel()</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> predict_quality(<span class="va">self</span>, query, ad_content, method):</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>        <span class="co">"""Predict quality with confidence bounds"""</span></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>        fast_prediction <span class="op">=</span> <span class="va">self</span>.fast_predictor.predict(query, ad_content, method)</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>        confidence <span class="op">=</span> <span class="va">self</span>.confidence_model.predict_confidence(</span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>            query, ad_content, method, fast_prediction</span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> fast_prediction, confidence</span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> update_quality_model(<span class="va">self</span>, query, ad_content, method, true_quality):</span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>        <span class="co">"""Update quality models with ground truth"""</span></span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a>        fast_prediction <span class="op">=</span> <span class="va">self</span>.fast_predictor.predict(query, ad_content, method)</span>
+<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a>        error <span class="op">=</span> <span class="bu">abs</span>(fast_prediction <span class="op">-</span> true_quality)</span>
+<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Update prediction model</span></span>
+<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.fast_predictor.update(query, ad_content, method, true_quality)</span>
+<span id="cb10-23"><a href="#cb10-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-24"><a href="#cb10-24" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Update confidence model</span></span>
+<span id="cb10-25"><a href="#cb10-25" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.prediction_errors.append(error)</span>
+<span id="cb10-26"><a href="#cb10-26" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.confidence_model.update(query, ad_content, method, error)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="user-preference-learning-implementation" class="level3" data-number="10.5.3">
+<h3 data-number="10.5.3" class="anchored" data-anchor-id="user-preference-learning-implementation"><span class="header-section-number">10.5.3</span> User Preference Learning Implementation</h3>
+<p>Learning individual user preferences requires careful privacy consideration and efficient algorithms.</p>
+<p><strong>Privacy-Preserving Preference Learning:</strong></p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> UserPreferenceLearner:</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, privacy_budget<span class="op">=</span><span class="fl">1.0</span>):</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.privacy_budget <span class="op">=</span> privacy_budget</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.user_preferences <span class="op">=</span> {}  <span class="co"># user_id -&gt; preference_estimate</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.global_preference_dist <span class="op">=</span> Beta(<span class="dv">1</span>, <span class="dv">1</span>)  <span class="co"># Population prior</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> get_user_preference(<span class="va">self</span>, user_id, context):</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>        <span class="co">"""Get preference estimate for user"""</span></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> user_id <span class="kw">in</span> <span class="va">self</span>.user_preferences:</span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>            individual_pref <span class="op">=</span> <span class="va">self</span>.user_preferences[user_id]</span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>        <span class="cf">else</span>:</span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>            <span class="co"># Use population prior for new users</span></span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>            individual_pref <span class="op">=</span> <span class="va">self</span>.global_preference_dist.mean()</span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Adjust for context</span></span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>        context_adjustment <span class="op">=</span> <span class="va">self</span>.context_adjustment_model.predict(</span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>            context, individual_pref</span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> np.clip(individual_pref <span class="op">+</span> context_adjustment, <span class="dv">0</span>, <span class="dv">1</span>)</span>
+<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> update_preference(<span class="va">self</span>, user_id, context, engagement_signal):</span>
+<span id="cb11-23"><a href="#cb11-23" aria-hidden="true" tabindex="-1"></a>        <span class="co">"""Update user preference based on engagement"""</span></span>
+<span id="cb11-24"><a href="#cb11-24" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Add differential privacy noise</span></span>
+<span id="cb11-25"><a href="#cb11-25" aria-hidden="true" tabindex="-1"></a>        noisy_signal <span class="op">=</span> engagement_signal <span class="op">+</span> np.random.laplace(</span>
+<span id="cb11-26"><a href="#cb11-26" aria-hidden="true" tabindex="-1"></a>            <span class="dv">0</span>, <span class="dv">1</span><span class="op">/</span><span class="va">self</span>.privacy_budget</span>
+<span id="cb11-27"><a href="#cb11-27" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb11-28"><a href="#cb11-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-29"><a href="#cb11-29" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Update individual preference</span></span>
+<span id="cb11-30"><a href="#cb11-30" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> user_id <span class="kw">not</span> <span class="kw">in</span> <span class="va">self</span>.user_preferences:</span>
+<span id="cb11-31"><a href="#cb11-31" aria-hidden="true" tabindex="-1"></a>            <span class="va">self</span>.user_preferences[user_id] <span class="op">=</span> <span class="fl">0.5</span></span>
+<span id="cb11-32"><a href="#cb11-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-33"><a href="#cb11-33" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Bayesian update with engagement feedback</span></span>
+<span id="cb11-34"><a href="#cb11-34" aria-hidden="true" tabindex="-1"></a>        learning_rate <span class="op">=</span> <span class="va">self</span>.compute_learning_rate(user_id)</span>
+<span id="cb11-35"><a href="#cb11-35" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.user_preferences[user_id] <span class="op">+=</span> learning_rate <span class="op">*</span> (</span>
+<span id="cb11-36"><a href="#cb11-36" aria-hidden="true" tabindex="-1"></a>            noisy_signal <span class="op">-</span> <span class="va">self</span>.user_preferences[user_id]</span>
+<span id="cb11-37"><a href="#cb11-37" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb11-38"><a href="#cb11-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-39"><a href="#cb11-39" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Update population distribution</span></span>
+<span id="cb11-40"><a href="#cb11-40" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.global_preference_dist.update(noisy_signal)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="performance-monitoring-and-change-detection" class="level3" data-number="10.5.4">
+<h3 data-number="10.5.4" class="anchored" data-anchor-id="performance-monitoring-and-change-detection"><span class="header-section-number">10.5.4</span> Performance Monitoring and Change Detection</h3>
+<p>Adaptive mechanisms require continuous monitoring to detect when relearning is necessary.</p>
+<p><strong>Multi-Metric Performance Monitoring:</strong></p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> PerformanceMonitor:</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, window_size<span class="op">=</span><span class="dv">1000</span>, significance_level<span class="op">=</span><span class="fl">0.05</span>):</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.window_size <span class="op">=</span> window_size</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.significance_level <span class="op">=</span> significance_level</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Performance metrics</span></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.revenue_history <span class="op">=</span> []</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.quality_history <span class="op">=</span> []</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.user_satisfaction_history <span class="op">=</span> []</span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Change detection</span></span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.last_change_point <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.change_detector <span class="op">=</span> CUSUM(threshold<span class="op">=</span><span class="fl">5.0</span>)</span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> record_performance(<span class="va">self</span>, revenue, quality, user_satisfaction):</span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>        <span class="co">"""Record performance metrics"""</span></span>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.revenue_history.append(revenue)</span>
+<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.quality_history.append(quality)</span>
+<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.user_satisfaction_history.append(user_satisfaction)</span>
+<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Combined performance score</span></span>
+<span id="cb12-22"><a href="#cb12-22" aria-hidden="true" tabindex="-1"></a>        combined_score <span class="op">=</span> <span class="fl">0.4</span> <span class="op">*</span> revenue <span class="op">+</span> <span class="fl">0.4</span> <span class="op">*</span> quality <span class="op">+</span> <span class="fl">0.2</span> <span class="op">*</span> user_satisfaction</span>
+<span id="cb12-23"><a href="#cb12-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-24"><a href="#cb12-24" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Check for change points</span></span>
+<span id="cb12-25"><a href="#cb12-25" aria-hidden="true" tabindex="-1"></a>        change_detected <span class="op">=</span> <span class="va">self</span>.change_detector.update(combined_score)</span>
+<span id="cb12-26"><a href="#cb12-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-27"><a href="#cb12-27" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> change_detected:</span>
+<span id="cb12-28"><a href="#cb12-28" aria-hidden="true" tabindex="-1"></a>            <span class="va">self</span>.handle_change_detection()</span>
+<span id="cb12-29"><a href="#cb12-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-30"><a href="#cb12-30" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> handle_change_detection(<span class="va">self</span>):</span>
+<span id="cb12-31"><a href="#cb12-31" aria-hidden="true" tabindex="-1"></a>        <span class="co">"""Handle detected performance changes"""</span></span>
+<span id="cb12-32"><a href="#cb12-32" aria-hidden="true" tabindex="-1"></a>        current_time <span class="op">=</span> <span class="bu">len</span>(<span class="va">self</span>.revenue_history)</span>
+<span id="cb12-33"><a href="#cb12-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-34"><a href="#cb12-34" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Statistical significance test</span></span>
+<span id="cb12-35"><a href="#cb12-35" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> current_time <span class="op">-</span> <span class="va">self</span>.last_change_point <span class="op">&gt;</span> <span class="va">self</span>.window_size:</span>
+<span id="cb12-36"><a href="#cb12-36" aria-hidden="true" tabindex="-1"></a>            recent_performance <span class="op">=</span> <span class="va">self</span>.get_recent_performance()</span>
+<span id="cb12-37"><a href="#cb12-37" aria-hidden="true" tabindex="-1"></a>            historical_performance <span class="op">=</span> <span class="va">self</span>.get_historical_performance()</span>
+<span id="cb12-38"><a href="#cb12-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-39"><a href="#cb12-39" aria-hidden="true" tabindex="-1"></a>            p_value <span class="op">=</span> <span class="va">self</span>.statistical_test(recent_performance, historical_performance)</span>
+<span id="cb12-40"><a href="#cb12-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-41"><a href="#cb12-41" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> p_value <span class="op">&lt;</span> <span class="va">self</span>.significance_level:</span>
+<span id="cb12-42"><a href="#cb12-42" aria-hidden="true" tabindex="-1"></a>                <span class="co"># Confirmed change - trigger relearning</span></span>
+<span id="cb12-43"><a href="#cb12-43" aria-hidden="true" tabindex="-1"></a>                <span class="va">self</span>.trigger_relearning()</span>
+<span id="cb12-44"><a href="#cb12-44" aria-hidden="true" tabindex="-1"></a>                <span class="va">self</span>.last_change_point <span class="op">=</span> current_time</span>
+<span id="cb12-45"><a href="#cb12-45" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-46"><a href="#cb12-46" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> trigger_relearning(<span class="va">self</span>):</span>
+<span id="cb12-47"><a href="#cb12-47" aria-hidden="true" tabindex="-1"></a>        <span class="co">"""Reset learning algorithms due to detected change"""</span></span>
+<span id="cb12-48"><a href="#cb12-48" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Reset mechanism parameter learning</span></span>
+<span id="cb12-49"><a href="#cb12-49" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.mechanism_learner.reset()</span>
+<span id="cb12-50"><a href="#cb12-50" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-51"><a href="#cb12-51" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Reset quality prediction models</span></span>
+<span id="cb12-52"><a href="#cb12-52" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.quality_learner.partial_reset()</span>
+<span id="cb12-53"><a href="#cb12-53" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-54"><a href="#cb12-54" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Preserve user preference learning (changes more slowly)</span></span>
+<span id="cb12-55"><a href="#cb12-55" aria-hidden="true" tabindex="-1"></a>        <span class="co"># self.preference_learner.reset()  # Optional</span></span>
+<span id="cb12-56"><a href="#cb12-56" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-57"><a href="#cb12-57" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Log change detection event</span></span>
+<span id="cb12-58"><a href="#cb12-58" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.log_change_event()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="ab-testing-framework-for-mechanism-learning" class="level3" data-number="10.5.5">
+<h3 data-number="10.5.5" class="anchored" data-anchor-id="ab-testing-framework-for-mechanism-learning"><span class="header-section-number">10.5.5</span> A/B Testing Framework for Mechanism Learning</h3>
+<p>Systematic experimentation helps validate learning algorithm performance and discover new mechanism designs.</p>
+<p><strong>Experimental Design for Mechanism Learning:</strong></p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> MechanismExperimentFramework:</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>):</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.active_experiments <span class="op">=</span> {}</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.experiment_results <span class="op">=</span> {}</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.randomization_engine <span class="op">=</span> StratifiedRandomization()</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> create_experiment(<span class="va">self</span>, experiment_id, treatments, allocation_ratios):</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>        <span class="co">"""Create new mechanism experiment"""</span></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>        experiment <span class="op">=</span> {</span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>            <span class="st">'id'</span>: experiment_id,</span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>            <span class="st">'treatments'</span>: treatments,  <span class="co"># Different learning algorithms or parameters</span></span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>            <span class="st">'allocation_ratios'</span>: allocation_ratios,</span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>            <span class="st">'start_time'</span>: time.time(),</span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>            <span class="st">'results'</span>: {treatment: [] <span class="cf">for</span> treatment <span class="kw">in</span> treatments}</span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>        }</span>
+<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.active_experiments[experiment_id] <span class="op">=</span> experiment</span>
+<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-19"><a href="#cb13-19" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> assign_treatment(<span class="va">self</span>, user_id, context, experiment_id):</span>
+<span id="cb13-20"><a href="#cb13-20" aria-hidden="true" tabindex="-1"></a>        <span class="co">"""Assign user to experimental treatment"""</span></span>
+<span id="cb13-21"><a href="#cb13-21" aria-hidden="true" tabindex="-1"></a>        experiment <span class="op">=</span> <span class="va">self</span>.active_experiments[experiment_id]</span>
+<span id="cb13-22"><a href="#cb13-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-23"><a href="#cb13-23" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Stratified randomization based on context</span></span>
+<span id="cb13-24"><a href="#cb13-24" aria-hidden="true" tabindex="-1"></a>        stratum <span class="op">=</span> <span class="va">self</span>.compute_stratum(context)</span>
+<span id="cb13-25"><a href="#cb13-25" aria-hidden="true" tabindex="-1"></a>        treatment <span class="op">=</span> <span class="va">self</span>.randomization_engine.assign(</span>
+<span id="cb13-26"><a href="#cb13-26" aria-hidden="true" tabindex="-1"></a>            user_id, stratum, experiment[<span class="st">'treatments'</span>], experiment[<span class="st">'allocation_ratios'</span>]</span>
+<span id="cb13-27"><a href="#cb13-27" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb13-28"><a href="#cb13-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-29"><a href="#cb13-29" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> treatment</span>
+<span id="cb13-30"><a href="#cb13-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-31"><a href="#cb13-31" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> record_outcome(<span class="va">self</span>, experiment_id, treatment, outcome):</span>
+<span id="cb13-32"><a href="#cb13-32" aria-hidden="true" tabindex="-1"></a>        <span class="co">"""Record experimental outcome"""</span></span>
+<span id="cb13-33"><a href="#cb13-33" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.active_experiments[experiment_id][<span class="st">'results'</span>][treatment].append(outcome)</span>
+<span id="cb13-34"><a href="#cb13-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-35"><a href="#cb13-35" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> analyze_experiment(<span class="va">self</span>, experiment_id):</span>
+<span id="cb13-36"><a href="#cb13-36" aria-hidden="true" tabindex="-1"></a>        <span class="co">"""Analyze experimental results"""</span></span>
+<span id="cb13-37"><a href="#cb13-37" aria-hidden="true" tabindex="-1"></a>        experiment <span class="op">=</span> <span class="va">self</span>.active_experiments[experiment_id]</span>
+<span id="cb13-38"><a href="#cb13-38" aria-hidden="true" tabindex="-1"></a>        results <span class="op">=</span> experiment[<span class="st">'results'</span>]</span>
+<span id="cb13-39"><a href="#cb13-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-40"><a href="#cb13-40" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Statistical analysis</span></span>
+<span id="cb13-41"><a href="#cb13-41" aria-hidden="true" tabindex="-1"></a>        analysis <span class="op">=</span> {</span>
+<span id="cb13-42"><a href="#cb13-42" aria-hidden="true" tabindex="-1"></a>            <span class="st">'treatment_means'</span>: {t: np.mean(results[t]) <span class="cf">for</span> t <span class="kw">in</span> results},</span>
+<span id="cb13-43"><a href="#cb13-43" aria-hidden="true" tabindex="-1"></a>            <span class="st">'treatment_vars'</span>: {t: np.var(results[t]) <span class="cf">for</span> t <span class="kw">in</span> results},</span>
+<span id="cb13-44"><a href="#cb13-44" aria-hidden="true" tabindex="-1"></a>            <span class="st">'sample_sizes'</span>: {t: <span class="bu">len</span>(results[t]) <span class="cf">for</span> t <span class="kw">in</span> results},</span>
+<span id="cb13-45"><a href="#cb13-45" aria-hidden="true" tabindex="-1"></a>        }</span>
+<span id="cb13-46"><a href="#cb13-46" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-47"><a href="#cb13-47" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Pairwise statistical tests</span></span>
+<span id="cb13-48"><a href="#cb13-48" aria-hidden="true" tabindex="-1"></a>        p_values <span class="op">=</span> {}</span>
+<span id="cb13-49"><a href="#cb13-49" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> t1 <span class="kw">in</span> results:</span>
+<span id="cb13-50"><a href="#cb13-50" aria-hidden="true" tabindex="-1"></a>            <span class="cf">for</span> t2 <span class="kw">in</span> results:</span>
+<span id="cb13-51"><a href="#cb13-51" aria-hidden="true" tabindex="-1"></a>                <span class="cf">if</span> t1 <span class="op">&lt;</span> t2:  <span class="co"># Avoid duplicate comparisons</span></span>
+<span id="cb13-52"><a href="#cb13-52" aria-hidden="true" tabindex="-1"></a>                    p_val <span class="op">=</span> scipy.stats.ttest_ind(results[t1], results[t2]).pvalue</span>
+<span id="cb13-53"><a href="#cb13-53" aria-hidden="true" tabindex="-1"></a>                    p_values[<span class="ss">f'</span><span class="sc">{</span>t1<span class="sc">}</span><span class="ss">_vs_</span><span class="sc">{</span>t2<span class="sc">}</span><span class="ss">'</span>] <span class="op">=</span> p_val</span>
+<span id="cb13-54"><a href="#cb13-54" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-55"><a href="#cb13-55" aria-hidden="true" tabindex="-1"></a>        analysis[<span class="st">'p_values'</span>] <span class="op">=</span> p_values</span>
+<span id="cb13-56"><a href="#cb13-56" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> analysis</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="strategic-robustness-implementation" class="level3" data-number="10.5.6">
+<h3 data-number="10.5.6" class="anchored" data-anchor-id="strategic-robustness-implementation"><span class="header-section-number">10.5.6</span> Strategic Robustness Implementation</h3>
+<p>Protecting against strategic manipulation requires robust learning algorithms and detection mechanisms.</p>
+<p><strong>Strategic Behavior Detection:</strong></p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> StrategicBehaviorDetector:</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>):</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.advertiser_patterns <span class="op">=</span> {}</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.coordination_detector <span class="op">=</span> CoordinationDetector()</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.manipulation_scores <span class="op">=</span> {}</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> analyze_bidding_patterns(<span class="va">self</span>, advertiser_id, bid_history, context_history):</span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>        <span class="co">"""Analyze advertiser bidding for strategic patterns"""</span></span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>        patterns <span class="op">=</span> {</span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>            <span class="st">'bid_volatility'</span>: np.std(bid_history),</span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>            <span class="st">'context_sensitivity'</span>: <span class="va">self</span>.compute_context_sensitivity(</span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>                bid_history, context_history</span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>            ),</span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>            <span class="st">'learning_phase_behavior'</span>: <span class="va">self</span>.analyze_learning_phase_bids(</span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a>                bid_history</span>
+<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a>            ),</span>
+<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a>            <span class="st">'coordination_signals'</span>: <span class="va">self</span>.coordination_detector.check_coordination(</span>
+<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a>                advertiser_id, bid_history</span>
+<span id="cb14-19"><a href="#cb14-19" aria-hidden="true" tabindex="-1"></a>            )</span>
+<span id="cb14-20"><a href="#cb14-20" aria-hidden="true" tabindex="-1"></a>        }</span>
+<span id="cb14-21"><a href="#cb14-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-22"><a href="#cb14-22" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Compute manipulation risk score</span></span>
+<span id="cb14-23"><a href="#cb14-23" aria-hidden="true" tabindex="-1"></a>        manipulation_score <span class="op">=</span> <span class="va">self</span>.compute_manipulation_score(patterns)</span>
+<span id="cb14-24"><a href="#cb14-24" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.manipulation_scores[advertiser_id] <span class="op">=</span> manipulation_score</span>
+<span id="cb14-25"><a href="#cb14-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-26"><a href="#cb14-26" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> manipulation_score</span>
+<span id="cb14-27"><a href="#cb14-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-28"><a href="#cb14-28" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> robust_mechanism_adjustment(<span class="va">self</span>, manipulation_scores):</span>
+<span id="cb14-29"><a href="#cb14-29" aria-hidden="true" tabindex="-1"></a>        <span class="co">"""Adjust mechanism parameters for robustness"""</span></span>
+<span id="cb14-30"><a href="#cb14-30" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="bu">max</span>(manipulation_scores.values()) <span class="op">&gt;</span> <span class="fl">0.7</span>:  <span class="co"># High manipulation risk</span></span>
+<span id="cb14-31"><a href="#cb14-31" aria-hidden="true" tabindex="-1"></a>            <span class="co"># Use more conservative learning rates</span></span>
+<span id="cb14-32"><a href="#cb14-32" aria-hidden="true" tabindex="-1"></a>            <span class="va">self</span>.mechanism_learner.set_conservative_mode(<span class="va">True</span>)</span>
+<span id="cb14-33"><a href="#cb14-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-34"><a href="#cb14-34" aria-hidden="true" tabindex="-1"></a>            <span class="co"># Increase exploration to avoid manipulation lock-in</span></span>
+<span id="cb14-35"><a href="#cb14-35" aria-hidden="true" tabindex="-1"></a>            <span class="va">self</span>.mechanism_learner.increase_exploration_rate()</span>
+<span id="cb14-36"><a href="#cb14-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-37"><a href="#cb14-37" aria-hidden="true" tabindex="-1"></a>            <span class="co"># Use robust confidence bounds</span></span>
+<span id="cb14-38"><a href="#cb14-38" aria-hidden="true" tabindex="-1"></a>            <span class="va">self</span>.mechanism_learner.use_robust_bounds(<span class="va">True</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="real-time-implementation-architecture" class="level3" data-number="10.5.7">
+<h3 data-number="10.5.7" class="anchored" data-anchor-id="real-time-implementation-architecture"><span class="header-section-number">10.5.7</span> Real-Time Implementation Architecture</h3>
+<p>Deploying learning mechanisms in production requires careful system architecture design.</p>
+<p><strong>System Architecture Overview:</strong></p>
+<pre><code>Production LLM Advertising System:
+
+┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
+│   User Query    │───▶│  Context         │───▶│  Mechanism      │
+│                 │    │  Extraction      │    │  Selection      │
+└─────────────────┘    └──────────────────┘    └─────────────────┘
+                                ▲                        │
+                                │                        ▼
+┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
+│  Learning       │◀───│  Performance     │◀───│  Segment        │
+│  Updates        │    │  Monitoring      │    │  Auction        │
+└─────────────────┘    └──────────────────┘    └─────────────────┘
+        │                                               │
+        ▼                                               ▼
+┌─────────────────┐                           ┌─────────────────┐
+│  Model Store    │                           │  Response       │
+│  (Parameters)   │                           │  Generation     │
+└─────────────────┘                           └─────────────────┘</code></pre>
+<p><strong>Performance Requirements:</strong></p>
+<ul>
+<li><strong>Latency:</strong> Context extraction + mechanism selection &lt; 10ms</li>
+<li><strong>Throughput:</strong> Handle 10,000+ queries per second</li>
+<li><strong>Availability:</strong> 99.9% uptime with graceful degradation</li>
+<li><strong>Learning Speed:</strong> Adapt to changes within hours, not days</li>
+</ul>
+<p><strong>Implementation Strategies:</strong></p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> ProductionLearningSystem:</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>):</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>        <span class="co"># High-performance components</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.context_cache <span class="op">=</span> RedisCache()</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.model_store <span class="op">=</span> ParameterStore()</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.async_learner <span class="op">=</span> AsyncLearningEngine()</span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Monitoring and safety</span></span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.performance_monitor <span class="op">=</span> RealTimeMonitor()</span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.circuit_breaker <span class="op">=</span> CircuitBreaker()</span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.fallback_mechanism <span class="op">=</span> StaticMechanism()</span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">async</span> <span class="kw">def</span> process_query(<span class="va">self</span>, query, user_context):</span>
+<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a>        <span class="co">"""Process query with learning mechanism"""</span></span>
+<span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a>        <span class="cf">try</span>:</span>
+<span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a>            <span class="co"># Extract context features (cached when possible)</span></span>
+<span id="cb16-17"><a href="#cb16-17" aria-hidden="true" tabindex="-1"></a>            features <span class="op">=</span> <span class="cf">await</span> <span class="va">self</span>.extract_features_cached(query, user_context)</span>
+<span id="cb16-18"><a href="#cb16-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-19"><a href="#cb16-19" aria-hidden="true" tabindex="-1"></a>            <span class="co"># Select mechanism parameters</span></span>
+<span id="cb16-20"><a href="#cb16-20" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> <span class="va">self</span>.circuit_breaker.is_healthy():</span>
+<span id="cb16-21"><a href="#cb16-21" aria-hidden="true" tabindex="-1"></a>                alpha <span class="op">=</span> <span class="va">self</span>.select_mechanism_parameter(features)</span>
+<span id="cb16-22"><a href="#cb16-22" aria-hidden="true" tabindex="-1"></a>            <span class="cf">else</span>:</span>
+<span id="cb16-23"><a href="#cb16-23" aria-hidden="true" tabindex="-1"></a>                <span class="co"># Fallback to safe static mechanism</span></span>
+<span id="cb16-24"><a href="#cb16-24" aria-hidden="true" tabindex="-1"></a>                alpha <span class="op">=</span> <span class="va">self</span>.fallback_mechanism.get_alpha(features)</span>
+<span id="cb16-25"><a href="#cb16-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-26"><a href="#cb16-26" aria-hidden="true" tabindex="-1"></a>            <span class="co"># Execute auction</span></span>
+<span id="cb16-27"><a href="#cb16-27" aria-hidden="true" tabindex="-1"></a>            result <span class="op">=</span> <span class="cf">await</span> <span class="va">self</span>.run_segment_auction(query, alpha)</span>
+<span id="cb16-28"><a href="#cb16-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-29"><a href="#cb16-29" aria-hidden="true" tabindex="-1"></a>            <span class="co"># Asynchronous learning update</span></span>
+<span id="cb16-30"><a href="#cb16-30" aria-hidden="true" tabindex="-1"></a>            <span class="va">self</span>.async_learner.queue_update(features, alpha, result)</span>
+<span id="cb16-31"><a href="#cb16-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-32"><a href="#cb16-32" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span> result</span>
+<span id="cb16-33"><a href="#cb16-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-34"><a href="#cb16-34" aria-hidden="true" tabindex="-1"></a>        <span class="cf">except</span> <span class="pp">Exception</span> <span class="im">as</span> e:</span>
+<span id="cb16-35"><a href="#cb16-35" aria-hidden="true" tabindex="-1"></a>            <span class="co"># Graceful degradation</span></span>
+<span id="cb16-36"><a href="#cb16-36" aria-hidden="true" tabindex="-1"></a>            <span class="va">self</span>.circuit_breaker.record_failure()</span>
+<span id="cb16-37"><a href="#cb16-37" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span> <span class="cf">await</span> <span class="va">self</span>.fallback_mechanism.process_query(query, user_context)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+</section>
+<section id="chapter-synthesis" class="level2" data-number="10.6">
+<h2 data-number="10.6" class="anchored" data-anchor-id="chapter-synthesis"><span class="header-section-number">10.6</span> Chapter Synthesis</h2>
+<p>This chapter has established the theoretical foundations and practical techniques for building adaptive mechanisms that learn and improve over time. The key insights that emerge are fundamental to understanding how mechanism design must evolve for dynamic digital environments like LLM advertising.</p>
+<p><strong>The Impossibility of Static Optimality:</strong> Our analysis demonstrates that no static mechanism can remain optimal in dynamic environments. Markets evolve, user preferences shift, and technology improves—any mechanism that cannot adapt will eventually become suboptimal or even counterproductive.</p>
+<p><strong>The Exploration-Exploitation Paradigm:</strong> Learning mechanisms must balance exploring new approaches against exploiting current knowledge. This trade-off, formalized through regret analysis, shows that some performance loss during learning is not just acceptable but necessary for long-term optimization.</p>
+<p><strong>Context-Dependent Optimization:</strong> The move from simple bandit problems to contextual bandits reflects the reality that optimal mechanisms depend on query characteristics, advertiser pools, and user contexts. This complexity requires sophisticated feature engineering and careful algorithm design.</p>
+<p><strong>Strategic Robustness as Core Requirement:</strong> Unlike standard online learning problems, mechanism learning faces strategic participants who may manipulate the learning process. This necessitates robust algorithms that maintain good performance even under strategic manipulation.</p>
+<p><strong>Multi-Objective Learning Complexity:</strong> Learning optimal trade-offs between competing objectives (revenue vs.&nbsp;quality) requires extensions to standard bandit algorithms. The techniques developed here—multi-objective UCB, Pareto regret minimization, and preference learning—provide tools for handling these more complex optimization problems.</p>
+<p><strong>Implementation Feasibility:</strong> The transition from theoretical learning algorithms to production systems requires careful attention to computational constraints, system architecture, and operational considerations. The implementation frameworks developed show how to bridge this gap while maintaining theoretical guarantees.</p>
+<p><strong>Connection to Previous Chapters:</strong> This chapter builds directly on the mechanism design foundations (Chapters 1-4), multi-objective optimization theory (Chapters 6-7), and computational considerations (Chapter 9). It provides the dynamic adaptation capabilities needed to make the static mechanisms from earlier chapters viable in real-world settings.</p>
+<p><strong>Forward Connection to Your Thesis:</strong> The learning frameworks developed here directly support your thesis research on multi-objective mechanism design for LLM advertising. Specifically:</p>
+<ol type="1">
+<li><strong>Adaptive Parameter Selection:</strong> The contextual bandit algorithms provide principled methods for learning optimal α values in segment auctions</li>
+<li><strong>Quality-Revenue Trade-off Learning:</strong> The multi-objective learning techniques enable platforms to discover and adapt to changing trade-off preferences</li>
+<li><strong>User Preference Integration:</strong> The hierarchical preference learning framework allows personalization of the revenue-quality balance</li>
+<li><strong>Strategic Robustness:</strong> The robust learning algorithms protect against advertiser manipulation of the learning process</li>
+</ol>
+<p><strong>Research Frontiers:</strong> Several important questions remain open and represent opportunities for your thesis contributions:</p>
+<ol type="1">
+<li><p><strong>Theoretical Gaps:</strong> Can we achieve better regret bounds for multi-objective mechanism learning? What are the fundamental limits when strategic behavior is present?</p></li>
+<li><p><strong>Practical Challenges:</strong> How can we scale these learning algorithms to handle millions of queries and thousands of advertisers in real-time?</p></li>
+<li><p><strong>Quality Learning:</strong> What are the most effective approaches for learning quality functions in LLM advertising contexts?</p></li>
+<li><p><strong>Long-term Dynamics:</strong> How do learning mechanisms perform when all participants (platform and advertisers) are learning simultaneously?</p></li>
+</ol>
+<p><strong>Integration with LLM Advertising:</strong> The segment auction framework from your main paper becomes significantly more powerful when enhanced with learning capabilities. Rather than fixing the trade-off parameter α, adaptive mechanisms can:</p>
+<ul>
+<li>Learn context-dependent optimal α values</li>
+<li>Adapt to changing advertiser populations and strategies</li>
+<li>Personalize trade-offs based on individual user preferences</li>
+<li>Detect and respond to market shifts or strategic manipulation</li>
+<li>Continuously improve quality prediction and relevance scoring</li>
+</ul>
+<p>These capabilities transform the segment auction from a static mechanism into a dynamic, adaptive system capable of sustained optimization in complex, evolving environments.</p>
+<p><strong>Practical Impact:</strong> The learning mechanisms developed in this chapter address real challenges faced by LLM advertising platforms. They provide concrete tools for building systems that improve over time rather than degrade, maintain performance despite strategic behavior, and adapt to changing market conditions automatically.</p>
+<p>This foundation prepares you to extend the theoretical segment auction framework with practical learning capabilities, creating mechanisms that are both theoretically sound and operationally viable in dynamic digital advertising markets.</p>
+</section>
+<section id="exercises" class="level2" data-number="10.7">
+<h2 data-number="10.7" class="anchored" data-anchor-id="exercises"><span class="header-section-number">10.7</span> Exercises</h2>
+<section id="basic-exercises" class="level3" data-number="10.7.1">
+<h3 data-number="10.7.1" class="anchored" data-anchor-id="basic-exercises"><span class="header-section-number">10.7.1</span> Basic Exercises</h3>
+<p><strong>Exercise 10.1:</strong> Consider a simple multi-armed bandit problem for learning optimal reserve prices in LLM advertising. (a) An LLM platform is testing three reserve price levels: $1, $3, and $5. After 100 rounds, the observed average revenues are $2.1, $4.5, and $3.8 respectively, with 40, 35, and 25 observations for each price. Compute the UCB values for each price level at round 101. (b) Which price should be selected according to the UCB algorithm? (c) How would the selection change if the platform were more risk-averse and used larger confidence bounds?</p>
+<p><strong>Exercise 10.2:</strong> Implement the basic UCB algorithm for mechanism selection. (a) Write pseudocode for UCB applied to selecting between 5 different α values for segment auctions: {0.0, 0.25, 0.5, 0.75, 1.0} (b) Simulate the algorithm for 1000 rounds where the true optimal α = 0.6, and α values have Gaussian rewards with mean equal to 1 - |α - 0.6| and standard deviation 0.1 (c) Plot the regret over time and verify it grows sublinearly</p>
+<p><strong>Exercise 10.3:</strong> Analyze the exploration-exploitation trade-off in mechanism learning. (a) For the UCB algorithm, derive the condition under which a suboptimal mechanism will be selected (b) Show how the confidence bounds change over time for mechanisms that are selected frequently vs.&nbsp;rarely (c) Explain why some regret is necessary for learning optimal mechanisms</p>
+</section>
+<section id="intermediate-exercises" class="level3" data-number="10.7.2">
+<h3 data-number="10.7.2" class="anchored" data-anchor-id="intermediate-exercises"><span class="header-section-number">10.7.2</span> Intermediate Exercises</h3>
+<p><strong>Exercise 10.4:</strong> Design a contextual bandit algorithm for context-dependent mechanism selection. (a) Consider contexts defined by query type (product, information, creative) and advertiser pool size (small: &lt;5, medium: 5-15, large: &gt;15). Design a LinUCB algorithm that learns optimal α values for each context (b) Analyze the regret when contexts are uniformly distributed vs.&nbsp;when 80% of queries are “product” type (c) How should the algorithm handle completely new context combinations?</p>
+<p><strong>Exercise 10.5:</strong> Implement Thompson Sampling for multi-objective mechanism learning. (a) Design a Thompson Sampling algorithm that learns to balance revenue and quality by selecting α parameters (b) Use Beta priors for the success probability of each α value, where “success” is defined as achieving above-median combined utility (c) Compare empirically to UCB in terms of regret and computational complexity</p>
+<p><strong>Exercise 10.6:</strong> Analyze strategic manipulation in learning mechanisms. (a) Consider advertisers who can observe the platform’s learning algorithm. Design a strategic bidding strategy that manipulates the platform’s reserve price learning (b) Prove that this strategy can improve the advertisers’ long-term utility (c) Design a robust learning algorithm that limits the effectiveness of such manipulation</p>
+</section>
+<section id="advanced-exercises" class="level3" data-number="10.7.3">
+<h3 data-number="10.7.3" class="anchored" data-anchor-id="advanced-exercises"><span class="header-section-number">10.7.3</span> Advanced Exercises</h3>
+<p><strong>Exercise 10.7:</strong> Design and analyze a change-point detection system for mechanism learning. (a) Develop a statistical test that can detect when the optimal mechanism parameters have shifted due to market changes (b) Analyze the trade-off between detection speed and false positive rate (c) Design an adaptive algorithm that restarts learning when changes are detected, and prove regret bounds in environments with unknown change points</p>
+<p><strong>Exercise 10.8:</strong> Multi-agent learning with strategic advertisers. (a) Model a scenario where both the platform learns optimal mechanisms and advertisers learn optimal bidding strategies simultaneously (b) Analyze the convergence properties of this multi-agent learning system (c) Design mechanisms that remain robust when all participants are learning</p>
+<p><strong>Exercise 10.9:</strong> Preference learning with privacy constraints. (a) Design a differentially private algorithm for learning user preferences over quality vs.&nbsp;commercial content (b) Analyze the privacy-utility trade-off: how does the privacy budget affect learning performance? (c) Extend to handle both individual and population-level preference learning while preserving privacy</p>
+</section>
+<section id="research-level-exercises" class="level3" data-number="10.7.4">
+<h3 data-number="10.7.4" class="anchored" data-anchor-id="research-level-exercises"><span class="header-section-number">10.7.4</span> Research-Level Exercises</h3>
+<p><strong>Exercise 10.10:</strong> Develop a comprehensive learning framework for multi-objective LLM advertising. Design a system that simultaneously learns:</p>
+<ul>
+<li>Optimal trade-off parameters α for different contexts</li>
+<li>User preferences for quality vs.&nbsp;commercial content</li>
+<li>Advertiser valuation distributions</li>
+<li>Quality prediction functions</li>
+</ul>
+<ol type="a">
+<li>Formalize the multi-dimensional learning problem and analyze its computational complexity (b) Design algorithms that can learn all these components simultaneously (c) Prove convergence and regret bounds for your integrated learning system (d) Analyze robustness to strategic behavior by both advertisers and users</li>
+</ol>
+<p><strong>Exercise 10.11:</strong> Theoretical foundations of multi-objective mechanism learning. (a) Extend existing regret analysis to multi-objective settings where the relative importance of objectives can change over time (b) Prove fundamental limits: what is the best possible regret for learning Pareto-optimal mechanisms? (c) Analyze the additional complexity introduced by strategic participants who can manipulate multiple objectives</p>
+<p><strong>Exercise 10.12:</strong> Real-world implementation and validation. (a) Design a complete system architecture for deploying learning mechanisms in a production LLM advertising platform (b) Specify performance requirements, fault tolerance mechanisms, and monitoring systems (c) Design experiments to validate the learning algorithms using real or realistic data (d) Analyze the operational challenges: model versioning, A/B testing, gradual rollouts, and rollback procedures</p>
+<p><strong>Exercise 10.13:</strong> Learning with limited feedback and partial observability. In real LLM advertising systems, feedback is often delayed, noisy, and incomplete: (a) Design learning algorithms that can handle scenarios where quality feedback arrives hours after the auction (b) Address partial observability where the platform only observes click-through rates, not true user satisfaction (c) Develop techniques for learning when advertiser valuations are private and only revealed through bidding behavior (d) Analyze how these practical constraints affect the achievable regret bounds</p>
+</section>
+</section>
+<section id="further-reading" class="level2" data-number="10.8">
+<h2 data-number="10.8" class="anchored" data-anchor-id="further-reading"><span class="header-section-number">10.8</span> Further Reading</h2>
+<section id="foundational-texts-on-learning-theory" class="level3" data-number="10.8.1">
+<h3 data-number="10.8.1" class="anchored" data-anchor-id="foundational-texts-on-learning-theory"><span class="header-section-number">10.8.1</span> Foundational Texts on Learning Theory</h3>
+<p><strong>Multi-Armed Bandits:</strong></p>
+<ul>
+<li><p>Lattimore, T., &amp; Szepesvári, C. (2020). <em>Bandit algorithms</em>. Cambridge University Press.</p>
+<ul>
+<li>Comprehensive treatment of bandit algorithms, essential for understanding exploration-exploitation trade-offs</li>
+<li>Chapters 7-9 on contextual bandits directly apply to mechanism learning</li>
+</ul></li>
+<li><p>Bubeck, S., &amp; Cesa-Bianchi, N. (2012). Regret analysis of stochastic and nonstochastic multi-armed bandit problems. <em>Foundations and Trends in Machine Learning</em>, 5(1), 1-122.</p>
+<ul>
+<li>Theoretical foundations of regret analysis, crucial for understanding performance guarantees</li>
+</ul></li>
+</ul>
+<p><strong>Online Learning:</strong></p>
+<ul>
+<li><p>Hazan, E. (2016). Introduction to online convex optimization. <em>Foundations and Trends in Optimization</em>, 2(3-4), 157-325.</p>
+<ul>
+<li>Mathematical foundations for online optimization, applicable to mechanism parameter learning</li>
+</ul></li>
+<li><p>Shalev-Shwartz, S. (2011). Online learning and online convex optimization. <em>Foundations and Trends in Machine Learning</em>, 4(2), 107-194.</p>
+<ul>
+<li>Practical algorithms for online learning with applications to mechanism design</li>
+</ul></li>
+</ul>
+</section>
+<section id="mechanism-design-with-learning" class="level3" data-number="10.8.2">
+<h3 data-number="10.8.2" class="anchored" data-anchor-id="mechanism-design-with-learning"><span class="header-section-number">10.8.2</span> Mechanism Design with Learning</h3>
+<p><strong>Theoretical Foundations:</strong></p>
+<ul>
+<li><p>Amin, K., Rostamizadeh, A., &amp; Syed, U. (2013). Learning prices for repeated auctions with strategic buyers. In <em>Advances in Neural Information Processing Systems</em> (pp.&nbsp;1169-1177).</p>
+<ul>
+<li>First systematic treatment of learning in mechanism design with strategic participants</li>
+</ul></li>
+<li><p>Mohri, M., &amp; Muñoz Medina, A. (2014). Learning theory and algorithms for revenue optimization in second price auctions with reserve. In <em>International Conference on Machine Learning</em> (pp.&nbsp;262-270).</p>
+<ul>
+<li>Theoretical analysis of reserve price learning with regret bounds</li>
+</ul></li>
+</ul>
+<p><strong>Strategic Considerations:</strong></p>
+<ul>
+<li><p>Dekel, O., Fischer, F., &amp; Procaccia, A. D. (2010). Incentive compatible regression learning. <em>Journal of Computer and System Sciences</em>, 76(8), 759-777.</p>
+<ul>
+<li>How to maintain incentive compatibility while learning from strategic participants</li>
+</ul></li>
+<li><p>Cesa-Bianchi, N., Gentile, C., &amp; Mansour, Y. (2015). Regret minimization for reserve prices in second-price auctions. <em>IEEE Transactions on Information Theory</em>, 61(1), 549-564.</p>
+<ul>
+<li>Robust learning algorithms for auction parameters</li>
+</ul></li>
+</ul>
+</section>
+<section id="multi-objective-and-contextual-learning" class="level3" data-number="10.8.3">
+<h3 data-number="10.8.3" class="anchored" data-anchor-id="multi-objective-and-contextual-learning"><span class="header-section-number">10.8.3</span> Multi-Objective and Contextual Learning</h3>
+<p><strong>Multi-Objective Optimization:</strong></p>
+<ul>
+<li><p>Roijers, D. M., Vamplew, P., Whiteson, S., &amp; Dazeley, R. (2013). A survey of multi-objective sequential decision-making. <em>Journal of Artificial Intelligence Research</em>, 48, 67-113.</p>
+<ul>
+<li>Comprehensive survey of multi-objective learning problems</li>
+</ul></li>
+<li><p>Hayes, C. F., Rădulescu, R., Bargiacchi, E., Källström, J., Macfarlane, M., Reymond, M., … &amp; Roijers, D. M. (2022). A practical guide to multi-objective reinforcement learning and planning. <em>Autonomous Agents and Multi-Agent Systems</em>, 36(1), 1-59.</p>
+<ul>
+<li>Practical techniques for multi-objective learning, applicable to mechanism design</li>
+</ul></li>
+</ul>
+<p><strong>Contextual Bandits:</strong></p>
+<ul>
+<li><p>Li, L., Chu, W., Langford, J., &amp; Schapire, R. E. (2010). A contextual-bandit approach to personalized news article recommendation. In <em>Proceedings of the 19th international conference on World wide web</em> (pp.&nbsp;661-670).</p>
+<ul>
+<li>LinUCB algorithm and its applications to personalized systems</li>
+</ul></li>
+<li><p>Agrawal, S., &amp; Goyal, N. (2013). Thompson sampling for contextual bandits with linear payoffs. In <em>International Conference on Machine Learning</em> (pp.&nbsp;127-135).</p>
+<ul>
+<li>Thompson sampling for contextual problems with theoretical guarantees</li>
+</ul></li>
+</ul>
+</section>
+<section id="learning-in-digital-advertising" class="level3" data-number="10.8.4">
+<h3 data-number="10.8.4" class="anchored" data-anchor-id="learning-in-digital-advertising"><span class="header-section-number">10.8.4</span> Learning in Digital Advertising</h3>
+<p><strong>Search Advertising:</strong></p>
+<ul>
+<li><p>Edelman, B., &amp; Ostrovsky, M. (2007). Strategic bidder behavior in sponsored search auctions. <em>Decision support systems</em>, 43(1), 192-198.</p>
+<ul>
+<li>Strategic behavior analysis in search advertising auctions</li>
+</ul></li>
+<li><p>Varian, H. R. (2007). Position auctions. <em>International Journal of Industrial Organization</em>, 25(6), 1163-1178.</p>
+<ul>
+<li>Theoretical foundations of position auctions with learning considerations</li>
+</ul></li>
+</ul>
+<p><strong>Display and Programmatic Advertising:</strong></p>
+<ul>
+<li><p>Chen, Y., Pavlov, D., &amp; Canny, J. F. (2009). Large-scale behavioral targeting. In <em>Proceedings of the 15th ACM SIGKDD international conference on Knowledge discovery and data mining</em> (pp.&nbsp;209-218).</p>
+<ul>
+<li>User preference learning in display advertising</li>
+</ul></li>
+<li><p>Yuan, S., Wang, J., &amp; Zhao, X. (2013). Real-time bidding for online advertising: measurement and analysis. In <em>Proceedings of the Seventh International Workshop on Data Mining for Online Advertising</em> (pp.&nbsp;1-8).</p>
+<ul>
+<li>Real-time learning and optimization in programmatic advertising</li>
+</ul></li>
+</ul>
+</section>
+<section id="llm-and-ai-powered-advertising-emerging-literature" class="level3" data-number="10.8.5">
+<h3 data-number="10.8.5" class="anchored" data-anchor-id="llm-and-ai-powered-advertising-emerging-literature"><span class="header-section-number">10.8.5</span> LLM and AI-Powered Advertising (Emerging Literature)</h3>
+<p><strong>Core Papers:</strong></p>
+<ul>
+<li><p>Hajiaghayi, M. T., Lahaie, S., Rezaei, K., &amp; Shin, S. (2024). Ad auctions for LLMs via retrieval augmented generation. <em>arXiv preprint arXiv:2406.09459</em>.</p>
+<ul>
+<li>Your main reference paper establishing segment auctions</li>
+</ul></li>
+<li><p>Feizi, S., Hajiaghayi, M. T., Rezaei, K., &amp; Shin, S. (2023). Online advertisements with LLMs: Opportunities and challenges. <em>arXiv preprint arXiv:2311.07601</em>.</p>
+<ul>
+<li>Broader perspective on LLM advertising challenges and opportunities</li>
+</ul></li>
+</ul>
+<p><strong>Related AI Systems:</strong></p>
+<ul>
+<li><p>Ouyang, L., Wu, J., Jiang, X., Almeida, D., Wainwright, C., Mishkin, P., … &amp; Lowe, R. (2022). Training language models to follow instructions with human feedback. <em>Advances in Neural Information Processing Systems</em>, 35, 27730-27744.</p>
+<ul>
+<li>RLHF techniques that could be adapted for preference learning in advertising</li>
+</ul></li>
+<li><p>Christiano, P. F., Leike, J., Brown, T., Martic, M., Legg, S., &amp; Amodei, D. (2017). Deep reinforcement learning from human feedback. <em>Advances in neural information processing systems</em>, 30.</p>
+<ul>
+<li>Human feedback learning techniques applicable to quality assessment</li>
+</ul></li>
+</ul>
+</section>
+<section id="practical-implementation-and-systems" class="level3" data-number="10.8.6">
+<h3 data-number="10.8.6" class="anchored" data-anchor-id="practical-implementation-and-systems"><span class="header-section-number">10.8.6</span> Practical Implementation and Systems</h3>
+<p><strong>Large-Scale Machine Learning:</strong></p>
+<ul>
+<li><p>Bottou, L. (2010). Large-scale machine learning with stochastic gradient descent. In <em>Proceedings of COMPSTAT’2010</em> (pp.&nbsp;177-186).</p>
+<ul>
+<li>Scalable learning algorithms for production systems</li>
+</ul></li>
+<li><p>Sculley, D., Holt, G., Golovin, D., Davydov, E., Phillips, T., Ebner, D., … &amp; Young, M. (2015). Hidden technical debt in machine learning systems. <em>Advances in neural information processing systems</em>, 28.</p>
+<ul>
+<li>Practical considerations for deploying learning systems in production</li>
+</ul></li>
+</ul>
+<p><strong>A/B Testing and Experimentation:</strong></p>
+<ul>
+<li><p>Kohavi, R., &amp; Longbotham, R. (2017). Online controlled experiments and A/B testing. <em>Encyclopedia of machine learning and data mining</em>, 922-929.</p>
+<ul>
+<li>Systematic experimentation for mechanism validation</li>
+</ul></li>
+<li><p>Xu, Y., Chen, N., Fernandez, A., Sinno, O., &amp; Bhasin, A. (2015). From infrastructure to culture: A/B testing challenges in large scale social networks. In <em>Proceedings of the 21th ACM SIGKDD International Conference on Knowledge Discovery and Data Mining</em> (pp.&nbsp;2227-2236).</p>
+<ul>
+<li>Challenges in large-scale experimentation platforms</li>
+</ul></li>
+</ul>
+</section>
+<section id="privacy-and-strategic-considerations" class="level3" data-number="10.8.7">
+<h3 data-number="10.8.7" class="anchored" data-anchor-id="privacy-and-strategic-considerations"><span class="header-section-number">10.8.7</span> Privacy and Strategic Considerations</h3>
+<p><strong>Differential Privacy in Learning:</strong></p>
+<ul>
+<li><p>Dwork, C., &amp; Roth, A. (2014). The algorithmic foundations of differential privacy. <em>Foundations and Trends in Theoretical Computer Science</em>, 9(3–4), 211-407.</p>
+<ul>
+<li>Theoretical foundations for privacy-preserving learning</li>
+</ul></li>
+<li><p>Papernot, N., Abadi, M., Erlingsson, U., Goodfellow, I., &amp; Talwar, K. (2016). Semi-supervised knowledge transfer for deep learning from private training data. <em>arXiv preprint arXiv:1610.05755</em>.</p>
+<ul>
+<li>Practical techniques for private machine learning</li>
+</ul></li>
+</ul>
+<p><strong>Game Theory and Strategic Learning:</strong></p>
+<ul>
+<li><p>McMahan, H. B., Gordon, G. J., &amp; Blum, A. (2003). Planning in the presence of cost functions controlled by an adversary. In <em>Proceedings of the 20th International Conference on Machine Learning</em> (pp.&nbsp;536-543).</p>
+<ul>
+<li>Learning under strategic manipulation</li>
+</ul></li>
+<li><p>Mansour, Y., Slivkins, A., Syrgkanis, V., &amp; Wu, Z. S. (2020). Bayesian exploration: Incentivizing exploration in bayesian games. <em>Operations Research</em>, 68(4), 1132-1161.</p>
+<ul>
+<li>Strategic incentives in learning mechanisms</li>
+</ul></li>
+</ul>
+</section>
+<section id="specialized-venues-and-resources" class="level3" data-number="10.8.8">
+<h3 data-number="10.8.8" class="anchored" data-anchor-id="specialized-venues-and-resources"><span class="header-section-number">10.8.8</span> Specialized Venues and Resources</h3>
+<p><strong>Premier Conferences:</strong></p>
+<ul>
+<li><strong>ICML (International Conference on Machine Learning)</strong> - Top venue for learning algorithm research</li>
+<li><strong>NeurIPS (Neural Information Processing Systems)</strong> - Leading conference for machine learning theory and applications</li>
+<li><strong>EC (Economics and Computation)</strong> - Premier venue for mechanism design with computational considerations</li>
+<li><strong>WWW (World Wide Web Conference)</strong> - Web systems and online advertising research</li>
+<li><strong>KDD (Knowledge Discovery and Data Mining)</strong> - Applied machine learning and data mining</li>
+</ul>
+<p><strong>Specialized Workshops:</strong></p>
+<ul>
+<li><strong>Workshop on Economics of Machine Learning (EcoML)</strong> at NeurIPS</li>
+<li><strong>Algorithmic Economics Workshop</strong> at various venues</li>
+<li><strong>Workshop on Machine Learning for Online Advertising</strong> at KDD/WWW</li>
+</ul>
+<p><strong>Online Resources:</strong></p>
+<ul>
+<li><strong>Bandit Algorithms Book Website</strong> (banditalgs.com) - Supplementary materials and implementations</li>
+<li><strong>Multi-Armed Bandit Repository</strong> (github.com/SMPyBandits) - Open source bandit algorithm implementations</li>
+<li><strong>Economics and Computation Archive</strong> (econcs.pku.edu.cn) - Research papers and resources</li>
+</ul>
+<p><strong>Datasets and Benchmarks:</strong></p>
+<ul>
+<li><strong>Yahoo! News Recommendation Dataset</strong> - Standard benchmark for contextual bandits</li>
+<li><strong>Criteo Ad Dataset</strong> - Large-scale advertising data for learning experiments</li>
+<li><strong>Microsoft Learning to Rank Datasets</strong> - Relevance learning benchmarks</li>
+</ul>
+<p>This comprehensive reading list provides multiple pathways for deepening understanding of learning in mechanism design. For your thesis work, I recommend starting with the Lattimore &amp; Szepesvári bandit book for theoretical foundations, then exploring the mechanism design with learning papers (particularly Amin et al.&nbsp;and Mohri &amp; Muñoz Medina) for strategic considerations, and finally diving into the emerging LLM advertising literature to understand current research frontiers.</p>
+<p>The combination of theoretical depth in learning theory with practical implementation guidance will provide the foundation needed to develop adaptive, learning-capable mechanisms for your multi-objective LLM advertising research while ensuring both theoretical rigor and practical viability.</p>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const disableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'prefetch';
+    }
+  }
+  const enableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'stylesheet';
+    }
+  }
+  const manageTransitions = (selector, allowTransitions) => {
+    const els = window.document.querySelectorAll(selector);
+    for (let i=0; i < els.length; i++) {
+      const el = els[i];
+      if (allowTransitions) {
+        el.classList.remove('notransition');
+      } else {
+        el.classList.add('notransition');
+      }
+    }
+  }
+  const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+    const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+    const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+    let newTheme = '';
+    if(darkModeDefault) {
+      newTheme = isAlternate ? baseTheme : alternateTheme;
+    } else {
+      newTheme = isAlternate ? alternateTheme : baseTheme;
+    }
+    const changeGiscusTheme = () => {
+      // From: https://github.com/giscus/giscus/issues/336
+      const sendMessage = (message) => {
+        const iframe = document.querySelector('iframe.giscus-frame');
+        if (!iframe) return;
+        iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+      }
+      sendMessage({
+        setConfig: {
+          theme: newTheme
+        }
+      });
+    }
+    const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+    if (isGiscussLoaded) {
+      changeGiscusTheme();
+    }
+  }
+  const toggleColorMode = (alternate) => {
+    // Switch the stylesheets
+    const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+    manageTransitions('#quarto-margin-sidebar .nav-link', false);
+    if (alternate) {
+      enableStylesheet(alternateStylesheets);
+      for (const sheetNode of alternateStylesheets) {
+        if (sheetNode.id === "quarto-bootstrap") {
+          toggleBodyColorMode(sheetNode);
+        }
+      }
+    } else {
+      disableStylesheet(alternateStylesheets);
+      toggleBodyColorPrimary();
+    }
+    manageTransitions('#quarto-margin-sidebar .nav-link', true);
+    // Switch the toggles
+    const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+    for (let i=0; i < toggles.length; i++) {
+      const toggle = toggles[i];
+      if (toggle) {
+        if (alternate) {
+          toggle.classList.add("alternate");     
+        } else {
+          toggle.classList.remove("alternate");
+        }
+      }
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455)
+    if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+      manageTransitions("body", false);
+      window.scrollTo(0, 1);
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+        manageTransitions("body", true);
+      }, 40);  
+    }
+  }
+  const isFileUrl = () => { 
+    return window.location.protocol === 'file:';
+  }
+  const hasAlternateSentinel = () => {  
+    let styleSentinel = getColorSchemeSentinel();
+    if (styleSentinel !== null) {
+      return styleSentinel === "alternate";
+    } else {
+      return false;
+    }
+  }
+  const setStyleSentinel = (alternate) => {
+    const value = alternate ? "alternate" : "default";
+    if (!isFileUrl()) {
+      window.localStorage.setItem("quarto-color-scheme", value);
+    } else {
+      localAlternateSentinel = value;
+    }
+  }
+  const getColorSchemeSentinel = () => {
+    if (!isFileUrl()) {
+      const storageValue = window.localStorage.getItem("quarto-color-scheme");
+      return storageValue != null ? storageValue : localAlternateSentinel;
+    } else {
+      return localAlternateSentinel;
+    }
+  }
+  const darkModeDefault = false;
+  let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+  // Dark / light mode switch
+  window.quartoToggleColorScheme = () => {
+    // Read the current dark / light value 
+    let toAlternate = !hasAlternateSentinel();
+    toggleColorMode(toAlternate);
+    setStyleSentinel(toAlternate);
+    toggleGiscusIfUsed(toAlternate, darkModeDefault);
+  };
+  // Ensure there is a toggle, if there isn't float one in the top right
+  if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+    const a = window.document.createElement('a');
+    a.classList.add('top-right');
+    a.classList.add('quarto-color-scheme-toggle');
+    a.href = "";
+    a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+    const i = window.document.createElement("i");
+    i.classList.add('bi');
+    a.appendChild(i);
+    window.document.body.appendChild(a);
+  }
+  // Switch to dark mode if need be
+  if (hasAlternateSentinel()) {
+    toggleColorMode(true);
+  } else {
+    toggleColorMode(false);
+  }
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+          // target, if specified
+          link.setAttribute("target", "_blank");
+          if (link.getAttribute("rel") === null) {
+            link.setAttribute("rel", "noopener");
+          }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../part03/computational-aspects-md.html" class="pagination-link" aria-label="Computational Aspects of Mechanism Design">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Computational Aspects of Mechanism Design</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../part03/platform-econ.html" class="pagination-link" aria-label="Platform Economics and Two-Sided Markets">
+        <span class="nav-page-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Platform Economics and Two-Sided Markets</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+<script src="../site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>
